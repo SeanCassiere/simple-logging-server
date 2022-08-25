@@ -17,16 +17,21 @@ model Service {
   createdAt DateTime @default(now())
 
   logs Log[]
+
+  @@index([createdAt])
 }
 
 model Log {
-  id          String   @id @default(cuid())
-  action      String?
-  environment String?
-  ip          String?
-  data        Json?
-  createdAt   DateTime @default(now())
+  id                String   @id @default(cuid())
+  action            String?
+  environment       String?
+  ip                String?
+  data              Json?
+  lookupFilterValue String?
+  createdAt         DateTime @default(now())
 
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   serviceId String
+
+  @@index([createdAt])
 }

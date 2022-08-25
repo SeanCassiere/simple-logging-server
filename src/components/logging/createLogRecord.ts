@@ -6,6 +6,7 @@ const createLogRecordInputSchema = z.object({
   serviceId: z.string(),
   action: z.string(),
   ip: z.string().optional(),
+  lookupFilterValue: z.string().optional(),
   environment: z.string().default("production"),
   data: z.any().optional(),
 });
@@ -47,6 +48,7 @@ export async function createLogRecord(request: FastifyRequest<{ Body: CreateLogR
         environment: body.environment,
         ip: body.ip,
         data: body.data ? body.data : undefined,
+        lookupFilterValue: body.lookupFilterValue ? body.lookupFilterValue : undefined,
       },
       include: {
         service: true,
