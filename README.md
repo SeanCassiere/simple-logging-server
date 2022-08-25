@@ -30,13 +30,26 @@ To create a log, a POST request must be sent to the following endpoint `/api/log
 }
 ```
 
-| Field       | Type                                    | Description                                                |
-| ----------- | --------------------------------------- | ---------------------------------------------------------- |
-| serviceId   | String (CUID)                           | The service id of the service that is logging the message. |
-| action      | String                                  | The action that is being logged.                           |
-| environment | String <br /> **_default_**: production | The environment that the action is being logged in.        |
-| ip          | String?                                 | The ip address of the client that is logging the message.  |
-| data        | Json?                                   | Any additional metadata to be stored along with this log.  |
+| Field             | Type                                    | Description                                                |
+| ----------------- | --------------------------------------- | ---------------------------------------------------------- |
+| serviceId         | String (CUID)                           | The service id of the service that is logging the message. |
+| action            | String                                  | The action that is being logged.                           |
+| environment       | String <br /> **_default_**: production | The environment that the action is being logged in.        |
+| lookupFilterValue | String?                                 | Used for filtering when searching up the records.          |
+| ip                | String?                                 | The ip address of the client that is logging the message.  |
+| data              | Json?                                   | Any additional metadata to be stored along with this log.  |
+
+### Searching for logs
+
+To view logs, a GET request must be sent to the following endpoint `/api/logs/services/{serviceId}`.
+
+| Field            | Type    | Description                                                |
+| ---------------- | ------- | ---------------------------------------------------------- |
+| serviceId (path) | String  | The service id of the service that is logging the message. |
+| lookup (query)   | String? | Exact matches to the `lookupFilterValue` field above       |
+| limit (query)    | Number? | Limit the number of records to return. The default is 500. |
+
+Please note, that this endpoint will return the **LAST** `x` number of logs ordered by their created date.
 
 ## Contributing
 
