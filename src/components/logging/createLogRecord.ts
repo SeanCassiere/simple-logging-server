@@ -32,6 +32,7 @@ export async function createLogRecord(request: FastifyRequest<{ Body: CreateLogR
       },
     });
   } catch (error) {
+    console.log(error);
     reply.code(500).send({
       message: "Something went wrong. Either an invalid service ID or it has been marked as inactive.",
       errors: [],
@@ -53,6 +54,7 @@ export async function createLogRecord(request: FastifyRequest<{ Body: CreateLogR
     });
     reply.code(201).send(log);
   } catch (error) {
+    console.log(error);
     reply.code(500).send({ message: "something went wrong creating the log record", errors: [] });
   }
 }

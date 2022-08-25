@@ -24,9 +24,6 @@ async function main() {
         console.log(`${packageJson.name} (${env.NODE_ENV} - ${packageJson.version}) listening on ${address} `);
       }
     );
-    console.log(
-      `${packageJson.name} (${env.NODE_ENV} - ${packageJson.version}) is running and listening on port ${env.PORT} 🚀`
-    );
   } catch (error) {
     console.error(error);
     process.exit(1);

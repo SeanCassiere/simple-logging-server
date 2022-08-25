@@ -7,15 +7,20 @@ export async function getLogsForService(
 ) {
   const serviceId = request.params.serviceId;
 
-  const records = await prisma.log.findMany({
-    where: {
-      serviceId,
-    },
-    take: 500,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  try {
+    const records = await prisma.log.findMany({
+      where: {
+        serviceId,
+      },
+      take: 500,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-  reply.code(200).send([...records].reverse());
+    reply.code(200).send([...records].reverse());
+  } catch (error) {
+    console.log(error);
+    reply.code(500).send({ message: `something went wrong finding logs for ${serviceId}`, errors: [] });
+  }
 }
