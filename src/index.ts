@@ -8,6 +8,13 @@ const app = fastify({ logger: env.NODE_ENV !== "production" });
 
 app.register(loggingRoutes, { prefix: "/api/logs" });
 
+app.get("/health", async (_, reply) => {
+  reply.code(200).send({
+    status: "ok",
+    uptime: process.uptime() ?? 0,
+  });
+});
+
 app.get("/", (_, reply) => {
   reply.code(200).send({ message: "Hello World" });
 });
