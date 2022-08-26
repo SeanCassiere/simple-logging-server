@@ -1,12 +1,27 @@
 import fastify from "fastify";
+import swagger from "@fastify/swagger";
+import rateLimit from "@fastify/rate-limit";
+import { withRefResolver } from "fastify-zod";
 
-import { loggingRoutes } from "./components/logging/logging.routes";
 import { env } from "./config/env";
+
+import { serviceRoutes } from "./components/services/services.routes";
+
+import { logSchemas } from "./components/logging/logging.schema";
+import { serviceSchemas } from "./components/services/services.schema";
+
 const packageJson = require("../package.json");
 
-const app = fastify({ logger: env.NODE_ENV !== "production" });
+const app = fastify({
+  logger: env.NODE_ENV !== "production",
+  // logger: false,
+});
 
-app.register(loggingRoutes, { prefix: "/api/logs" });
+app.register(rateLimit, {
+  max: 50,
+  timeWindow: "1 minute",
+  // ...(env.NODE_ENV !== "production" ? { allowList: ["127.0.0.1", "localhost"] } : {}),
+});
 
 app.get("/health", async (_, reply) => {
   reply.code(200).send({
@@ -14,6 +29,27 @@ app.get("/health", async (_, reply) => {
     uptime: process.uptime() ?? 0,
   });
 });
+
+for (const schema of [...logSchemas, ...serviceSchemas]) {
+  app.addSchema(schema);
+}
+
+app.register(
+  swagger,
+  withRefResolver({
+    routePrefix: "/docs",
+    exposeRoute: true,
+    staticCSP: true,
+    openapi: {
+      info: {
+        title: "Logging API",
+        version: packageJson.version,
+      },
+    },
+  })
+);
+
+app.register(serviceRoutes, { prefix: "/api/services" });
 
 app.get("/", (_, reply) => {
   reply.code(200).send({ message: "Hello World" });
