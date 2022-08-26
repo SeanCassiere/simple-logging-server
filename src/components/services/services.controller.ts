@@ -45,10 +45,8 @@ export async function getServiceLogsHandler(
       environment: request.query.environment,
       includeService: false,
     });
-    console.log(logs);
     reply.code(200).send(logs);
   } catch (error) {
-    console.log(error);
     reply.code(500).send({ message: `something went wrong finding logs for ${serviceId}`, errors: [] });
   }
 }
