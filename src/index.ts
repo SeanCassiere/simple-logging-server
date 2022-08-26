@@ -1,5 +1,6 @@
 import fastify from "fastify";
 import swagger from "@fastify/swagger";
+import rateLimit from "@fastify/rate-limit";
 import { withRefResolver } from "fastify-zod";
 
 import { env } from "./config/env";
@@ -14,6 +15,12 @@ const packageJson = require("../package.json");
 const app = fastify({
   logger: env.NODE_ENV !== "production",
   // logger: false,
+});
+
+app.register(rateLimit, {
+  max: 50,
+  timeWindow: "1 minute",
+  // ...(env.NODE_ENV !== "production" ? { allowList: ["127.0.0.1", "localhost"] } : {}),
 });
 
 app.get("/health", async (_, reply) => {
