@@ -1,22 +1,21 @@
 import { FastifyInstance } from "fastify";
 
-import { $ref as $refCommon } from "../common.schema";
-
+import { $ref } from "../../config/fastify-zod";
 import { cleanLogsForAllHandler } from "./logging.controller";
 
 export async function logRoutes(server: FastifyInstance) {
   server.get(
-    "/clean",
+    `/clean`,
     {
       schema: {
         tags: ["Logs"],
-        operationId: "CleanLogsForAll",
+        operationId: `CleanLogsForAll`,
         description: "Clean all logs for all services that are not persisted",
-        headers: $refCommon("XAppClientIdHeaderSchema"),
+        headers: $ref("XAppServiceIdHeader"),
         response: {
-          200: $refCommon("SuccessResponseSchema"),
-          403: $refCommon("SuccessResponseSchema"), //error
-          500: $refCommon("SuccessResponseSchema"), //error
+          200: $ref("SuccessResponse"),
+          403: $ref("SuccessResponse"),
+          500: $ref("SuccessResponse"),
         },
       },
     },

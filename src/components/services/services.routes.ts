@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 
-import { $ref as $refService } from "./services.schema";
-import { $ref as $refLog } from "../logging/logging.schema";
+import { $ref } from "../../config/fastify-zod";
 import { createServiceLogHandler, getServiceLogsHandler } from "./services.controller";
 
 export async function serviceRoutes(server: FastifyInstance) {
@@ -11,10 +10,10 @@ export async function serviceRoutes(server: FastifyInstance) {
       schema: {
         tags: ["Services"],
         operationId: "GetLogsForService",
-        params: $refService("ServiceIdRouteParamSchema"),
-        querystring: $refService("GetServiceLogsQueryParamsSchema"),
+        params: $ref("ServiceIdParameter"),
+        querystring: $ref("ServiceLogListQueryParams"),
         response: {
-          200: $refLog("LogsResponseSchema"),
+          200: $ref("LogListResponse"),
         },
       },
     },
@@ -26,10 +25,10 @@ export async function serviceRoutes(server: FastifyInstance) {
       schema: {
         tags: ["Services"],
         operationId: "CreateLogForService",
-        body: $refLog("CreateLogInputSchema"),
-        params: $refService("ServiceIdRouteParamSchema"),
+        body: $ref("CreateLogDTO"),
+        params: $ref("ServiceIdParameter"),
         response: {
-          201: $refLog("LogResponseSchema"),
+          201: $ref("LogResponse"),
         },
       },
     },
