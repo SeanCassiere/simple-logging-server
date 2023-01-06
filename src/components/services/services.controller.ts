@@ -14,13 +14,14 @@ export async function createServiceLogHandler(
 ) {
   const serviceId = request.params.ServiceId;
 
-  if (!(await findActiveService({ serviceId: serviceId }))) {
+  const service = await findActiveService({ serviceId: serviceId });
+  if (!service) {
     reply.code(404).send({ message: "Service ID invalid or inactive", errors: [] });
     return;
   }
 
   try {
-    const log = await createLog({ ...request.body, serviceId });
+    const log = await createLog({ ...request.body, serviceId, isPersisted: service.isPersisted });
     reply.code(201).send(log);
   } catch (error) {
     reply.code(500).send({ message: `error creating log for service ${serviceId}`, errors: [] });

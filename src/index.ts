@@ -6,9 +6,11 @@ import { withRefResolver } from "fastify-zod";
 import { env } from "./config/env";
 
 import { serviceRoutes } from "./components/services/services.routes";
+import { logRoutes } from "./components/logging/logging.routes";
 
 import { logSchemas } from "./components/logging/logging.schema";
 import { serviceSchemas } from "./components/services/services.schema";
+import { commonSchemas } from "./components/common.schema";
 
 const packageJson = require("../package.json");
 
@@ -30,7 +32,7 @@ async function main() {
     });
   });
 
-  for (const schema of [...logSchemas, ...serviceSchemas]) {
+  for (const schema of [...commonSchemas, ...logSchemas, ...serviceSchemas]) {
     app.addSchema(schema);
   }
 
@@ -49,10 +51,12 @@ async function main() {
       uiConfig: {
         docExpansion: "list",
         displayRequestDuration: true,
+        displayOperationId: true,
       },
     })
   );
 
+  app.register(logRoutes, { prefix: "/api/logs" });
   app.register(serviceRoutes, { prefix: "/api/services" });
 
   app.get("/", (_, reply) => {
@@ -76,4 +80,4 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => console.error(err));
