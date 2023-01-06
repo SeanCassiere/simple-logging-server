@@ -11,7 +11,7 @@ export async function serviceRoutes(server: FastifyInstance) {
         tags: ["Services"],
         operationId: "GetLogsForService",
         params: $ref("ServiceIdParameter"),
-        querystring: $ref("ServiceLogListQueryParams"),
+        querystring: $ref("LogListQueryDTO"),
         response: {
           200: $ref("LogListResponse"),
         },

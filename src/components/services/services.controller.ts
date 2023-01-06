@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { CreateLogInput } from "../logging/logging.schema";
+import { CreateLogInput, TGetLogsQueryParamsInput } from "../logging/logging.schema";
 import { createLog, getLogs } from "../logging/logging.service";
-import { GetServiceLogsQueryParamsInput, ServiceIdRouteParamInput } from "./services.schema";
+import { ServiceIdRouteParamInput } from "./services.schema";
 import { findActiveService } from "./services.service";
 
 export async function createServiceLogHandler(
@@ -31,7 +31,7 @@ export async function createServiceLogHandler(
 export async function getServiceLogsHandler(
   request: FastifyRequest<{
     Params: ServiceIdRouteParamInput;
-    Querystring: GetServiceLogsQueryParamsInput;
+    Querystring: TGetLogsQueryParamsInput;
   }>,
   reply: FastifyReply
 ) {

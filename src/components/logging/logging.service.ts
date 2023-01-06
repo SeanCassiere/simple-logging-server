@@ -8,6 +8,7 @@ export async function createLog(data: CreateLogInput & { serviceId: string; isPe
 export async function getLogs({
   limit = 500,
   sortDirection = "desc",
+  includeService = false,
   ...data
 }: {
   serviceId?: string;
@@ -25,7 +26,7 @@ export async function getLogs({
     },
     take: limit,
     orderBy: { createdAt: sortDirection },
-    include: { service: data.includeService ? true : false },
+    include: { service: includeService ? true : false },
   });
 }
 
