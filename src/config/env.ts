@@ -7,6 +7,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   PORT: z.string(),
   DATABASE_URL: z.string(),
+  DEFAULT_NUM_OF_MONTHS_TO_DELETE: z.string().default("8"),
 });
 
 const envData = envSchema.safeParse(process.env);
