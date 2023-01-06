@@ -1,7 +1,7 @@
 import fastify from "fastify";
-import swagger from "@fastify/swagger";
+// import swagger from "@fastify/swagger";
 import rateLimit from "@fastify/rate-limit";
-import { withRefResolver } from "fastify-zod";
+import { buildJsonSchemas, register } from "fastify-zod";
 
 import { env } from "./config/env";
 
@@ -18,6 +18,8 @@ const app = fastify({
   logger: env.NODE_ENV !== "production",
 });
 
+const allModels = [...commonSchemas, ...logSchemas, ...serviceSchemas];
+
 async function main() {
   app.register(rateLimit, {
     max: 50,
@@ -32,29 +34,34 @@ async function main() {
     });
   });
 
-  for (const schema of [...commonSchemas, ...logSchemas, ...serviceSchemas]) {
+  for (const schema of allModels) {
     app.addSchema(schema);
   }
 
-  app.register(
-    swagger,
-    withRefResolver({
-      routePrefix: "/docs",
+  await register(app, {
+    jsonSchemas: buildJsonSchemas(
+      allModels.reduce((prev, current) => {
+        return { ...prev, current };
+      }, {})
+    ),
+    swaggerOptions: {
       exposeRoute: true,
+      routePrefix: "/docs",
       staticCSP: true,
+      uiConfig: {
+        docExpansion: "list",
+        displayRequestDuration: true,
+        displayOperationId: true,
+      },
       openapi: {
         info: {
           title: "Logging API",
           version: packageJson.version,
         },
       },
-      uiConfig: {
-        docExpansion: "list",
-        displayRequestDuration: true,
-        displayOperationId: true,
-      },
-    })
-  );
+      hideUntagged: true,
+    },
+  });
 
   app.register(logRoutes, { prefix: "/api/logs" });
   app.register(serviceRoutes, { prefix: "/api/services" });
