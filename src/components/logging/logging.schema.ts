@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { buildJsonSchemas } from "fastify-zod";
 
 const logCreateInput = {
   action: z.string(),
@@ -28,13 +27,8 @@ const LogsResponseSchema = z.array(LogResponseSchema);
 
 export type CreateLogInput = z.infer<typeof CreateLogInputSchema>;
 
-export const { schemas: logSchemas, $ref } = buildJsonSchemas(
-  {
-    CreateLogInputSchema,
-    LogResponseSchema,
-    LogsResponseSchema,
-  },
-  {
-    $id: "Logs",
-  }
-);
+export const logModels = {
+  CreateLogDTO: CreateLogInputSchema,
+  LogResponse: LogResponseSchema,
+  LogListResponse: LogsResponseSchema,
+};

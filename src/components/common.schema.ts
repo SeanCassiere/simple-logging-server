@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { buildJsonSchemas } from "fastify-zod";
 
 const SuccessResponseSchema = z.object({
   success: z.boolean(),
@@ -12,12 +11,7 @@ const XAppClientIdHeaderSchema = z.object({
 
 export type TXAppClientIdHeaderSchema = z.infer<typeof XAppClientIdHeaderSchema>;
 
-export const { schemas: commonSchemas, $ref } = buildJsonSchemas(
-  {
-    SuccessResponseSchema,
-    XAppClientIdHeaderSchema,
-  },
-  {
-    $id: "Common",
-  }
-);
+export const commonModels = {
+  XAppClientIdHeader: XAppClientIdHeaderSchema,
+  SuccessResponse: SuccessResponseSchema,
+};
