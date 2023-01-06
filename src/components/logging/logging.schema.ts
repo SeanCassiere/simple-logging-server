@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ServiceZodSchema } from "../services/services.schema";
 
 const logCreateInput = {
   action: z.string(),
@@ -7,22 +8,31 @@ const logCreateInput = {
   lookupFilterValue: z.string().nullable().optional(),
   data: z.any().nullable().optional(),
 };
+const CreateLogInputSchema = z.object({
+  ...logCreateInput,
+});
+export type CreateLogInput = z.infer<typeof CreateLogInputSchema>;
 
+//
 const logGenerated = {
   id: z.string(),
   ...logCreateInput,
   createdAt: z.date(),
   serviceId: z.string(),
 };
-
-const CreateLogInputSchema = z.object({
-  ...logCreateInput,
-});
-
 const LogResponseSchema = z.object({
   ...logGenerated,
 });
+const LogsResponseSchema = z.array(LogResponseSchema);
 
+//
+const LogResponseWithServiceSchema = z.object({
+  ...logGenerated,
+  service: ServiceZodSchema,
+});
+const LogsResponseWithServiceSchema = z.array(LogResponseWithServiceSchema);
+
+//
 const getLogsQueryParamsInput = {
   lookup: z.string().optional(),
   limit: z.string().optional(),
@@ -33,20 +43,21 @@ const getLogsQueryParamsInput = {
 const GetLogsQueryParamsSchema = z.object({
   ...getLogsQueryParamsInput,
 });
+export type TGetLogsQueryParamsInput = z.infer<typeof GetLogsQueryParamsSchema>;
 
+//
 const GetLogsForAdminQueryParamsSchema = z.object({
   ...getLogsQueryParamsInput,
   serviceId: z.string().optional(),
 });
-
-const LogsResponseSchema = z.array(LogResponseSchema);
-
-export type CreateLogInput = z.infer<typeof CreateLogInputSchema>;
+export type TGetLogsForAdminQueryParams = z.infer<typeof GetLogsForAdminQueryParamsSchema>;
 
 export const logModels = {
   CreateLogDTO: CreateLogInputSchema,
-  LogResponse: LogResponseSchema,
-  LogListResponse: LogsResponseSchema,
   LogListQueryDTO: GetLogsQueryParamsSchema,
   LogListAdminQueryDTO: GetLogsForAdminQueryParamsSchema,
+  LogResponse: LogResponseSchema,
+  LogListResponse: LogsResponseSchema,
+  LogWithServiceResponse: LogResponseWithServiceSchema,
+  LogListWithServiceResponse: LogsResponseWithServiceSchema,
 };

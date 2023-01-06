@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 import { $ref } from "../../config/fastify-zod";
-import { cleanLogsForAllHandler } from "./logging.controller";
+import { cleanLogsForAllHandler, getAllLogsForAdminHandler } from "./logging.controller";
 
 export async function logRoutes(server: FastifyInstance) {
   server.get(
@@ -16,7 +16,7 @@ export async function logRoutes(server: FastifyInstance) {
         querystring: $ref("LogListAdminQueryDTO"),
         response: {
           200: {
-            $ref: $ref("LogListResponse").$ref,
+            $ref: $ref("LogListWithServiceResponse").$ref,
             description: "Logs for all service",
           },
           403: {
@@ -27,9 +27,7 @@ export async function logRoutes(server: FastifyInstance) {
         },
       },
     },
-    async () => {
-      return [];
-    }
+    getAllLogsForAdminHandler
   );
 
   server.get(
