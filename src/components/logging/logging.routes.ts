@@ -11,7 +11,7 @@ export async function logRoutes(server: FastifyInstance) {
         tags: ["Logs"],
         operationId: `CleanLogsForAll`,
         description: "Clean all logs for all services that are not persisted",
-        headers: $ref("XAppClientIdHeader"),
+        headers: $ref("XAppServiceIdHeader"),
         response: {
           200: $ref("SuccessResponse"),
           403: $ref("SuccessResponse"),

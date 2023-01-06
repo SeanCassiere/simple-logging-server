@@ -1,4 +1,3 @@
-import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { CreateLogInput } from "./logging.schema";
 
@@ -35,10 +34,7 @@ export async function getLogs({
  *
  * Currently, the number of months is defined in the env file
  */
-export async function cleanLogsForAll() {
-  const numberOfMonthsToRemove = Number(env.DEFAULT_NUM_OF_MONTHS_TO_DELETE);
-  // console.log("number of months to remove", numberOfMonthsToRemove);
-
+export async function cleanLogsForAll({ numberOfMonthsToRemove }: { numberOfMonthsToRemove: number }) {
   const date = new Date();
   date.setMonth(date.getMonth() - numberOfMonthsToRemove);
 
