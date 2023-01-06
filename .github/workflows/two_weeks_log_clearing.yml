@@ -1,0 +1,12 @@
+name: fortnight-logs-clearing
+on:
+  schedule:
+    - cron: 0 0 * * 1
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit the clear logs endpoint
+        run: |
+          curl --url '${{ secrets.APP_CLEAR_LOGS_ENDPOINT }}' \
+          --header 'X-APP-CLIENT-ID: ${{ secrets.APP_CLEAR_LOGS_CLIENT_ID }}'
