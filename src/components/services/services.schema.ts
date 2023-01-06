@@ -16,5 +16,4 @@ export type GetServiceLogsQueryParamsInput = z.infer<typeof GetServiceLogsQueryP
 
 export const serviceModels = {
   ServiceIdParameter: ServiceIdRouteParamSchema,
-  ServiceLogListQueryParams: GetServiceLogsQueryParamsSchema,
 };
