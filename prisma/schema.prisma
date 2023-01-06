@@ -11,10 +11,12 @@ datasource db {
 }
 
 model Service {
-  id        String   @id @default(cuid())
-  name      String
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  isActive    Boolean  @default(false)
+  isAdmin     Boolean  @default(false)
+  isPersisted Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
   logs Log[]
 
@@ -29,6 +31,7 @@ model Log {
   data              Json?
   lookupFilterValue String?
   createdAt         DateTime @default(now())
+  isPersisted       Boolean  @default(false)
 
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   serviceId String
