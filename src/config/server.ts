@@ -34,6 +34,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
   await register(fastify, {
     jsonSchemas: fastifyZodCompiled,
     swaggerOptions: {
+      stripBasePath: true,
       exposeRoute: true,
       routePrefix: "/docs",
       staticCSP: true,
@@ -43,12 +44,13 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
         displayOperationId: true,
       },
       openapi: {
+        servers: [{ url: env.SERVER_URI + "/api", description: `Base URL (${env.NODE_ENV})` }],
         info: {
           title: "Logging API",
           version: packageVersion,
-          description: `
-This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
+          description: `This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
 ### Usage
+\`\`\`sh\n\n  Base URL: ${env.SERVER_URI}/api\n\n  HTTP headers:\n    X-APP-SERVICE-ID: [ServiceID]\n\n\`\`\`
 All functions on this server is tied to your \`ServiceID\`. To get your own \`ServiceID\`, please DM me on [Twitter](https://twitter.com/SeanCassiere).`,
           license: {
             name: "MIT",
