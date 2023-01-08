@@ -34,6 +34,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
   await register(fastify, {
     jsonSchemas: fastifyZodCompiled,
     swaggerOptions: {
+      stripBasePath: true,
       exposeRoute: true,
       routePrefix: "/docs",
       staticCSP: true,
@@ -43,6 +44,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
         displayOperationId: true,
       },
       openapi: {
+        servers: [{ url: env.SERVER_URI + "/api", description: `Base URL (${env.NODE_ENV})` }],
         info: {
           title: "Logging API",
           version: packageVersion,
