@@ -5,7 +5,7 @@ import { createServiceLogHandler, getServiceLogsHandler } from "./services.contr
 
 export async function serviceRoutes(server: FastifyInstance) {
   server.get(
-    "/:ServiceId/logs",
+    "/:ServiceId/log",
     {
       schema: {
         tags: ["Services"],
@@ -20,7 +20,7 @@ export async function serviceRoutes(server: FastifyInstance) {
     getServiceLogsHandler
   );
   server.post(
-    "/:ServiceId/logs",
+    "/:ServiceId/log",
     {
       schema: {
         tags: ["Services"],

@@ -66,8 +66,8 @@ All functions on this server is tied to your \`ServiceID\`. To get your own \`Se
     },
   });
 
-  fastify.register(logRoutes, { prefix: "/api/logs" });
-  fastify.register(serviceRoutes, { prefix: "/api/services" });
+  fastify.register(logRoutes, { prefix: "/api/log" });
+  fastify.register(serviceRoutes, { prefix: "/api/service" });
 
   fastify.get("/swagger", (_, reply) => {
     reply.code(302).redirect("/docs");
