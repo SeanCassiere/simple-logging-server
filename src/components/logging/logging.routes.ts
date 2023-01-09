@@ -30,7 +30,7 @@ export async function logRoutes(server: FastifyInstance) {
     getAllLogsForAdminHandler
   );
 
-  server.get(
+  server.delete(
     `/clean`,
     {
       schema: {

@@ -9,5 +9,6 @@ jobs:
     steps:
       - name: Hit the clear logs endpoint
         run: |
-          curl --url '${{ secrets.APP_CLEAR_LOGS_ENDPOINT }}' \
+          curl --request DELETE \ 
+          --url '${{ secrets.APP_CLEAR_LOGS_ENDPOINT }}' \
           --header 'X-APP-SERVICE-ID: ${{ secrets.APP_CLEAR_LOGS_CLIENT_ID }}'
