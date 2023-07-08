@@ -16,7 +16,9 @@
     "postinstall": "prisma generate",
     "migrate": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:explorer": "prisma studio"
+    "db:explorer": "prisma studio",
+    "db:migrate-generate": "drizzle-kit generate:pg",
+    "db:migrate-run": "ts-node ./migrator.ts"
   },
   "keywords": [],
   "author": "Sean Cassiere",
