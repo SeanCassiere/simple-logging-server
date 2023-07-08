@@ -1,6 +1,6 @@
 {
   "name": "simple-logging-server",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "",
   "private": true,
   "main": "dist/index.js",
@@ -13,8 +13,7 @@
     "build:kill-dist": "rimraf ./dist",
     "build:code": "tsc",
     "build": "npm run build:kill-dist && npm run build:code",
-    "migrate": "prisma migrate dev",
-    "db:explorer": "prisma studio",
+    "db:explorer": "drizzle-kit studio --port 3590",
     "db:migrate-generate": "drizzle-kit generate:pg",
     "db:migrate-run": "ts-node ./migrator.ts"
   },
@@ -30,6 +29,7 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "nodemon": "^2.0.20",
+    "pg": "^8.11.1",
     "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",

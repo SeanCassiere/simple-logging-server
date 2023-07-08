@@ -8,6 +8,13 @@
       "when": 1688818129682,
       "tag": "0000_absent_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1688826426429,
+      "tag": "0001_clean_blindfold",
+      "breakpoints": true
     }
   ]
 }
