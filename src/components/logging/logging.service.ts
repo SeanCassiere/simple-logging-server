@@ -1,8 +1,41 @@
-import { prisma } from "../../config/prisma";
+import { and, eq, lt } from "drizzle-orm";
+
 import { CreateLogInput } from "./logging.schema";
 
+import { db } from "../../config/db";
+import { logs as logsTable } from "../../config/db/schema";
+
+import { createDbId } from "../../utils/db";
+
 export async function createLog(data: CreateLogInput & { serviceId: string; isPersisted?: boolean }) {
-  return await prisma.log.create({ data, include: { service: true } });
+  const newId = createDbId();
+  const log = await db
+    .insert(logsTable)
+    .values({
+      id: newId,
+      serviceId: data.serviceId,
+
+      action: data.action,
+      environment: data.environment,
+      ip: data.ip,
+      data: data.data || {},
+      isPersisted: data.isPersisted || false,
+      lookupFilterValue: data.lookupFilterValue,
+    })
+    .returning({
+      id: logsTable.id,
+      action: logsTable.id,
+      environment: logsTable.environment,
+      ip: logsTable.ip,
+      lookupFilterValue: logsTable.lookupFilterValue,
+      data: logsTable.data,
+
+      serviceId: logsTable.serviceId,
+      createdAt: logsTable.createdAt,
+    })
+    .execute();
+
+  return log[0];
 }
 
 export async function getLogs({
@@ -20,17 +53,20 @@ export async function getLogs({
   limit?: number;
   skip?: number;
 }) {
-  return await prisma.log.findMany({
-    where: {
-      ...(data.serviceId ? { serviceId: { equals: data.serviceId } } : {}),
-      ...(data.environment ? { environment: { equals: data.environment, mode: "insensitive" } } : {}),
-      ...(data.lookupValue ? { lookupFilterValue: { equals: data.lookupValue, mode: "insensitive" } } : {}),
-    },
-    take: limit,
-    orderBy: { createdAt: sortDirection },
-    include: { service: includeService ? true : false },
-    skip,
+  const logs = await db.query.logs.findMany({
+    limit,
+    offset: skip,
+    orderBy: (table, { asc, desc }) => (sortDirection === "asc" ? asc(table.createdAt) : desc(table.createdAt)),
+    with: { service: includeService ? true : undefined },
+    where: (table, { and, eq }) =>
+      and(
+        ...(data.serviceId ? [eq(table.serviceId, data.serviceId)] : []),
+        ...(data.environment ? [eq(table.environment, data.environment)] : []),
+        ...(data.lookupValue ? [eq(table.lookupFilterValue, data.lookupValue)] : [])
+      ),
   });
+
+  return logs;
 }
 
 /**
@@ -42,7 +78,10 @@ export async function cleanLogsForAll({ numberOfMonthsToRemove }: { numberOfMont
   const date = new Date();
   date.setMonth(date.getMonth() - numberOfMonthsToRemove);
 
-  await prisma.log.deleteMany({
-    where: { isPersisted: false, createdAt: { lt: date } },
-  });
+  await db
+    .delete(logsTable)
+    .where(and(eq(logsTable.isPersisted, false), lt(logsTable.createdAt, date.toISOString())))
+    .execute();
+
+  return true;
 }

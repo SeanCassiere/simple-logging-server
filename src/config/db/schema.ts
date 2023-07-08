@@ -1,6 +1,7 @@
 import { pgTable, timestamp, text, index, jsonb, boolean } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
-export const log = pgTable(
+export const logs = pgTable(
   "logs",
   {
     id: text("id").primaryKey().notNull(),
@@ -11,7 +12,7 @@ export const log = pgTable(
     createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
     serviceId: text("service_id")
       .notNull()
-      .references(() => service.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => services.id, { onDelete: "cascade", onUpdate: "cascade" }),
     lookupFilterValue: text("lookup_filter_value"),
     isPersisted: boolean("is_persisted").notNull(),
   },
@@ -22,7 +23,14 @@ export const log = pgTable(
   }
 );
 
-export const service = pgTable(
+export const logRelations = relations(logs, ({ one }) => ({
+  service: one(services, {
+    fields: [logs.serviceId],
+    references: [services.id],
+  }),
+}));
+
+export const services = pgTable(
   "services",
   {
     id: text("id").primaryKey().notNull(),
@@ -38,3 +46,7 @@ export const service = pgTable(
     };
   }
 );
+
+export const serviceRelations = relations(services, ({ many }) => ({
+  logs: many(logs),
+}));
