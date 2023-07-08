@@ -49,7 +49,7 @@ export type TGetLogsQueryParamsInput = z.infer<typeof GetLogsQueryParamsSchema>;
 //
 const GetLogsForAdminQueryParamsSchema = z.object({
   ...getLogsQueryParamsInput,
-  serviceId: z.string().optional(),
+  service_id: z.string().optional(),
 });
 export type TGetLogsForAdminQueryParams = z.infer<typeof GetLogsForAdminQueryParamsSchema>;
 

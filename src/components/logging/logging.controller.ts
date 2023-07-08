@@ -83,7 +83,7 @@ export async function getAllLogsForAdminHandler(
     });
 
     const logs = await getLogs({
-      serviceId: query?.serviceId,
+      serviceId: query?.service_id,
       environment: query?.environment,
       lookupValue: query?.lookup,
       includeService: true,
