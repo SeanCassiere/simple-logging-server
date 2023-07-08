@@ -6,6 +6,7 @@ export async function createLog(data: CreateLogInput & { serviceId: string; isPe
 }
 
 export async function getLogs({
+  skip = 0,
   limit = 500,
   sortDirection = "desc",
   includeService = false,
@@ -17,6 +18,7 @@ export async function getLogs({
   includeService?: boolean;
   sortDirection?: "asc" | "desc";
   limit?: number;
+  skip?: number;
 }) {
   return await prisma.log.findMany({
     where: {
@@ -27,6 +29,7 @@ export async function getLogs({
     take: limit,
     orderBy: { createdAt: sortDirection },
     include: { service: includeService ? true : false },
+    skip,
   });
 }
 

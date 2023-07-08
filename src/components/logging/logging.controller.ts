@@ -30,6 +30,10 @@ export async function cleanLogsForAllHandler(
   }>,
   reply: FastifyReply
 ) {
+  if (env.FREEZE_DB_WRITES) {
+    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
+  }
+
   const client = await validateHeaderServiceIdIsAdmin(request, reply);
 
   try {
@@ -83,12 +87,13 @@ export async function getAllLogsForAdminHandler(
     });
 
     const logs = await getLogs({
-      serviceId: query?.serviceId,
+      serviceId: query?.service_id,
       environment: query?.environment,
       lookupValue: query?.lookup,
       includeService: true,
-      limit: query?.limit ? parseInt(query?.limit) : 500,
       sortDirection: query?.sort?.toLowerCase() === "desc" ? "desc" : "asc",
+      limit: request.query.page_size,
+      skip: (request.query.page - 1) * request.query.page_size,
     });
 
     reply.statusCode = 200;

@@ -4,6 +4,7 @@ import { CreateLogInput, TGetLogsQueryParamsInput } from "../logging/logging.sch
 import { createLog, getLogs } from "../logging/logging.service";
 import { ServiceIdRouteParamInput } from "./services.schema";
 import { findActiveService } from "./services.service";
+import { env } from "../../config/env";
 
 export async function createServiceLogHandler(
   request: FastifyRequest<{
@@ -12,6 +13,10 @@ export async function createServiceLogHandler(
   }>,
   reply: FastifyReply
 ) {
+  if (env.FREEZE_DB_WRITES) {
+    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
+  }
+
   const serviceId = request.params.ServiceId;
 
   const service = await findActiveService({ serviceId: serviceId });
@@ -41,10 +46,11 @@ export async function getServiceLogsHandler(
     const logs = await getLogs({
       serviceId,
       lookupValue: request.query.lookup,
-      limit: request.query.limit ? parseInt(request.query.limit) : undefined,
       sortDirection: request.query.sort && request.query.sort.toLowerCase() === "desc" ? "desc" : "asc",
       environment: request.query.environment,
       includeService: false,
+      limit: request.query.page_size,
+      skip: (request.query.page - 1) * request.query.page_size,
     });
     reply.code(200).send(logs);
   } catch (error) {

@@ -9,6 +9,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
   DEFAULT_NUM_OF_MONTHS_TO_DELETE: z.string().default("8"),
   SERVER_URI: z.string().default("http://localhost"),
+  FREEZE_DB_WRITES: z.preprocess((val) => val === "true" || val === "1", z.boolean()).default(false),
 });
 
 const envData = envSchema.safeParse(process.env);
