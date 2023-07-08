@@ -30,6 +30,10 @@ export async function cleanLogsForAllHandler(
   }>,
   reply: FastifyReply
 ) {
+  if (env.FREEZE_DB_WRITES) {
+    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
+  }
+
   const client = await validateHeaderServiceIdIsAdmin(request, reply);
 
   try {
