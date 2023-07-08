@@ -87,8 +87,9 @@ export async function getAllLogsForAdminHandler(
       environment: query?.environment,
       lookupValue: query?.lookup,
       includeService: true,
-      limit: query?.limit ? parseInt(query?.limit) : 500,
       sortDirection: query?.sort?.toLowerCase() === "desc" ? "desc" : "asc",
+      limit: request.query.page_size,
+      skip: (request.query.page - 1) * request.query.page_size,
     });
 
     reply.statusCode = 200;

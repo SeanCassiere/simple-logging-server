@@ -35,9 +35,10 @@ const LogsResponseWithServiceSchema = z.array(LogResponseWithServiceSchema);
 //
 const getLogsQueryParamsInput = {
   lookup: z.string().optional(),
-  limit: z.string().optional(),
   environment: z.string().optional(),
   sort: z.string().optional(),
+  page: z.coerce.number().min(1).optional().default(1),
+  page_size: z.coerce.number().min(1).optional().default(50),
 };
 
 const GetLogsQueryParamsSchema = z.object({

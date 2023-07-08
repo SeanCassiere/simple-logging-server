@@ -41,10 +41,11 @@ export async function getServiceLogsHandler(
     const logs = await getLogs({
       serviceId,
       lookupValue: request.query.lookup,
-      limit: request.query.limit ? parseInt(request.query.limit) : undefined,
       sortDirection: request.query.sort && request.query.sort.toLowerCase() === "desc" ? "desc" : "asc",
       environment: request.query.environment,
       includeService: false,
+      limit: request.query.page_size,
+      skip: (request.query.page - 1) * request.query.page_size,
     });
     reply.code(200).send(logs);
   } catch (error) {
