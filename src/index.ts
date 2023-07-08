@@ -6,6 +6,10 @@ const packageJson = require("../package.json");
 async function main() {
   const fastify = await makeFastifyServer({ packageVersion: packageJson?.version });
 
+  if (env.FREEZE_DB_WRITES) {
+    console.warn("  ⚠️ ⚠️ ⚠️ ⚠️\n  Database writes are currently frozen\n  ⚠️ ⚠️ ⚠️ ⚠️\n");
+  }
+
   try {
     fastify.listen(
       { port: Number(env.PORT), host: env.NODE_ENV !== "production" ? "127.0.0.1" : "0.0.0.0" },
