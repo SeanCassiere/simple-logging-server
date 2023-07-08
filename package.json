@@ -13,7 +13,7 @@
     "build:kill-dist": "rimraf ./dist",
     "build:code": "tsc",
     "build": "npm run build:kill-dist && npm run build:code",
-    "db:explorer": "drizzle-kit studio",
+    "db:explorer": "drizzle-kit studio --port 3590",
     "db:migrate-generate": "drizzle-kit generate:pg",
     "db:migrate-run": "ts-node ./migrator.ts"
   },
