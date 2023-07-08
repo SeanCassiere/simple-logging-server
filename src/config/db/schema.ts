@@ -5,8 +5,8 @@ export const logs = pgTable(
   "logs",
   {
     id: text("id").primaryKey().notNull(),
-    action: text("action"),
-    environment: text("environment"),
+    action: text("action").notNull(),
+    environment: text("environment").notNull(),
     ip: text("ip"),
     data: jsonb("data"),
     createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
