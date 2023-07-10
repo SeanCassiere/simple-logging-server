@@ -6,6 +6,22 @@ const ServiceIdRouteParamSchema = z.object({
 
 export type ServiceIdRouteParamInput = z.infer<typeof ServiceIdRouteParamSchema>;
 
+//
+const ServiceResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  isActive: z.boolean(),
+  isPersisted: z.boolean(),
+  isAdmin: z.boolean(),
+  createdAt: z.date(),
+});
+
+const ServiceListResponseSchema = z.array(ServiceResponseSchema);
+
 export const serviceModels = {
+  //
   ServiceIdPathParameter: ServiceIdRouteParamSchema,
+  //
+  ServiceResponse: ServiceResponseSchema,
+  ServiceListResponse: ServiceListResponseSchema,
 };

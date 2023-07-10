@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import { db } from "../../config/db";
 import { services as serviceTable } from "../../config/db/schema";
@@ -9,4 +9,8 @@ export async function findActiveService(data: { serviceId: string; isAdmin?: boo
     return service;
   }
   return null;
+}
+
+export async function findAllServices() {
+  return await db.query.services.findMany({ orderBy: desc(serviceTable.createdAt) });
 }

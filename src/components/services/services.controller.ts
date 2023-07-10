@@ -1,10 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { createLog, getLogs } from "../logging/logging.service";
-import { type TGetLogsSearchParamsInput } from "../logging/logging.schema";
-
-import { findActiveService } from "./services.service";
-import { type ServiceIdRouteParamInput } from "./services.schema";
+import { findActiveService, findAllServices } from "./services.service";
+// import { type ServiceIdRouteParamInput } from "./services.schema";
 
 import { type TXAppServiceIdHeaderSchema } from "../common.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
@@ -26,43 +23,19 @@ export const validateHeaderServiceIdIsAdmin = async (
   return client;
 };
 
-export async function getLogsForServiceAdminHandler(
+export async function getAllServicesForAdminUser(
   request: FastifyRequest<{
     Headers: TXAppServiceIdHeaderSchema;
-    Params: ServiceIdRouteParamInput;
-    Querystring: TGetLogsSearchParamsInput;
   }>,
   reply: FastifyReply
 ) {
-  const client = await validateHeaderServiceIdIsAdmin(request, reply);
+  await validateHeaderServiceIdIsAdmin(request, reply);
 
-  const query = request.query;
-  const serviceId = request.params.ServiceId;
-
-  const ip = request.ip;
-  // make a persisted log of this view action
   try {
-    await createLog({
-      serviceId: client.id,
-      isPersisted: true,
-      action: "app-admin-view-service-logs",
-      ip,
-      environment: "production",
-      lookupFilterValue: "app-admin-action",
-      data: { client: client.name, ip },
-    });
-
-    const logs = await getLogs({
-      serviceId: serviceId,
-      environment: query?.environment,
-      lookupValue: query?.lookup,
-      sortDirection: query?.sort?.toLowerCase() === "desc" ? "desc" : "asc",
-      limit: request.query.page_size,
-      skip: (request.query.page - 1) * request.query.page_size,
-    });
+    const services = await findAllServices();
 
     reply.statusCode = 200;
-    reply.send(logs);
+    reply.send(services);
     return;
   } catch (error) {
     reply.statusCode = 500;

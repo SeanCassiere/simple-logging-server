@@ -28,7 +28,7 @@ const LogsResponseSchema = z.array(LogResponseSchema);
 const getLogsQueryParamsInput = {
   lookup: z.string().optional(),
   environment: z.string().optional(),
-  sort: z.string().optional(),
+  sort: z.enum(["ASC", "DESC"]).optional(),
   page: z.coerce.number().min(1).optional().default(1),
   page_size: z.coerce.number().min(1).optional().default(50),
   service_id: z.string(),
