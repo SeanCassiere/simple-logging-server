@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { findActiveService, findAllServices } from "./services.service";
-// import { type ServiceIdRouteParamInput } from "./services.schema";
+import { findActiveService, findAllServices, findServiceById } from "./services.service";
+import { type ServiceIdRouteParamInput } from "./services.schema";
 
 import { type TXAppServiceIdHeaderSchema } from "../common.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
@@ -15,15 +15,16 @@ export const validateHeaderServiceIdIsAdmin = async (
   const client = await findActiveService({ serviceId: xAppClientId, isAdmin: true });
 
   if (!client) {
-    reply.statusCode = 403;
-    reply.send({ success: false, message: `${xAppClientId} - client does not exist or does not have admin rights` });
+    reply
+      .code(403)
+      .send({ success: false, message: `${xAppClientId} - client does not exist or does not have admin rights` });
     throw new Error("Client does not exist or does not have admin rights");
   }
 
   return client;
 };
 
-export async function getAllServicesForAdminUser(
+export async function getAllServicesForAdmin(
   request: FastifyRequest<{
     Headers: TXAppServiceIdHeaderSchema;
   }>,
@@ -34,12 +35,33 @@ export async function getAllServicesForAdminUser(
   try {
     const services = await findAllServices();
 
-    reply.statusCode = 200;
-    reply.send(services);
+    reply.code(200).send(services);
     return;
   } catch (error) {
-    reply.statusCode = 500;
-    reply.send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
+    reply.code(500).send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
     return;
+  }
+}
+
+export async function getServiceByIdForAdmin(
+  request: FastifyRequest<{
+    Headers: TXAppServiceIdHeaderSchema;
+    Params: ServiceIdRouteParamInput;
+  }>,
+  reply: FastifyReply
+) {
+  await validateHeaderServiceIdIsAdmin(request, reply);
+  const serviceId = request.params.ServiceId;
+
+  try {
+    const service = await findServiceById({ serviceId });
+
+    if (!service) {
+      return reply.code(404).send({ success: false, message: ENDPOINT_MESSAGES.ServiceNotFound });
+    }
+
+    return reply.code(200).send(service);
+  } catch (error) {
+    return reply.code(500).send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
   }
 }

@@ -17,14 +17,14 @@ export async function createLogForServiceHandler(
   reply: FastifyReply
 ) {
   if (env.FREEZE_DB_WRITES) {
-    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
+    return reply.code(503).send({ success: false, message: "Database writes are currently frozen" });
   }
 
   const serviceId = request.body.serviceId;
 
   const service = await findActiveService({ serviceId: serviceId });
   if (!service) {
-    reply.code(404).send({ message: "Service ID invalid or inactive", errors: [] });
+    reply.code(404).send({ success: false, message: "Service ID invalid or inactive" });
     return;
   }
 
@@ -32,7 +32,7 @@ export async function createLogForServiceHandler(
     const log = await createLog({ ...request.body, serviceId, isPersisted: service.isPersisted });
     reply.code(201).send(log);
   } catch (error) {
-    reply.code(500).send({ message: `error creating log for service ${serviceId}`, errors: [] });
+    reply.code(500).send({ success: false, message: `error creating log for service ${serviceId}` });
   }
 }
 
@@ -55,7 +55,7 @@ export async function getLogsForServiceHandler(
     });
     reply.code(200).send(logs);
   } catch (error) {
-    reply.code(500).send({ message: `something went wrong finding logs for ${serviceId}`, errors: [] });
+    reply.code(500).send({ success: false, message: `something went wrong finding logs for ${serviceId}`, errors: [] });
   }
 }
 
@@ -66,7 +66,7 @@ export async function cleanLogsForAllHandler(
   reply: FastifyReply
 ) {
   if (env.FREEZE_DB_WRITES) {
-    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
+    return reply.code(503).send({ success: false, message: "Database writes are currently frozen", errors: [] });
   }
 
   const client = await validateHeaderServiceIdIsAdmin(request, reply);

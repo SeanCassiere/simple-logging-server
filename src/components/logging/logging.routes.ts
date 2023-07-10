@@ -15,7 +15,14 @@ export async function logRoutes(server: FastifyInstance) {
         operationId: "GetLogsForService",
         querystring: $ref("GetLogsSearchParamDTO"),
         response: {
-          200: $ref("LogListResponse"),
+          200: {
+            $ref: $ref("LogListResponse").$ref,
+            description: "List of logs for the service",
+          },
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
         },
       },
     },
@@ -30,7 +37,18 @@ export async function logRoutes(server: FastifyInstance) {
         operationId: "CreateLogForService",
         body: $ref("CreateLogDTO"),
         response: {
-          201: $ref("LogResponse"),
+          201: {
+            $ref: $ref("LogResponse").$ref,
+            description: "Log created",
+          },
+          404: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServiceNotFound,
+          },
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
         },
       },
     },
@@ -38,7 +56,7 @@ export async function logRoutes(server: FastifyInstance) {
   );
 
   server.delete(
-    "/clean",
+    "/purge",
     {
       schema: {
         tags: ["Logs"],
@@ -54,7 +72,10 @@ export async function logRoutes(server: FastifyInstance) {
             $ref: $ref("SuccessResponse").$ref,
             description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
           },
-          500: $ref("SuccessResponse"),
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
         },
       },
     },

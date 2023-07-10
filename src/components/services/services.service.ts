@@ -14,3 +14,7 @@ export async function findActiveService(data: { serviceId: string; isAdmin?: boo
 export async function findAllServices() {
   return await db.query.services.findMany({ orderBy: desc(serviceTable.createdAt) });
 }
+
+export async function findServiceById(data: { serviceId: string }) {
+  return (await db.query.services.findFirst({ where: eq(serviceTable.id, data.serviceId) })) ?? null;
+}
