@@ -7,5 +7,5 @@ const ServiceIdRouteParamSchema = z.object({
 export type ServiceIdRouteParamInput = z.infer<typeof ServiceIdRouteParamSchema>;
 
 export const serviceModels = {
-  ServiceIdParameter: ServiceIdRouteParamSchema,
+  ServiceIdPathParameter: ServiceIdRouteParamSchema,
 };

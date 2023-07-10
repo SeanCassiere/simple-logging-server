@@ -31,16 +31,19 @@ const getLogsQueryParamsInput = {
   sort: z.string().optional(),
   page: z.coerce.number().min(1).optional().default(1),
   page_size: z.coerce.number().min(1).optional().default(50),
+  service_id: z.string(),
 };
 
-const GetLogsQueryParamsSchema = z.object({
+const GetLogsSearchParamsSchema = z.object({
   ...getLogsQueryParamsInput,
 });
-export type TGetLogsQueryParamsInput = z.infer<typeof GetLogsQueryParamsSchema>;
+export type TGetLogsSearchParamsInput = z.infer<typeof GetLogsSearchParamsSchema>;
 
 export const logModels = {
+  GetLogsSearchParamDTO: GetLogsSearchParamsSchema,
+  //
   CreateLogDTO: CreateLogInputSchema,
-  LogListQueryDTO: GetLogsQueryParamsSchema,
+  //
   LogResponse: LogResponseSchema,
   LogListResponse: LogsResponseSchema,
 };

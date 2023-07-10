@@ -2,9 +2,24 @@ import { FastifyInstance } from "fastify";
 
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 import { $ref } from "../../config/fastify-zod";
-import { createLogForServiceHandler, cleanLogsForAllHandler } from "./logging.controller";
+import { createLogForServiceHandler, getLogsForServiceHandler, cleanLogsForAllHandler } from "./logging.controller";
 
 export async function logRoutes(server: FastifyInstance) {
+  server.get(
+    "",
+    {
+      schema: {
+        tags: ["Logs"],
+        operationId: "GetLogsForService",
+        querystring: $ref("GetLogsSearchParamDTO"),
+        response: {
+          200: $ref("LogListResponse"),
+        },
+      },
+    },
+    getLogsForServiceHandler
+  );
+
   server.post(
     "",
     {

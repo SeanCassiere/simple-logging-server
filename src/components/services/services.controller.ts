@@ -1,9 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { type TGetLogsQueryParamsInput } from "../logging/logging.schema";
 import { createLog, getLogs } from "../logging/logging.service";
-import { type ServiceIdRouteParamInput } from "./services.schema";
+import { type TGetLogsSearchParamsInput } from "../logging/logging.schema";
+
 import { findActiveService } from "./services.service";
+import { type ServiceIdRouteParamInput } from "./services.schema";
 
 import { type TXAppServiceIdHeaderSchema } from "../common.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
@@ -25,35 +26,11 @@ const validateHeaderServiceIdIsAdmin = async (
   return client;
 };
 
-export async function getServiceLogsHandler(
-  request: FastifyRequest<{
-    Params: ServiceIdRouteParamInput;
-    Querystring: TGetLogsQueryParamsInput;
-  }>,
-  reply: FastifyReply
-) {
-  const serviceId = request.params.ServiceId;
-
-  try {
-    const logs = await getLogs({
-      serviceId,
-      lookupValue: request.query.lookup,
-      sortDirection: request.query.sort && request.query.sort.toLowerCase() === "desc" ? "desc" : "asc",
-      environment: request.query.environment,
-      limit: request.query.page_size,
-      skip: (request.query.page - 1) * request.query.page_size,
-    });
-    reply.code(200).send(logs);
-  } catch (error) {
-    reply.code(500).send({ message: `something went wrong finding logs for ${serviceId}`, errors: [] });
-  }
-}
-
 export async function getLogsForServiceAdminHandler(
   request: FastifyRequest<{
     Headers: TXAppServiceIdHeaderSchema;
     Params: ServiceIdRouteParamInput;
-    Querystring: TGetLogsQueryParamsInput;
+    Querystring: TGetLogsSearchParamsInput;
   }>,
   reply: FastifyReply
 ) {

@@ -1,7 +1,9 @@
 import { FastifyInstance } from "fastify";
 
 import { $ref } from "../../config/fastify-zod";
-import { getLogsForServiceAdminHandler, getServiceLogsHandler } from "./services.controller";
+
+import { getLogsForServiceAdminHandler } from "./services.controller";
+
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
 export async function serviceRoutes(server: FastifyInstance) {
@@ -13,8 +15,8 @@ export async function serviceRoutes(server: FastifyInstance) {
         operationId: "GetAllLogs",
         description: "Get all the logs for all service.\nOnly available to admins",
         headers: $ref("XAppServiceIdHeader"),
-        params: $ref("ServiceIdParameter"),
-        querystring: $ref("LogListQueryDTO"),
+        params: $ref("ServiceIdPathParameter"),
+        querystring: $ref("GetLogsSearchParamDTO"),
         response: {
           200: {
             $ref: $ref("LogListResponse").$ref,
@@ -29,21 +31,5 @@ export async function serviceRoutes(server: FastifyInstance) {
       },
     },
     getLogsForServiceAdminHandler
-  );
-
-  server.get(
-    "/:ServiceId/logs-old",
-    {
-      schema: {
-        tags: ["Services"],
-        operationId: "GetLogsForService",
-        params: $ref("ServiceIdParameter"),
-        querystring: $ref("LogListQueryDTO"),
-        response: {
-          200: $ref("LogListResponse"),
-        },
-      },
-    },
-    getServiceLogsHandler
   );
 }

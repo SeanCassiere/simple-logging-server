@@ -1,10 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { env } from "../../config/env";
 
-import { TXAppServiceIdHeaderSchema } from "../common.schema";
-import { findActiveService } from "../services/services.service";
 import { createLog, cleanLogsForAll, getLogs } from "./logging.service";
-import { type CreateLogInput } from "./logging.schema";
+import { TGetLogsSearchParamsInput, type CreateLogInput } from "./logging.schema";
+
+import { findActiveService } from "../services/services.service";
+
+import { TXAppServiceIdHeaderSchema } from "../common.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
 const validateHeaderServiceIdIsAdmin = async (
@@ -47,6 +49,29 @@ export async function createLogForServiceHandler(
     reply.code(201).send(log);
   } catch (error) {
     reply.code(500).send({ message: `error creating log for service ${serviceId}`, errors: [] });
+  }
+}
+
+export async function getLogsForServiceHandler(
+  request: FastifyRequest<{
+    Querystring: TGetLogsSearchParamsInput;
+  }>,
+  reply: FastifyReply
+) {
+  const serviceId = request.query.service_id;
+
+  try {
+    const logs = await getLogs({
+      serviceId,
+      lookupValue: request.query.lookup,
+      sortDirection: request.query.sort && request.query.sort.toLowerCase() === "desc" ? "desc" : "asc",
+      environment: request.query.environment,
+      limit: request.query.page_size,
+      skip: (request.query.page - 1) * request.query.page_size,
+    });
+    reply.code(200).send(logs);
+  } catch (error) {
+    reply.code(500).send({ message: `something went wrong finding logs for ${serviceId}`, errors: [] });
   }
 }
 
