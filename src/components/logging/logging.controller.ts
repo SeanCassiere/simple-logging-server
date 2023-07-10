@@ -1,30 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { env } from "../../config/env";
 
-import { createLog, cleanLogsForAll, getLogs } from "./logging.service";
+import { cleanLogsForAll, createLog, getLogs } from "./logging.service";
 import { TGetLogsSearchParamsInput, type CreateLogInput } from "./logging.schema";
 
 import { findActiveService } from "../services/services.service";
+import { validateHeaderServiceIdIsAdmin } from "../services/services.controller";
 
+import { env } from "../../config/env";
 import { TXAppServiceIdHeaderSchema } from "../common.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
-
-const validateHeaderServiceIdIsAdmin = async (
-  request: FastifyRequest<{ Headers: TXAppServiceIdHeaderSchema }>,
-  reply: FastifyReply
-) => {
-  const xAppClientId = request.headers["x-app-service-id"];
-
-  const client = await findActiveService({ serviceId: xAppClientId, isAdmin: true });
-
-  if (!client) {
-    reply.statusCode = 403;
-    reply.send({ success: false, message: `${xAppClientId} - client does not exist or does not have admin rights` });
-    throw new Error("Client does not exist or does not have admin rights");
-  }
-
-  return client;
-};
 
 export async function createLogForServiceHandler(
   request: FastifyRequest<{

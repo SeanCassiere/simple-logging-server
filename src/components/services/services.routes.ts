@@ -1,9 +1,8 @@
 import { FastifyInstance } from "fastify";
 
-import { $ref } from "../../config/fastify-zod";
-
 import { getLogsForServiceAdminHandler } from "./services.controller";
 
+import { $ref } from "../../config/fastify-zod";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
 export async function serviceRoutes(server: FastifyInstance) {
@@ -12,7 +11,7 @@ export async function serviceRoutes(server: FastifyInstance) {
     {
       schema: {
         tags: ["Services"],
-        operationId: "GetAllLogs",
+        operationId: "GetLogsForService-Admin",
         description: "Get all the logs for all service.\nOnly available to admins",
         headers: $ref("XAppServiceIdHeader"),
         params: $ref("ServiceIdPathParameter"),

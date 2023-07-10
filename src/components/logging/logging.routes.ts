@@ -1,8 +1,10 @@
 import { FastifyInstance } from "fastify";
 
-import { ENDPOINT_MESSAGES } from "../../utils/messages";
+import { cleanLogsForAllHandler, createLogForServiceHandler, getLogsForServiceHandler } from "./logging.controller";
+
 import { $ref } from "../../config/fastify-zod";
-import { createLogForServiceHandler, getLogsForServiceHandler, cleanLogsForAllHandler } from "./logging.controller";
+import { ENDPOINT_MESSAGES } from "../../utils/messages";
+import { env } from "../../config/env";
 
 export async function logRoutes(server: FastifyInstance) {
   server.get(
@@ -36,12 +38,12 @@ export async function logRoutes(server: FastifyInstance) {
   );
 
   server.delete(
-    `/clean`,
+    "/clean",
     {
       schema: {
         tags: ["Logs"],
-        operationId: `CleanLogsForAll`,
-        description: "Clean all logs for all services that are not persisted.\nOnly available to admins",
+        operationId: `PurgeLogsForAllServices-Admin`,
+        description: `Purge the logs for all services that do NOT have their logs persisted. This will delete logs that are older than ${env.DEFAULT_NUM_OF_MONTHS_TO_DELETE} months.\nOnly available to admins`,
         headers: $ref("XAppServiceIdHeader"),
         response: {
           200: {

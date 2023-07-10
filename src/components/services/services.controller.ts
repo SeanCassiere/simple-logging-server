@@ -9,7 +9,7 @@ import { type ServiceIdRouteParamInput } from "./services.schema";
 import { type TXAppServiceIdHeaderSchema } from "../common.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
-const validateHeaderServiceIdIsAdmin = async (
+export const validateHeaderServiceIdIsAdmin = async (
   request: FastifyRequest<{ Headers: TXAppServiceIdHeaderSchema }>,
   reply: FastifyReply
 ) => {
