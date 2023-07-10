@@ -7,6 +7,7 @@ const logCreateInput = {
   ip: z.string().nullable().optional(),
   lookupFilterValue: z.string().nullable().optional(),
   data: z.any().optional(),
+  serviceId: z.string(),
 };
 const CreateLogInputSchema = z.object({
   ...logCreateInput,
@@ -18,7 +19,6 @@ const logGenerated = {
   id: z.string(),
   ...logCreateInput,
   createdAt: z.date(),
-  serviceId: z.string(),
 };
 const LogResponseSchema = z.object({
   ...logGenerated,

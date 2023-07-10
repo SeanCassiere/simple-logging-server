@@ -1,37 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { CreateLogInput, TGetLogsQueryParamsInput } from "../logging/logging.schema";
-import { createLog, getLogs } from "../logging/logging.service";
+import { TGetLogsQueryParamsInput } from "../logging/logging.schema";
+import { getLogs } from "../logging/logging.service";
 import { ServiceIdRouteParamInput } from "./services.schema";
-import { findActiveService } from "./services.service";
-import { env } from "../../config/env";
-
-export async function createServiceLogHandler(
-  request: FastifyRequest<{
-    Body: CreateLogInput;
-    Params: ServiceIdRouteParamInput;
-  }>,
-  reply: FastifyReply
-) {
-  if (env.FREEZE_DB_WRITES) {
-    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
-  }
-
-  const serviceId = request.params.ServiceId;
-
-  const service = await findActiveService({ serviceId: serviceId });
-  if (!service) {
-    reply.code(404).send({ message: "Service ID invalid or inactive", errors: [] });
-    return;
-  }
-
-  try {
-    const log = await createLog({ ...request.body, serviceId, isPersisted: service.isPersisted });
-    reply.code(201).send(log);
-  } catch (error) {
-    reply.code(500).send({ message: `error creating log for service ${serviceId}`, errors: [] });
-  }
-}
 
 export async function getServiceLogsHandler(
   request: FastifyRequest<{

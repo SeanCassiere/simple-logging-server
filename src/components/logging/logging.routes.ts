@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 import { $ref } from "../../config/fastify-zod";
-import { cleanLogsForAllHandler, getAllLogsForAdminHandler } from "./logging.controller";
+import { createLogForServiceHandler, cleanLogsForAllHandler, getAllLogsForAdminHandler } from "./logging.controller";
 
 export async function logRoutes(server: FastifyInstance) {
   server.get(
@@ -28,6 +28,21 @@ export async function logRoutes(server: FastifyInstance) {
       },
     },
     getAllLogsForAdminHandler
+  );
+
+  server.post(
+    "",
+    {
+      schema: {
+        tags: ["Logs"],
+        operationId: "CreateLogForService",
+        body: $ref("CreateLogDTO"),
+        response: {
+          201: $ref("LogResponse"),
+        },
+      },
+    },
+    createLogForServiceHandler
   );
 
   server.delete(

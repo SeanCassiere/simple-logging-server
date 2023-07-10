@@ -4,7 +4,7 @@ import { env } from "../../config/env";
 import { TXAppServiceIdHeaderSchema } from "../common.schema";
 import { findActiveService } from "../services/services.service";
 import { createLog, cleanLogsForAll, getLogs } from "./logging.service";
-import { TGetLogsForAdminQueryParams } from "./logging.schema";
+import { type CreateLogInput, type TGetLogsForAdminQueryParams } from "./logging.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
 const validateHeaderServiceIdIsAdmin = async (
@@ -23,6 +23,32 @@ const validateHeaderServiceIdIsAdmin = async (
 
   return client;
 };
+
+export async function createLogForServiceHandler(
+  request: FastifyRequest<{
+    Body: CreateLogInput;
+  }>,
+  reply: FastifyReply
+) {
+  if (env.FREEZE_DB_WRITES) {
+    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
+  }
+
+  const serviceId = request.body.serviceId;
+
+  const service = await findActiveService({ serviceId: serviceId });
+  if (!service) {
+    reply.code(404).send({ message: "Service ID invalid or inactive", errors: [] });
+    return;
+  }
+
+  try {
+    const log = await createLog({ ...request.body, serviceId, isPersisted: service.isPersisted });
+    reply.code(201).send(log);
+  } catch (error) {
+    reply.code(500).send({ message: `error creating log for service ${serviceId}`, errors: [] });
+  }
+}
 
 export async function cleanLogsForAllHandler(
   request: FastifyRequest<{
