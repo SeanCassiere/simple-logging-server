@@ -4,7 +4,7 @@ import { env } from "../../config/env";
 import { TXAppServiceIdHeaderSchema } from "../common.schema";
 import { findActiveService } from "../services/services.service";
 import { createLog, cleanLogsForAll, getLogs } from "./logging.service";
-import { type CreateLogInput, type TGetLogsForAdminQueryParams } from "./logging.schema";
+import { type CreateLogInput } from "./logging.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
 const validateHeaderServiceIdIsAdmin = async (
@@ -81,49 +81,6 @@ export async function cleanLogsForAllHandler(
 
     reply.statusCode = 200;
     reply.send({ success: true, message: `Successfully cleaned logs for the last ${numberOfMonthsToRemove} months` });
-    return;
-  } catch (error) {
-    reply.statusCode = 500;
-    reply.send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
-    return;
-  }
-}
-
-export async function getAllLogsForAdminHandler(
-  request: FastifyRequest<{
-    Headers: TXAppServiceIdHeaderSchema;
-    Querystring: TGetLogsForAdminQueryParams;
-  }>,
-  reply: FastifyReply
-) {
-  const client = await validateHeaderServiceIdIsAdmin(request, reply);
-  const query = request.query;
-
-  const ip = request.ip;
-  // make a persisted log of this view action
-  try {
-    await createLog({
-      serviceId: client.id,
-      isPersisted: true,
-      action: "app-admin-view-service-logs",
-      ip,
-      environment: "production",
-      lookupFilterValue: "app-admin-action",
-      data: { client: client.name, ip },
-    });
-
-    const logs = await getLogs({
-      serviceId: query?.service_id,
-      environment: query?.environment,
-      lookupValue: query?.lookup,
-      includeService: true,
-      sortDirection: query?.sort?.toLowerCase() === "desc" ? "desc" : "asc",
-      limit: request.query.page_size,
-      skip: (request.query.page - 1) * request.query.page_size,
-    });
-
-    reply.statusCode = 200;
-    reply.send(logs);
     return;
   } catch (error) {
     reply.statusCode = 500;

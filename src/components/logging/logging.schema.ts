@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ServiceZodSchema } from "../services/services.schema";
 
 const logCreateInput = {
   action: z.string(),
@@ -26,13 +25,6 @@ const LogResponseSchema = z.object({
 const LogsResponseSchema = z.array(LogResponseSchema);
 
 //
-const LogResponseWithServiceSchema = z.object({
-  ...logGenerated,
-  service: ServiceZodSchema,
-});
-const LogsResponseWithServiceSchema = z.array(LogResponseWithServiceSchema);
-
-//
 const getLogsQueryParamsInput = {
   lookup: z.string().optional(),
   environment: z.string().optional(),
@@ -46,19 +38,9 @@ const GetLogsQueryParamsSchema = z.object({
 });
 export type TGetLogsQueryParamsInput = z.infer<typeof GetLogsQueryParamsSchema>;
 
-//
-const GetLogsForAdminQueryParamsSchema = z.object({
-  ...getLogsQueryParamsInput,
-  service_id: z.string().optional(),
-});
-export type TGetLogsForAdminQueryParams = z.infer<typeof GetLogsForAdminQueryParamsSchema>;
-
 export const logModels = {
   CreateLogDTO: CreateLogInputSchema,
   LogListQueryDTO: GetLogsQueryParamsSchema,
-  LogListAdminQueryDTO: GetLogsForAdminQueryParamsSchema,
   LogResponse: LogResponseSchema,
   LogListResponse: LogsResponseSchema,
-  LogWithServiceResponse: LogResponseWithServiceSchema,
-  LogListWithServiceResponse: LogsResponseWithServiceSchema,
 };

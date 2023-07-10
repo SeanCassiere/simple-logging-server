@@ -14,9 +14,7 @@ type MakeFastifyServerProps = {
 export async function makeFastifyServer(props: MakeFastifyServerProps) {
   const { packageVersion = "0.0.1-alpha.1" } = props;
 
-  const fastify = Fastify({
-    logger: env.NODE_ENV !== "production",
-  });
+  const fastify = Fastify();
 
   fastify.register(rateLimit, {
     max: 50,
