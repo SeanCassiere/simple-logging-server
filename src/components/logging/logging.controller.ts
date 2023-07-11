@@ -11,6 +11,7 @@ import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
 export async function createLogForServiceHandler(
   request: FastifyRequest<{
+    Headers: TXAppServiceIdHeaderSchema;
     Body: CreateLogInput;
   }>,
   reply: FastifyReply
@@ -19,7 +20,7 @@ export async function createLogForServiceHandler(
     return reply.code(503).send({ success: false, message: "Database writes are currently frozen" });
   }
 
-  const serviceId = request.body.serviceId;
+  const serviceId = request.headers["x-app-service-id"];
 
   const service = await findActiveService({ serviceId: serviceId });
   if (!service) {
@@ -37,11 +38,12 @@ export async function createLogForServiceHandler(
 
 export async function getLogsForServiceHandler(
   request: FastifyRequest<{
+    Headers: TXAppServiceIdHeaderSchema;
     Querystring: TGetLogsSearchParamsInput;
   }>,
   reply: FastifyReply
 ) {
-  const serviceId = request.query.service_id;
+  const serviceId = request.headers["x-app-service-id"];
 
   try {
     const logs = await getLogs({

@@ -6,7 +6,6 @@ const logCreateInput = {
   ip: z.string().nullable().optional(),
   lookupFilterValue: z.string().nullable().optional(),
   data: z.any().optional(),
-  serviceId: z.string(),
 };
 const CreateLogInputSchema = z.object({
   ...logCreateInput,
@@ -31,7 +30,6 @@ const getLogsQueryParamsInput = {
   sort: z.enum(["ASC", "DESC"]).optional(),
   page: z.coerce.number().min(1).optional().default(1),
   page_size: z.coerce.number().min(1).optional().default(50),
-  service_id: z.string(),
 };
 
 const GetLogsSearchParamsSchema = z.object({

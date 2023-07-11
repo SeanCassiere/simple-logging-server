@@ -5,9 +5,12 @@ import { services as serviceTable } from "../../config/db/schema";
 
 export async function findActiveService(data: { serviceId: string; isAdmin?: boolean }) {
   const service = await db.query.services.findFirst({ where: eq(serviceTable.id, data.serviceId) });
-  if (service && service.isActive && service.isAdmin) {
+  if (data.isAdmin && service && service.isActive && service.isAdmin) {
+    return service;
+  } else if (service && service.isActive) {
     return service;
   }
+
   return null;
 }
 

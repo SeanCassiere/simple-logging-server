@@ -1,16 +1,17 @@
 import { FastifyInstance } from "fastify";
 
 import { cleanLogsForAllHandler, createLogForServiceHandler, getLogsForServiceHandler } from "./logging.controller";
+import { serviceIdMiddleware } from "../common.middleware";
 
 import { $ref } from "../../config/fastify-zod";
-import { ENDPOINT_MESSAGES } from "../../utils/messages";
 import { env } from "../../config/env";
-import { serviceIdMiddleware } from "../common.middleware";
+import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
 export async function logRoutes(server: FastifyInstance) {
   server.get(
     "",
     {
+      preHandler: [serviceIdMiddleware()],
       schema: {
         tags: ["Logs"],
         operationId: "GetLogsForService",
@@ -20,11 +21,20 @@ export async function logRoutes(server: FastifyInstance) {
             $ref: $ref("LogListResponse").$ref,
             description: "List of logs for the service",
           },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenServiceNotAvailable,
+          },
           500: {
             $ref: $ref("SuccessResponse").$ref,
             description: ENDPOINT_MESSAGES.ServerError,
           },
         },
+        security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
     getLogsForServiceHandler
@@ -33,6 +43,7 @@ export async function logRoutes(server: FastifyInstance) {
   server.post(
     "",
     {
+      preHandler: [serviceIdMiddleware()],
       schema: {
         tags: ["Logs"],
         operationId: "CreateLogForService",
@@ -41,6 +52,14 @@ export async function logRoutes(server: FastifyInstance) {
           201: {
             $ref: $ref("LogResponse").$ref,
             description: "Log created",
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenServiceNotAvailable,
           },
           404: {
             $ref: $ref("SuccessResponse").$ref,
@@ -51,6 +70,7 @@ export async function logRoutes(server: FastifyInstance) {
             description: ENDPOINT_MESSAGES.ServerError,
           },
         },
+        security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
     createLogForServiceHandler
