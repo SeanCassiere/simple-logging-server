@@ -10,14 +10,19 @@ export const validateHeaderServiceIdIsAdmin = async (
   request: FastifyRequest<{ Headers: TXAppServiceIdHeaderSchema }>,
   reply: FastifyReply
 ) => {
-  const xAppClientId = request.headers["x-app-service-id"];
+  const xAppServiceId = request.headers["x-app-service-id"];
 
-  const client = await findActiveService({ serviceId: xAppClientId, isAdmin: true });
+  if (!xAppServiceId) {
+    reply.code(401).send({ success: false, message: `X-APP-SERVICE-ID header was not passed.` });
+    throw new Error("X-APP-SERVICE-ID header was not passed.");
+  }
+
+  const client = await findActiveService({ serviceId: xAppServiceId, isAdmin: true });
 
   if (!client) {
     reply
       .code(403)
-      .send({ success: false, message: `${xAppClientId} - client does not exist or does not have admin rights` });
+      .send({ success: false, message: `${xAppServiceId} - service does not exist or does not have admin rights` });
     throw new Error("Client does not exist or does not have admin rights");
   }
 

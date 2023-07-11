@@ -13,11 +13,14 @@ export async function serviceRoutes(server: FastifyInstance) {
         tags: ["Services", "Admin"],
         operationId: "GetAllServices-Admin",
         description: "Get the details for all the services.\nOnly available to admins",
-        headers: $ref("XAppServiceIdHeader"),
         response: {
           200: {
             $ref: $ref("ServiceListResponse").$ref,
             description: "All services",
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
           },
           403: {
             $ref: $ref("SuccessResponse").$ref,
@@ -28,6 +31,7 @@ export async function serviceRoutes(server: FastifyInstance) {
             description: ENDPOINT_MESSAGES.ServerError,
           },
         },
+        security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
     getAllServicesForAdmin
@@ -40,12 +44,15 @@ export async function serviceRoutes(server: FastifyInstance) {
         tags: ["Services", "Admin"],
         operationId: "GetServiceById-Admin",
         description: "Get the details of a service by its ID.\nOnly available to admins",
-        headers: $ref("XAppServiceIdHeader"),
         params: $ref("ServiceIdPathParameter"),
         response: {
           200: {
             $ref: $ref("ServiceResponse").$ref,
             description: "Service details",
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
           },
           403: {
             $ref: $ref("SuccessResponse").$ref,
@@ -60,6 +67,7 @@ export async function serviceRoutes(server: FastifyInstance) {
             description: ENDPOINT_MESSAGES.ServerError,
           },
         },
+        security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
     getServiceByIdForAdmin

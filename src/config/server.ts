@@ -68,6 +68,15 @@ All functions on this server is tied to your \`ServiceID\`. To get your own \`Se
           description: "GitHub Repository",
           url: "https://github.com/SeanCassiere/simple-logging-server",
         },
+        components: {
+          securitySchemes: {
+            ServiceIdHeaderAuth: {
+              type: "apiKey",
+              in: "header",
+              name: "X-APP-SERVICE-ID",
+            },
+          },
+        },
       },
       hideUntagged: true,
     },
