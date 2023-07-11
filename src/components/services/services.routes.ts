@@ -10,7 +10,7 @@ export async function serviceRoutes(server: FastifyInstance) {
     "",
     {
       schema: {
-        tags: ["Services"],
+        tags: ["Services", "Admin"],
         operationId: "GetAllServices-Admin",
         description: "Get the details for all the services.\nOnly available to admins",
         headers: $ref("XAppServiceIdHeader"),
@@ -37,7 +37,7 @@ export async function serviceRoutes(server: FastifyInstance) {
     "/:ServiceId",
     {
       schema: {
-        tags: ["Services"],
+        tags: ["Services", "Admin"],
         operationId: "GetServiceById-Admin",
         description: "Get the details of a service by its ID.\nOnly available to admins",
         headers: $ref("XAppServiceIdHeader"),

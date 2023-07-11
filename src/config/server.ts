@@ -55,6 +55,15 @@ All functions on this server is tied to your \`ServiceID\`. To get your own \`Se
             url: "https://github.com/SeanCassiere/simple-logging-server/blob/master/LICENSE.md",
           },
         },
+        tags: [
+          {
+            name: "Admin",
+            description:
+              "Routes are exclusively available to services that require the `Service` to have `admin` privileges.",
+          },
+          { name: "Logs", description: "Routes that interact with the `Log` entity." },
+          { name: "Services", description: "All routes that interact with the `Service` entity." },
+        ],
         externalDocs: {
           description: "GitHub Repository",
           url: "https://github.com/SeanCassiere/simple-logging-server",

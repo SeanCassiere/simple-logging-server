@@ -59,7 +59,7 @@ export async function logRoutes(server: FastifyInstance) {
     "/purge",
     {
       schema: {
-        tags: ["Logs"],
+        tags: ["Logs", "Admin"],
         operationId: `PurgeLogsForAllServices-Admin`,
         description: `Purge the logs for all services that do NOT have their logs persisted. This will delete logs that are older than ${env.DEFAULT_NUM_OF_MONTHS_TO_DELETE} months.\nOnly available to admins`,
         headers: $ref("XAppServiceIdHeader"),
