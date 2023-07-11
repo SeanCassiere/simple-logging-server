@@ -14,9 +14,7 @@ type MakeFastifyServerProps = {
 export async function makeFastifyServer(props: MakeFastifyServerProps) {
   const { packageVersion = "0.0.1-alpha.1" } = props;
 
-  const fastify = Fastify({
-    logger: env.NODE_ENV !== "production",
-  });
+  const fastify = Fastify();
 
   fastify.register(rateLimit, {
     max: 50,
@@ -44,30 +42,48 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
         displayOperationId: true,
       },
       openapi: {
-        servers: [{ url: env.SERVER_URI + "/api", description: `Base URL (${env.NODE_ENV})` }],
+        servers: [{ url: env.SERVER_URI + "/api/v2", description: `Base URL (${env.NODE_ENV})` }],
         info: {
           title: "Logging API",
           version: packageVersion,
           description: `This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
 ### Usage
-\`\`\`sh\n\n  Base URL: ${env.SERVER_URI}/api\n\n  HTTP headers:\n    X-APP-SERVICE-ID: [ServiceID]\n\n\`\`\`
+\`\`\`sh\n\n  Base URL: ${env.SERVER_URI}/api/v2\n\n  HTTP headers:\n    X-APP-SERVICE-ID: [ServiceID]\n\n\`\`\`
 All functions on this server is tied to your \`ServiceID\`. To get your own \`ServiceID\`, please DM me on [Twitter](https://twitter.com/SeanCassiere).`,
           license: {
             name: "MIT",
             url: "https://github.com/SeanCassiere/simple-logging-server/blob/master/LICENSE.md",
           },
         },
+        tags: [
+          {
+            name: "Admin",
+            description:
+              "Routes are exclusively available to services that require the `Service` to have `admin` privileges.",
+          },
+          { name: "Logs", description: "Routes that interact with the `Log` entity." },
+          { name: "Services", description: "All routes that interact with the `Service` entity." },
+        ],
         externalDocs: {
           description: "GitHub Repository",
           url: "https://github.com/SeanCassiere/simple-logging-server",
+        },
+        components: {
+          securitySchemes: {
+            ServiceIdHeaderAuth: {
+              type: "apiKey",
+              in: "header",
+              name: "X-APP-SERVICE-ID",
+            },
+          },
         },
       },
       hideUntagged: true,
     },
   });
 
-  fastify.register(logRoutes, { prefix: "/api/log" });
-  fastify.register(serviceRoutes, { prefix: "/api/service" });
+  fastify.register(logRoutes, { prefix: "/api/v2/log" });
+  fastify.register(serviceRoutes, { prefix: "/api/v2/service" });
 
   fastify.get("/swagger", (_, reply) => {
     reply.code(302).redirect("/docs");

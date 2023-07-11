@@ -1,59 +1,44 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { CreateLogInput, TGetLogsQueryParamsInput } from "../logging/logging.schema";
-import { createLog, getLogs } from "../logging/logging.service";
-import { ServiceIdRouteParamInput } from "./services.schema";
-import { findActiveService } from "./services.service";
-import { env } from "../../config/env";
+import { findAllServices, findServiceById } from "./services.service";
+import { type ServiceIdRouteParamInput } from "./services.schema";
 
-export async function createServiceLogHandler(
-  request: FastifyRequest<{
-    Body: CreateLogInput;
-    Params: ServiceIdRouteParamInput;
-  }>,
+import { type TXAppServiceIdHeaderSchema } from "../common.schema";
+import { ENDPOINT_MESSAGES } from "../../utils/messages";
+
+export async function getAllServicesForAdmin(
+  _: FastifyRequest<{ Headers: TXAppServiceIdHeaderSchema }>,
   reply: FastifyReply
 ) {
-  if (env.FREEZE_DB_WRITES) {
-    return reply.code(503).send({ message: "Database writes are currently frozen", errors: [] });
-  }
-
-  const serviceId = request.params.ServiceId;
-
-  const service = await findActiveService({ serviceId: serviceId });
-  if (!service) {
-    reply.code(404).send({ message: "Service ID invalid or inactive", errors: [] });
-    return;
-  }
-
   try {
-    const log = await createLog({ ...request.body, serviceId, isPersisted: service.isPersisted });
-    reply.code(201).send(log);
+    const services = await findAllServices();
+
+    reply.code(200).send(services);
+    return;
   } catch (error) {
-    reply.code(500).send({ message: `error creating log for service ${serviceId}`, errors: [] });
+    reply.code(500).send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
+    return;
   }
 }
 
-export async function getServiceLogsHandler(
+export async function getServiceByIdForAdmin(
   request: FastifyRequest<{
+    Headers: TXAppServiceIdHeaderSchema;
     Params: ServiceIdRouteParamInput;
-    Querystring: TGetLogsQueryParamsInput;
   }>,
   reply: FastifyReply
 ) {
   const serviceId = request.params.ServiceId;
 
   try {
-    const logs = await getLogs({
-      serviceId,
-      lookupValue: request.query.lookup,
-      sortDirection: request.query.sort && request.query.sort.toLowerCase() === "desc" ? "desc" : "asc",
-      environment: request.query.environment,
-      includeService: false,
-      limit: request.query.page_size,
-      skip: (request.query.page - 1) * request.query.page_size,
-    });
-    reply.code(200).send(logs);
+    const service = await findServiceById({ serviceId });
+
+    if (!service) {
+      return reply.code(404).send({ success: false, message: ENDPOINT_MESSAGES.ServiceNotFound });
+    }
+
+    return reply.code(200).send(service);
   } catch (error) {
-    reply.code(500).send({ message: `something went wrong finding logs for ${serviceId}`, errors: [] });
+    return reply.code(500).send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
   }
 }

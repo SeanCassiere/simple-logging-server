@@ -4,14 +4,24 @@ const ServiceIdRouteParamSchema = z.object({
   ServiceId: z.string(),
 });
 
-export const ServiceZodSchema = z.object({
+export type ServiceIdRouteParamInput = z.infer<typeof ServiceIdRouteParamSchema>;
+
+//
+const ServiceResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
+  isActive: z.boolean(),
+  isPersisted: z.boolean(),
+  isAdmin: z.boolean(),
   createdAt: z.date(),
 });
 
-export type ServiceIdRouteParamInput = z.infer<typeof ServiceIdRouteParamSchema>;
+const ServiceListResponseSchema = z.array(ServiceResponseSchema);
 
 export const serviceModels = {
-  ServiceIdParameter: ServiceIdRouteParamSchema,
+  //
+  ServiceIdPathParameter: ServiceIdRouteParamSchema,
+  //
+  ServiceResponse: ServiceResponseSchema,
+  ServiceListResponse: ServiceListResponseSchema,
 };

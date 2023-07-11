@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ServiceZodSchema } from "../services/services.schema";
 
 const logCreateInput = {
   action: z.string(),
@@ -18,7 +17,6 @@ const logGenerated = {
   id: z.string(),
   ...logCreateInput,
   createdAt: z.date(),
-  serviceId: z.string(),
 };
 const LogResponseSchema = z.object({
   ...logGenerated,
@@ -26,39 +24,24 @@ const LogResponseSchema = z.object({
 const LogsResponseSchema = z.array(LogResponseSchema);
 
 //
-const LogResponseWithServiceSchema = z.object({
-  ...logGenerated,
-  service: ServiceZodSchema,
-});
-const LogsResponseWithServiceSchema = z.array(LogResponseWithServiceSchema);
-
-//
 const getLogsQueryParamsInput = {
   lookup: z.string().optional(),
   environment: z.string().optional(),
-  sort: z.string().optional(),
+  sort: z.enum(["ASC", "DESC"]).optional(),
   page: z.coerce.number().min(1).optional().default(1),
   page_size: z.coerce.number().min(1).optional().default(50),
 };
 
-const GetLogsQueryParamsSchema = z.object({
+const GetLogsSearchParamsSchema = z.object({
   ...getLogsQueryParamsInput,
 });
-export type TGetLogsQueryParamsInput = z.infer<typeof GetLogsQueryParamsSchema>;
-
-//
-const GetLogsForAdminQueryParamsSchema = z.object({
-  ...getLogsQueryParamsInput,
-  service_id: z.string().optional(),
-});
-export type TGetLogsForAdminQueryParams = z.infer<typeof GetLogsForAdminQueryParamsSchema>;
+export type TGetLogsSearchParamsInput = z.infer<typeof GetLogsSearchParamsSchema>;
 
 export const logModels = {
+  GetLogsSearchParamDTO: GetLogsSearchParamsSchema,
+  //
   CreateLogDTO: CreateLogInputSchema,
-  LogListQueryDTO: GetLogsQueryParamsSchema,
-  LogListAdminQueryDTO: GetLogsForAdminQueryParamsSchema,
+  //
   LogResponse: LogResponseSchema,
   LogListResponse: LogsResponseSchema,
-  LogWithServiceResponse: LogResponseWithServiceSchema,
-  LogListWithServiceResponse: LogsResponseWithServiceSchema,
 };

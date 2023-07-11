@@ -12,6 +12,5 @@ const XAppServiceIdHeaderSchema = z.object({
 export type TXAppServiceIdHeaderSchema = z.infer<typeof XAppServiceIdHeaderSchema>;
 
 export const commonModels = {
-  XAppServiceIdHeader: XAppServiceIdHeaderSchema,
   SuccessResponse: SuccessResponseSchema,
 };

@@ -42,13 +42,11 @@ export async function getLogs({
   skip = 0,
   limit = 500,
   sortDirection = "desc",
-  includeService = false,
   ...data
 }: {
-  serviceId?: string;
+  serviceId: string;
   environment?: string;
   lookupValue?: string;
-  includeService?: boolean;
   sortDirection?: "asc" | "desc";
   limit?: number;
   skip?: number;
@@ -57,10 +55,9 @@ export async function getLogs({
     limit,
     offset: skip,
     orderBy: (table, { asc, desc }) => (sortDirection === "asc" ? asc(table.createdAt) : desc(table.createdAt)),
-    with: { service: includeService ? true : undefined },
     where: (table, { and, eq }) =>
       and(
-        ...(data.serviceId ? [eq(table.serviceId, data.serviceId)] : []),
+        ...[eq(table.serviceId, data.serviceId)],
         ...(data.environment ? [eq(table.environment, data.environment)] : []),
         ...(data.lookupValue ? [eq(table.lookupFilterValue, data.lookupValue)] : [])
       ),
