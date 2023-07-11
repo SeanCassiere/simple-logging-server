@@ -4,7 +4,6 @@ import { cleanLogsForAll, createLog, getLogs } from "./logging.service";
 import { TGetLogsSearchParamsInput, type CreateLogInput } from "./logging.schema";
 
 import { findActiveService } from "../services/services.service";
-import { validateHeaderServiceIdIsAdmin } from "../services/services.controller";
 
 import { env } from "../../config/env";
 import { TXAppServiceIdHeaderSchema } from "../common.schema";
@@ -69,7 +68,13 @@ export async function cleanLogsForAllHandler(
     return reply.code(503).send({ success: false, message: "Database writes are currently frozen", errors: [] });
   }
 
-  const client = await validateHeaderServiceIdIsAdmin(request, reply);
+  const client = await findActiveService({ serviceId: request.headers["x-app-service-id"] ?? "" });
+
+  if (!client) {
+    reply.statusCode = 403;
+    reply.send({ success: false, message: ENDPOINT_MESSAGES.ServiceNotFound });
+    return;
+  }
 
   try {
     const numberOfMonthsToRemove = Number(env.DEFAULT_NUM_OF_MONTHS_TO_DELETE);

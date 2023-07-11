@@ -5,6 +5,7 @@ import { cleanLogsForAllHandler, createLogForServiceHandler, getLogsForServiceHa
 import { $ref } from "../../config/fastify-zod";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 import { env } from "../../config/env";
+import { serviceIdMiddleware } from "../common.middleware";
 
 export async function logRoutes(server: FastifyInstance) {
   server.get(
@@ -58,6 +59,7 @@ export async function logRoutes(server: FastifyInstance) {
   server.delete(
     "/purge",
     {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
       schema: {
         tags: ["Logs", "Admin"],
         operationId: `PurgeLogsForAllServices-Admin`,

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import { getAllServicesForAdmin, getServiceByIdForAdmin } from "./services.controller";
+import { serviceIdMiddleware } from "../common.middleware";
 
 import { $ref } from "../../config/fastify-zod";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
@@ -9,6 +10,7 @@ export async function serviceRoutes(server: FastifyInstance) {
   server.get(
     "",
     {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
       schema: {
         tags: ["Services", "Admin"],
         operationId: "GetAllServices-Admin",
@@ -40,6 +42,7 @@ export async function serviceRoutes(server: FastifyInstance) {
   server.get(
     "/:ServiceId",
     {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
       schema: {
         tags: ["Services", "Admin"],
         operationId: "GetServiceById-Admin",

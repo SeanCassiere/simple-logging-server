@@ -1,42 +1,15 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { findActiveService, findAllServices, findServiceById } from "./services.service";
+import { findAllServices, findServiceById } from "./services.service";
 import { type ServiceIdRouteParamInput } from "./services.schema";
 
 import { type TXAppServiceIdHeaderSchema } from "../common.schema";
 import { ENDPOINT_MESSAGES } from "../../utils/messages";
 
-export const validateHeaderServiceIdIsAdmin = async (
-  request: FastifyRequest<{ Headers: TXAppServiceIdHeaderSchema }>,
-  reply: FastifyReply
-) => {
-  const xAppServiceId = request.headers["x-app-service-id"];
-
-  if (!xAppServiceId) {
-    reply.code(401).send({ success: false, message: `X-APP-SERVICE-ID header was not passed.` });
-    throw new Error("X-APP-SERVICE-ID header was not passed.");
-  }
-
-  const client = await findActiveService({ serviceId: xAppServiceId, isAdmin: true });
-
-  if (!client) {
-    reply
-      .code(403)
-      .send({ success: false, message: `${xAppServiceId} - service does not exist or does not have admin rights` });
-    throw new Error("Client does not exist or does not have admin rights");
-  }
-
-  return client;
-};
-
 export async function getAllServicesForAdmin(
-  request: FastifyRequest<{
-    Headers: TXAppServiceIdHeaderSchema;
-  }>,
+  _: FastifyRequest<{ Headers: TXAppServiceIdHeaderSchema }>,
   reply: FastifyReply
 ) {
-  await validateHeaderServiceIdIsAdmin(request, reply);
-
   try {
     const services = await findAllServices();
 
@@ -55,7 +28,6 @@ export async function getServiceByIdForAdmin(
   }>,
   reply: FastifyReply
 ) {
-  await validateHeaderServiceIdIsAdmin(request, reply);
   const serviceId = request.params.ServiceId;
 
   try {
