@@ -42,7 +42,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
         displayOperationId: true,
       },
       openapi: {
-        servers: [{ url: env.SERVER_URI + "/api", description: `Base URL (${env.NODE_ENV})` }],
+        servers: [{ url: env.SERVER_URI + "/api/v2", description: `Base URL (${env.NODE_ENV})` }],
         info: {
           title: "Logging API",
           version: packageVersion,
@@ -64,8 +64,8 @@ All functions on this server is tied to your \`ServiceID\`. To get your own \`Se
     },
   });
 
-  fastify.register(logRoutes, { prefix: "/api/log" });
-  fastify.register(serviceRoutes, { prefix: "/api/service" });
+  fastify.register(logRoutes, { prefix: "/api/v2/log" });
+  fastify.register(serviceRoutes, { prefix: "/api/v2/service" });
 
   fastify.get("/swagger", (_, reply) => {
     reply.code(302).redirect("/docs");
