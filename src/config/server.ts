@@ -48,7 +48,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
           version: packageVersion,
           description: `This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
 ### Usage
-\`\`\`sh\n\n  Base URL: ${env.SERVER_URI}/api\n\n  HTTP headers:\n    X-APP-SERVICE-ID: [ServiceID]\n\n\`\`\`
+\`\`\`sh\n\n  Base URL: ${env.SERVER_URI}/api/v2\n\n  HTTP headers:\n    X-APP-SERVICE-ID: [ServiceID]\n\n\`\`\`
 All functions on this server is tied to your \`ServiceID\`. To get your own \`ServiceID\`, please DM me on [Twitter](https://twitter.com/SeanCassiere).`,
           license: {
             name: "MIT",
