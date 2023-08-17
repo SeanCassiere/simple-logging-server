@@ -31,9 +31,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
 
   await register(fastify, {
     jsonSchemas: fastifyZodCompiled,
-    swaggerOptions: {
-      stripBasePath: true,
-      exposeRoute: true,
+    swaggerUiOptions: {
       routePrefix: "/docs",
       staticCSP: true,
       uiConfig: {
@@ -41,6 +39,9 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
         displayRequestDuration: true,
         displayOperationId: true,
       },
+    },
+    swaggerOptions: {
+      stripBasePath: true,
       openapi: {
         servers: [{ url: env.SERVER_URI + "/api/v2", description: `Base URL (${env.NODE_ENV})` }],
         info: {
