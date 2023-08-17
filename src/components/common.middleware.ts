@@ -12,9 +12,9 @@ export function serviceIdMiddleware(opts?: { checkAdmin?: boolean }) {
       reply.code(401).send({ success: false, message: `X-APP-SERVICE-ID header was not passed.` });
       return done(new Error("X-APP-SERVICE-ID header was not passed."));
     }
-    console.log("xAppServiceId", xAppServiceId);
+
     const client = await findActiveService({ serviceId: xAppServiceId, ...(checkAdmin ? { isAdmin: true } : {}) });
-    console.log("client", client);
+
     if (!client) {
       reply.code(403).send({
         success: false,
