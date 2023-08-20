@@ -56,6 +56,9 @@ All functions on this server is tied to your \`ServiceID\`. To get your own \`Se
             name: "MIT",
             url: "https://github.com/SeanCassiere/simple-logging-server/blob/master/LICENSE.md",
           },
+          contact: {
+            email: "admin@pingstash.com",
+          },
         },
         tags: [
           {
