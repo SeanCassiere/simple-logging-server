@@ -43,6 +43,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
     swaggerOptions: {
       stripBasePath: true,
       openapi: {
+        openapi: "3.1.0",
         servers: [{ url: env.SERVER_URI + "/api/v2", description: `Base URL (${env.NODE_ENV})` }],
         info: {
           title: "Logging API",
