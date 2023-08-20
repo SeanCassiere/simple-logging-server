@@ -54,6 +54,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
 All functions on this server is tied to your \`ServiceID\`. To get your own \`ServiceID\`, please DM me on [Twitter](https://twitter.com/SeanCassiere).`,
           license: {
             name: "MIT",
+            identifier: "MIT",
             url: "https://github.com/SeanCassiere/simple-logging-server/blob/master/LICENSE.md",
           },
           contact: {
