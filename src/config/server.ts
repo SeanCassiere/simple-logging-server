@@ -39,6 +39,9 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
         displayRequestDuration: true,
         displayOperationId: true,
       },
+      theme: {
+        title: "Simple Logging Server API Documentation",
+      },
     },
     swaggerOptions: {
       stripBasePath: true,
@@ -46,7 +49,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
         openapi: "3.1.0",
         servers: [{ url: env.SERVER_URI + "/api/v2", description: `Base URL (${env.NODE_ENV})` }],
         info: {
-          title: "Logging API",
+          title: "Simple Logging Server API",
           version: packageVersion,
           description: `This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
 ### Usage
