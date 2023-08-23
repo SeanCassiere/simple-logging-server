@@ -46,7 +46,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
     swaggerOptions: {
       stripBasePath: true,
       openapi: {
-        openapi: "3.1.0",
+        openapi: "3.0.0",
         servers: [{ url: env.SERVER_URI + "/api/v2", description: `Base URL (${env.NODE_ENV})` }],
         info: {
           title: "Simple Logging Server API",
@@ -54,7 +54,7 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
           description: `This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
 ### Usage
 \`\`\`sh\n\n  Base URL: ${env.SERVER_URI}/api/v2\n\n  HTTP headers:\n    X-APP-SERVICE-ID: [ServiceID]\n\n\`\`\`
-All functions on this server is tied to your \`ServiceID\`. To get your own \`ServiceID\`, please DM me on [Twitter](https://twitter.com/SeanCassiere).`,
+All functions on this server is tied to your \`ServiceID\`. To get your own \`ServiceID\`, DM me on [X/Twitter](https://twitter.com/SeanCassiere) or send me an email using the contact details below.`,
           license: {
             name: "MIT",
             identifier: "MIT",
