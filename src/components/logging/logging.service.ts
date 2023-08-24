@@ -5,10 +5,10 @@ import { CreateLogInput } from "./logging.schema";
 import { db } from "../../config/db";
 import { logs as logsTable } from "../../config/db/schema";
 
-import { createDbId } from "../../utils/db";
+import { createDbId, dbPrefixes } from "../../utils/db";
 
 export async function createLog(data: CreateLogInput & { serviceId: string; isPersisted?: boolean }) {
-  const newId = createDbId();
+  const newId = createDbId(dbPrefixes.log);
   const log = await db
     .insert(logsTable)
     .values({
