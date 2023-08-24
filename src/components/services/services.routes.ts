@@ -5,6 +5,7 @@ import {
   getServiceByIdForAdmin,
   createServiceForAdmin,
   disableServiceForAdmin,
+  enableServiceForAdmin,
 } from "./services.controller";
 import { serviceIdMiddleware } from "../common.middleware";
 
@@ -185,6 +186,6 @@ export async function serviceRoutes(server: FastifyInstance) {
         security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
-    disableServiceForAdmin,
+    enableServiceForAdmin,
   );
 }
