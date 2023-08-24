@@ -39,7 +39,7 @@
     "@fastify/rate-limit": "^8.0.3",
     "@paralleldrive/cuid2": "^2.2.2",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.28.4-b0f0ac9",
+    "drizzle-orm": "^0.28.5",
     "fastify": "^4.21.0",
     "fastify-zod": "^1.4.0",
     "postgres": "^3.3.5",
