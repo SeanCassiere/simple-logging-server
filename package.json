@@ -43,7 +43,7 @@
     "fastify": "^4.21.0",
     "fastify-zod": "^1.4.0",
     "postgres": "^3.3.5",
-    "zod": "^3.22.1",
+    "zod": "^3.22.2",
     "zod-to-json-schema": "^3.20.1"
   }
 }
