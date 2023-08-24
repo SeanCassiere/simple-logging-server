@@ -5,5 +5,6 @@ export const ENDPOINT_MESSAGES = {
   ServerError: "Server Error. There was an error on the server.",
   ServiceNotFound: "Service not found.",
   ServiceDisabled: "Service disabled.",
+  ServiceEnabled: "Service enabled.",
   OwnServiceError: "You cannot perform this action on the service you are using.",
 };

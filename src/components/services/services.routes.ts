@@ -140,9 +140,42 @@ export async function serviceRoutes(server: FastifyInstance) {
             $ref: $ref("SuccessResponse").$ref,
             description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
           },
-          404: {
+          500: {
             $ref: $ref("SuccessResponse").$ref,
-            description: ENDPOINT_MESSAGES.ServiceNotFound,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
+        },
+        security: [{ ServiceIdHeaderAuth: [] }],
+      },
+    },
+    disableServiceForAdmin,
+  );
+
+  server.post(
+    "/:ServiceId/enable",
+    {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
+      schema: {
+        tags: ["Services", "Admin"],
+        operationId: "EnableServiceById-Admin",
+        description: "Enable a service its ID.\nOnly available to admins",
+        params: $ref("ServiceIdPathParameter"),
+        response: {
+          200: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServiceEnabled,
+          },
+          400: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.OwnServiceError,
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
           },
           500: {
             $ref: $ref("SuccessResponse").$ref,

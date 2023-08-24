@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { createService, disableService, findAllServices, findServiceById } from "./services.service";
+import { createService, disableService, enableService, findAllServices, findServiceById } from "./services.service";
 import type { CreateServiceInput, ServiceIdRouteParamInput } from "./services.schema";
 
 import { type TXAppServiceIdHeaderSchema } from "../common.schema";
@@ -36,6 +36,27 @@ export async function disableServiceForAdmin(
     await disableService({ serviceId: request.params.ServiceId });
 
     reply.code(200).send({ success: true, message: ENDPOINT_MESSAGES.ServiceDisabled });
+  } catch (error) {
+    reply.code(500).send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
+  }
+}
+
+export async function enableServiceForAdmin(
+  request: FastifyRequest<{ Headers: TXAppServiceIdHeaderSchema; Params: ServiceIdRouteParamInput }>,
+  reply: FastifyReply,
+) {
+  try {
+    const xAppServiceId = request.headers["x-app-service-id"];
+
+    if (xAppServiceId === request.params.ServiceId) {
+      return reply.code(400).send({
+        success: false,
+        message: "You cannot enable the service you are using.",
+      });
+    }
+    await enableService({ serviceId: request.params.ServiceId });
+
+    reply.code(200).send({ success: true, message: ENDPOINT_MESSAGES.ServiceEnabled });
   } catch (error) {
     reply.code(500).send({ success: false, message: ENDPOINT_MESSAGES.ServerError });
   }

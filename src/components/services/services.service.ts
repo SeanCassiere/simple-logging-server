@@ -51,3 +51,7 @@ export async function createService(data: CreateServiceInput) {
 export async function disableService(data: { serviceId: string }) {
   await db.update(serviceTable).set({ isActive: false }).where(eq(serviceTable.id, data.serviceId)).execute();
 }
+
+export async function enableService(data: { serviceId: string }) {
+  await db.update(serviceTable).set({ isActive: true }).where(eq(serviceTable.id, data.serviceId)).execute();
+}
