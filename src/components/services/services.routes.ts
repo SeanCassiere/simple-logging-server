@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 
-import { getAllServicesForAdmin, getServiceByIdForAdmin } from "./services.controller";
+import { getAllServicesForAdmin, getServiceByIdForAdmin, createServiceForAdmin } from "./services.controller";
 import { serviceIdMiddleware } from "../common.middleware";
 
 import { $ref } from "../../config/fastify-zod";
@@ -36,7 +36,40 @@ export async function serviceRoutes(server: FastifyInstance) {
         security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
-    getAllServicesForAdmin
+    getAllServicesForAdmin,
+  );
+
+  server.post(
+    "",
+    {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
+      schema: {
+        tags: ["Services", "Admin"],
+        operationId: "CreateService-Admin",
+        description: "Create a new service.\nOnly available to admins",
+        body: $ref("CreateServiceDTO"),
+        response: {
+          201: {
+            $ref: $ref("ServiceResponse").$ref,
+            description: "Created service details",
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
+          },
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
+        },
+        security: [{ ServiceIdHeaderAuth: [] }],
+      },
+    },
+    createServiceForAdmin,
   );
 
   server.get(
@@ -73,6 +106,6 @@ export async function serviceRoutes(server: FastifyInstance) {
         security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
-    getServiceByIdForAdmin
+    getServiceByIdForAdmin,
   );
 }
