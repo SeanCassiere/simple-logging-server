@@ -1,6 +1,11 @@
 import { FastifyInstance } from "fastify";
 
-import { getAllServicesForAdmin, getServiceByIdForAdmin, createServiceForAdmin } from "./services.controller";
+import {
+  getAllServicesForAdmin,
+  getServiceByIdForAdmin,
+  createServiceForAdmin,
+  disableServiceForAdmin,
+} from "./services.controller";
 import { serviceIdMiddleware } from "../common.middleware";
 
 import { $ref } from "../../config/fastify-zod";
@@ -107,5 +112,46 @@ export async function serviceRoutes(server: FastifyInstance) {
       },
     },
     getServiceByIdForAdmin,
+  );
+
+  server.delete(
+    "/:ServiceId",
+    {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
+      schema: {
+        tags: ["Services", "Admin"],
+        operationId: "DisableById-Admin",
+        description: "Disable a service its ID.\nOnly available to admins",
+        params: $ref("ServiceIdPathParameter"),
+        response: {
+          200: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServiceDisabled,
+          },
+          400: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.OwnServiceError,
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
+          },
+          404: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServiceNotFound,
+          },
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
+        },
+        security: [{ ServiceIdHeaderAuth: [] }],
+      },
+    },
+    disableServiceForAdmin,
   );
 }

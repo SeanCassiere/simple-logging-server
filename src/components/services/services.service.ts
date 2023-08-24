@@ -47,3 +47,7 @@ export async function createService(data: CreateServiceInput) {
 
   return service[0];
 }
+
+export async function disableService(data: { serviceId: string }) {
+  await db.update(serviceTable).set({ isActive: false }).where(eq(serviceTable.id, data.serviceId)).execute();
+}
