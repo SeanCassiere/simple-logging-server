@@ -120,7 +120,7 @@ export async function serviceRoutes(server: FastifyInstance) {
       preHandler: [serviceIdMiddleware({ checkAdmin: true })],
       schema: {
         tags: ["Services", "Admin"],
-        operationId: "DisableById-Admin",
+        operationId: "DisableServiceById-Admin",
         description: "Disable a service its ID.\nOnly available to admins",
         params: $ref("ServiceIdPathParameter"),
         response: {
