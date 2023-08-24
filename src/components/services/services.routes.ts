@@ -1,6 +1,12 @@
 import { FastifyInstance } from "fastify";
 
-import { getAllServicesForAdmin, getServiceByIdForAdmin } from "./services.controller";
+import {
+  getAllServicesForAdmin,
+  getServiceByIdForAdmin,
+  createServiceForAdmin,
+  disableServiceForAdmin,
+  enableServiceForAdmin,
+} from "./services.controller";
 import { serviceIdMiddleware } from "../common.middleware";
 
 import { $ref } from "../../config/fastify-zod";
@@ -36,7 +42,40 @@ export async function serviceRoutes(server: FastifyInstance) {
         security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
-    getAllServicesForAdmin
+    getAllServicesForAdmin,
+  );
+
+  server.post(
+    "",
+    {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
+      schema: {
+        tags: ["Services", "Admin"],
+        operationId: "CreateService-Admin",
+        description: "Create a new service.\nOnly available to admins",
+        body: $ref("CreateServiceDTO"),
+        response: {
+          201: {
+            $ref: $ref("ServiceResponse").$ref,
+            description: "Created service details",
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
+          },
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
+        },
+        security: [{ ServiceIdHeaderAuth: [] }],
+      },
+    },
+    createServiceForAdmin,
   );
 
   server.get(
@@ -73,6 +112,80 @@ export async function serviceRoutes(server: FastifyInstance) {
         security: [{ ServiceIdHeaderAuth: [] }],
       },
     },
-    getServiceByIdForAdmin
+    getServiceByIdForAdmin,
+  );
+
+  server.delete(
+    "/:ServiceId",
+    {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
+      schema: {
+        tags: ["Services", "Admin"],
+        operationId: "DisableServiceById-Admin",
+        description: "Disable a service its ID.\nOnly available to admins",
+        params: $ref("ServiceIdPathParameter"),
+        response: {
+          200: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServiceDisabled,
+          },
+          400: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.OwnServiceError,
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
+          },
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
+        },
+        security: [{ ServiceIdHeaderAuth: [] }],
+      },
+    },
+    disableServiceForAdmin,
+  );
+
+  server.post(
+    "/:ServiceId/enable",
+    {
+      preHandler: [serviceIdMiddleware({ checkAdmin: true })],
+      schema: {
+        tags: ["Services", "Admin"],
+        operationId: "EnableServiceById-Admin",
+        description: "Enable a service its ID.\nOnly available to admins",
+        params: $ref("ServiceIdPathParameter"),
+        response: {
+          200: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServiceEnabled,
+          },
+          400: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.OwnServiceError,
+          },
+          401: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.UnAuthorized,
+          },
+          403: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ForbiddenMustBeAdmin,
+          },
+          500: {
+            $ref: $ref("SuccessResponse").$ref,
+            description: ENDPOINT_MESSAGES.ServerError,
+          },
+        },
+        security: [{ ServiceIdHeaderAuth: [] }],
+      },
+    },
+    enableServiceForAdmin,
   );
 }

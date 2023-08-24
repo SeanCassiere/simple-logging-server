@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+const commonServiceSchema = z.object({
+  name: z.string(),
+  isPersisted: z.boolean(),
+  isAdmin: z.boolean(),
+});
+
+const CreateServiceInputSchema = commonServiceSchema.extend({});
+export type CreateServiceInput = z.infer<typeof CreateServiceInputSchema>;
+
+//
 const ServiceIdRouteParamSchema = z.object({
   ServiceId: z.string(),
 });
@@ -7,12 +17,9 @@ const ServiceIdRouteParamSchema = z.object({
 export type ServiceIdRouteParamInput = z.infer<typeof ServiceIdRouteParamSchema>;
 
 //
-const ServiceResponseSchema = z.object({
+const ServiceResponseSchema = commonServiceSchema.extend({
   id: z.string(),
-  name: z.string(),
   isActive: z.boolean(),
-  isPersisted: z.boolean(),
-  isAdmin: z.boolean(),
   createdAt: z.date(),
 });
 
@@ -21,6 +28,8 @@ const ServiceListResponseSchema = z.array(ServiceResponseSchema);
 export const serviceModels = {
   //
   ServiceIdPathParameter: ServiceIdRouteParamSchema,
+  //
+  CreateServiceDTO: CreateServiceInputSchema,
   //
   ServiceResponse: ServiceResponseSchema,
   ServiceListResponse: ServiceListResponseSchema,
