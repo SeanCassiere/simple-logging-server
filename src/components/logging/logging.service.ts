@@ -35,7 +35,7 @@ export async function createLog(data: CreateLogInput & { serviceId: string; isPe
     })
     .execute();
 
-  return log[0];
+  return { ...log[0], data: Object.keys(log[0]?.data ?? {}).length === 0 ? null : log[0].data };
 }
 
 export async function getLogs({
@@ -59,11 +59,14 @@ export async function getLogs({
       and(
         ...[eq(table.serviceId, data.serviceId)],
         ...(data.environment ? [eq(table.environment, data.environment)] : []),
-        ...(data.lookupValue ? [eq(table.lookupFilterValue, data.lookupValue)] : [])
+        ...(data.lookupValue ? [eq(table.lookupFilterValue, data.lookupValue)] : []),
       ),
   });
 
-  return logs;
+  return logs.map((log) => ({
+    ...log,
+    data: Object.keys(log.data ?? {}).length === 0 ? null : log.data,
+  }));
 }
 
 /**

@@ -5,7 +5,7 @@ const logCreateInput = {
   environment: z.string().default("production"),
   ip: z.string().nullable().optional(),
   lookupFilterValue: z.string().nullable().optional(),
-  data: z.any().optional(),
+  data: z.record(z.string(), z.any()).nullable(),
 };
 const CreateLogInputSchema = z.object({
   ...logCreateInput,
