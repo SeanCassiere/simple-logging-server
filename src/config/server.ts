@@ -57,7 +57,6 @@ export async function makeFastifyServer(props: MakeFastifyServerProps) {
 All functions on this server is tied to your \`ServiceID\`. To get your own \`ServiceID\`, DM me on [X/Twitter](https://twitter.com/SeanCassiere) or send me an email using the contact details below.`,
           license: {
             name: "MIT",
-            identifier: "MIT",
             url: "https://github.com/SeanCassiere/simple-logging-server/blob/master/LICENSE.md",
           },
           contact: {
@@ -65,13 +64,13 @@ All functions on this server is tied to your \`ServiceID\`. To get your own \`Se
           },
         },
         tags: [
+          { name: "Logs", description: "Routes that interact with the `Log` entity." },
+          { name: "Services", description: "All routes that interact with the `Service` entity." },
           {
             name: "Admin",
             description:
               "Routes are exclusively available to services that require the `Service` to have `admin` privileges.",
           },
-          { name: "Logs", description: "Routes that interact with the `Log` entity." },
-          { name: "Services", description: "All routes that interact with the `Service` entity." },
         ],
         externalDocs: {
           description: "GitHub Repository",
