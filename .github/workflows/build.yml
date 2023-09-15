@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: 18.17.1
+          node-version: 18
 
       #This step runs npm ci to install any dependencies listed in your package.json file.
       - name: Install dependencies
