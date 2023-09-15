@@ -1,6 +1,6 @@
 name: "🐛 Bug report"
-description: Create a report to help us improve
-title: "[Bug]: "
+description: Create a report to help us improve simple-logging-server.
+title: "fix: "
 labels:
   - "bug"
 
@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for reporting an issue :pray:.
+        **Thank you for finding and reporting this issue :pray:!**
         We kindly ask that you search to see if an issue [already exists](https://github.com/SeanCassiere/simple-logging-server/issues?q=is%3Aissue+sort%3Acreated-desc+) for your bug.
 
         We are also happy to accept contributions from our users. For more details see [here](https://github.com/SeanCassiere/simple-logging-server/blob/master/CONTRIBUTION.md).
