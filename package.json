@@ -40,7 +40,7 @@
     "@paralleldrive/cuid2": "^2.2.2",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.28.6",
-    "fastify": "^4.21.0",
+    "fastify": "^4.23.2",
     "fastify-zod": "^1.4.0",
     "postgres": "^3.3.5",
     "zod": "^3.22.2",
