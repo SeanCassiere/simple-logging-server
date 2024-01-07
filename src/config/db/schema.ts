@@ -13,14 +13,16 @@ export const logs = pgTable(
     serviceId: text("service_id")
       .notNull()
       .references(() => services.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    level: text("level").default("info").notNull(),
     lookupFilterValue: text("lookup_filter_value"),
     isPersisted: boolean("is_persisted").notNull(),
   },
   (table) => {
     return {
       createdAtIdx: index("log_created_at_idx").on(table.createdAt),
+      levelIdx: index("log_level_idx").on(table.level),
     };
-  }
+  },
 );
 
 export const logRelations = relations(logs, ({ one }) => ({
@@ -44,7 +46,7 @@ export const services = pgTable(
     return {
       createdAtIdx: index("service_created_at_idx").on(table.createdAt),
     };
-  }
+  },
 );
 
 export const serviceRelations = relations(services, ({ many }) => ({

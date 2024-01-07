@@ -15,6 +15,13 @@
       "when": 1688826426429,
       "tag": "0001_clean_blindfold",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1704635877860,
+      "tag": "0002_aromatic_nightcrawler",
+      "breakpoints": true
     }
   ]
 }

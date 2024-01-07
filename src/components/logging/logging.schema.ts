@@ -6,6 +6,15 @@ const logCreateInput = {
   ip: z.string().nullable().optional(),
   lookupFilterValue: z.string().nullable().optional(),
   data: z.record(z.string(), z.any()).nullable(),
+  level: z
+    .preprocess(
+      (val) => {
+        if (val) return val;
+        return val;
+      },
+      z.enum(["info", "warn", "error", "fatal"]),
+    )
+    .default("info"),
 };
 const CreateLogInputSchema = z.object({
   ...logCreateInput,
@@ -30,6 +39,16 @@ const getLogsQueryParamsInput = {
   sort: z.enum(["ASC", "DESC"]).default("DESC").optional(),
   page: z.coerce.number().min(1).optional().default(1),
   page_size: z.coerce.number().min(1).optional().default(50),
+  level: z
+    .preprocess(
+      (val) => {
+        if (val) return val;
+        return ["all"];
+      },
+      z.array(z.enum(["all", "info", "warn", "error", "fatal"])),
+    )
+    .default(["all"])
+    .optional(),
 };
 
 const GetLogsSearchParamsSchema = z.object({

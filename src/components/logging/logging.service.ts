@@ -1,6 +1,6 @@
-import { and, eq, lt } from "drizzle-orm";
+import { and, eq, lt, inArray } from "drizzle-orm";
 
-import { CreateLogInput } from "./logging.schema";
+import { CreateLogInput, TGetLogsSearchParamsInput } from "./logging.schema";
 
 import { db } from "../../config/db";
 import { logs as logsTable } from "../../config/db/schema";
@@ -21,6 +21,7 @@ export async function createLog(data: CreateLogInput & { serviceId: string; isPe
       data: data.data || {},
       isPersisted: data.isPersisted || false,
       lookupFilterValue: data.lookupFilterValue,
+      level: data.level,
     })
     .returning({
       id: logsTable.id,
@@ -29,6 +30,7 @@ export async function createLog(data: CreateLogInput & { serviceId: string; isPe
       ip: logsTable.ip,
       lookupFilterValue: logsTable.lookupFilterValue,
       data: logsTable.data,
+      level: logsTable.level,
 
       serviceId: logsTable.serviceId,
       createdAt: logsTable.createdAt,
@@ -42,6 +44,7 @@ export async function getLogs({
   skip = 0,
   limit = 500,
   sortDirection = "desc",
+  level = ["all"],
   ...data
 }: {
   serviceId: string;
@@ -50,7 +53,11 @@ export async function getLogs({
   sortDirection?: "asc" | "desc";
   limit?: number;
   skip?: number;
+  level: TGetLogsSearchParamsInput["level"];
 }) {
+  const isSpecificLogLevel = level && !level.includes("all"); // searching for a specific log level
+  const levelsWithoutAll = level.filter((val) => val !== "all") as unknown as string[];
+
   const logs = await db.query.logs.findMany({
     limit,
     offset: skip,
@@ -60,6 +67,7 @@ export async function getLogs({
         ...[eq(table.serviceId, data.serviceId)],
         ...(data.environment ? [eq(table.environment, data.environment)] : []),
         ...(data.lookupValue ? [eq(table.lookupFilterValue, data.lookupValue)] : []),
+        ...(isSpecificLogLevel ? [inArray(table.level, levelsWithoutAll)] : []),
       ),
   });
 
