@@ -30,6 +30,7 @@ export async function createLog(data: CreateLogInput & { serviceId: string; isPe
       ip: logsTable.ip,
       lookupFilterValue: logsTable.lookupFilterValue,
       data: logsTable.data,
+      level: logsTable.level,
 
       serviceId: logsTable.serviceId,
       createdAt: logsTable.createdAt,
