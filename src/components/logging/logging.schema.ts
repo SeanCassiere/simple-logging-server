@@ -43,10 +43,11 @@ const getLogsQueryParamsInput = {
     .preprocess(
       (val) => {
         if (val) return val;
-        return "all";
+        return ["all"];
       },
-      z.enum(["all", "info", "warn", "error", "fatal"]),
+      z.array(z.enum(["all", "info", "warn", "error", "fatal"])),
     )
+    .default(["all"])
     .optional(),
 };
 
