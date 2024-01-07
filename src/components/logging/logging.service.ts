@@ -1,6 +1,6 @@
 import { and, eq, lt } from "drizzle-orm";
 
-import { CreateLogInput } from "./logging.schema";
+import { CreateLogInput, TGetLogsSearchParamsInput } from "./logging.schema";
 
 import { db } from "../../config/db";
 import { logs as logsTable } from "../../config/db/schema";
@@ -44,6 +44,7 @@ export async function getLogs({
   skip = 0,
   limit = 500,
   sortDirection = "desc",
+  level = "all",
   ...data
 }: {
   serviceId: string;
@@ -52,7 +53,10 @@ export async function getLogs({
   sortDirection?: "asc" | "desc";
   limit?: number;
   skip?: number;
+  level: TGetLogsSearchParamsInput["level"];
 }) {
+  const isSpecificLogLevel = level && level.length !== 0 && level !== "all"; // searching for a specific log level
+
   const logs = await db.query.logs.findMany({
     limit,
     offset: skip,
@@ -62,6 +66,7 @@ export async function getLogs({
         ...[eq(table.serviceId, data.serviceId)],
         ...(data.environment ? [eq(table.environment, data.environment)] : []),
         ...(data.lookupValue ? [eq(table.lookupFilterValue, data.lookupValue)] : []),
+        ...(isSpecificLogLevel ? [eq(table.level, level)] : []),
       ),
   });
 

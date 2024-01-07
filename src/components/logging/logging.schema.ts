@@ -39,6 +39,15 @@ const getLogsQueryParamsInput = {
   sort: z.enum(["ASC", "DESC"]).default("DESC").optional(),
   page: z.coerce.number().min(1).optional().default(1),
   page_size: z.coerce.number().min(1).optional().default(50),
+  level: z
+    .preprocess(
+      (val) => {
+        if (val) return val;
+        return "all";
+      },
+      z.enum(["all", "info", "warn", "error", "fatal"]),
+    )
+    .optional(),
 };
 
 const GetLogsSearchParamsSchema = z.object({

@@ -53,6 +53,7 @@ export async function getLogsForServiceHandler(
       environment: request.query.environment,
       limit: request.query.page_size,
       skip: (request.query.page - 1) * request.query.page_size,
+      level: request.query.level,
     });
     reply.code(200).send(logs);
   } catch (error) {
