@@ -14,7 +14,7 @@ export async function createLogForServiceHandler(
     Headers: TXAppServiceIdHeaderSchema;
     Body: CreateLogInput;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   if (env.FREEZE_DB_WRITES) {
     return reply.code(503).send({ success: false, message: "Database writes are currently frozen" });
@@ -41,7 +41,7 @@ export async function getLogsForServiceHandler(
     Headers: TXAppServiceIdHeaderSchema;
     Querystring: TGetLogsSearchParamsInput;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const serviceId = request.headers["x-app-service-id"];
 
@@ -64,7 +64,7 @@ export async function cleanLogsForAllHandler(
   request: FastifyRequest<{
     Headers: TXAppServiceIdHeaderSchema;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   if (env.FREEZE_DB_WRITES) {
     return reply.code(503).send({ success: false, message: "Database writes are currently frozen", errors: [] });
@@ -93,6 +93,7 @@ export async function cleanLogsForAllHandler(
       environment: "production",
       lookupFilterValue: "app-admin-action",
       data: { client: client.name, ip },
+      level: "info",
     });
 
     reply.statusCode = 200;

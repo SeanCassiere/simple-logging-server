@@ -6,6 +6,15 @@ const logCreateInput = {
   ip: z.string().nullable().optional(),
   lookupFilterValue: z.string().nullable().optional(),
   data: z.record(z.string(), z.any()).nullable(),
+  level: z
+    .preprocess(
+      (val) => {
+        if (val) return val;
+        return val;
+      },
+      z.enum(["info", "warn", "error", "fatal"]),
+    )
+    .default("info"),
 };
 const CreateLogInputSchema = z.object({
   ...logCreateInput,

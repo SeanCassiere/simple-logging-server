@@ -21,6 +21,7 @@ export async function createLog(data: CreateLogInput & { serviceId: string; isPe
       data: data.data || {},
       isPersisted: data.isPersisted || false,
       lookupFilterValue: data.lookupFilterValue,
+      level: data.level,
     })
     .returning({
       id: logsTable.id,
