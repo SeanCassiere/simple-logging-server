@@ -1,6 +1,6 @@
 {
   "name": "simple-logging-server",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "This is a simple API for logging messages",
   "private": true,
   "main": "dist/index.js",
