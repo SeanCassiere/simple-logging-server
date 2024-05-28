@@ -15,7 +15,7 @@ jobs:
     steps:
       # This step uses the actions/checkout action to download a copy of your repository on the runner.
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # This step uses the pnpm/action-setup action to set up pnpm on the runner.
       - name: Install pnpm
