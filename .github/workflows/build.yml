@@ -8,22 +8,33 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
     steps:
       # This step uses the actions/checkout action to download a copy of your repository on the runner.
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      # This step uses the pnpm/action-setup action to set up pnpm on the runner.
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
 
       # This step uses the actions/setup-node action to set up a Node.js environment on the runner.
-      - name: Setup Node.js 18
-        uses: actions/setup-node@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
 
-      # This step runs npm ci to install any dependencies listed in your package.json file.
+      # This step runs the install script for the selected node package manager.
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
 
       # This step runs the build script if there is one specified under the scripts key in your package.json file.
       - name: Build
-        run: npm run build --if-present
+        run: pnpm build
