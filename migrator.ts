@@ -13,9 +13,11 @@ if (!DB_URL) {
 const main = async () => {
   const start = new Date();
 
-  const migrationClient = postgres(DB_URL, { max: 1 });
-  const db = drizzle(migrationClient);
+  const client = postgres(DB_URL, { max: 1 });
+  const db = drizzle(client);
+
   await migrate(db, { migrationsFolder: "./drizzle" });
+  await client.end();
 
   const end = new Date();
   console.log(`Migrations complete in ${end.getTime() - start.getTime()}ms`);
