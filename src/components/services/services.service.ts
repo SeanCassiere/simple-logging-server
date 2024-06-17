@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { db } from "../../config/db";
 import { services as serviceTable } from "../../config/db/schema";
@@ -6,7 +6,8 @@ import { createDbId, dbPrefixes } from "../../utils/db";
 import type { CreateServiceInput } from "./services.schema";
 
 export async function findActiveService(data: { serviceId: string; isAdmin?: boolean }) {
-  const service = await db.query.services.findFirst({ where: eq(serviceTable.id, data.serviceId) });
+  const service = await db.query.services.findFirst({ where: (fields, { eq }) => eq(fields.id, data.serviceId) });
+
   if (data.isAdmin && service && service.isActive) {
     return service.isAdmin ? service : null;
   } else if (service && service.isActive) {
@@ -17,11 +18,13 @@ export async function findActiveService(data: { serviceId: string; isAdmin?: boo
 }
 
 export async function findAllServices() {
-  return await db.query.services.findMany({ orderBy: desc(serviceTable.createdAt) });
+  const services = await db.query.services.findMany({ orderBy: (fields, { desc }) => desc(fields.createdAt) });
+  return services;
 }
 
 export async function findServiceById(data: { serviceId: string }) {
-  return (await db.query.services.findFirst({ where: eq(serviceTable.id, data.serviceId) })) ?? null;
+  const service = await db.query.services.findFirst({ where: (fields, { eq }) => eq(fields.id, data.serviceId) });
+  return service ?? null;
 }
 
 export async function createService(data: CreateServiceInput) {

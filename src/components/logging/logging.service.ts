@@ -1,4 +1,4 @@
-import { and, eq, lt, inArray } from "drizzle-orm";
+import { and, eq, lt } from "drizzle-orm";
 
 import { CreateLogInput, TGetLogsSearchParamsInput } from "./logging.schema";
 
@@ -61,13 +61,13 @@ export async function getLogs({
   const logs = await db.query.logs.findMany({
     limit,
     offset: skip,
-    orderBy: (table, { asc, desc }) => (sortDirection === "asc" ? asc(table.createdAt) : desc(table.createdAt)),
-    where: (table, { and, eq }) =>
+    orderBy: (fields, { asc, desc }) => (sortDirection === "asc" ? asc(fields.createdAt) : desc(fields.createdAt)),
+    where: (fields, { and, eq, inArray }) =>
       and(
-        ...[eq(table.serviceId, data.serviceId)],
-        ...(data.environment ? [eq(table.environment, data.environment)] : []),
-        ...(data.lookupValue ? [eq(table.lookupFilterValue, data.lookupValue)] : []),
-        ...(isSpecificLogLevel ? [inArray(table.level, levelsWithoutAll)] : []),
+        ...[eq(fields.serviceId, data.serviceId)],
+        ...(data.environment ? [eq(fields.environment, data.environment)] : []),
+        ...(data.lookupValue ? [eq(fields.lookupFilterValue, data.lookupValue)] : []),
+        ...(isSpecificLogLevel ? [inArray(fields.level, levelsWithoutAll)] : []),
       ),
   });
 
