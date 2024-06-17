@@ -34,7 +34,7 @@ jobs:
 
       # This step runs the test script if there is one specified under the scripts key in your package.json file.
       - name: Test
-        run: pnpm test
+        run: pnpm test:ci
 
   build:
     name: build

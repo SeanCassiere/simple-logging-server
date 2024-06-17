@@ -11,6 +11,7 @@
     "start": "NODE_ENV=production node dist/index.js",
     "dev": "NODE_ENV=development tsx --watch ./src/index.ts",
     "test": "vitest --typecheck",
+    "test:ci": "vitest run --typecheck",
     "build:kill-dist": "rimraf ./dist",
     "build:code": "tsc",
     "build": "pnpm run build:kill-dist && pnpm run build:code",
