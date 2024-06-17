@@ -4,6 +4,7 @@
   "description": "This is a simple API for logging messages",
   "private": true,
   "main": "dist/index.js",
+  "packageManager": "pnpm@latest",
   "scripts": {
     "lint": "eslint --max-warnings=0 src",
     "lint:fix": "eslint --fix --max-warnings=0 src",
