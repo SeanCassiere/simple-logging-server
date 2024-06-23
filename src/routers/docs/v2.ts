@@ -11,7 +11,7 @@ app.get(
     pageTitle: "Simple Logging Server API Reference",
     theme: "purple",
     spec: {
-      url: "/static/openapi.v2.yml",
+      url: "/static/openapi.v2.yaml",
     },
   }),
 );

@@ -7,7 +7,7 @@ type OpenApiDocTransformer = (dirVersion: string, doc: string) => string;
  * Modify the OpenAPI doc with the provided transformers and write the file to the static directory.
  */
 export function transformOpenapiYmlDoc(dir_version: string, transformers: OpenApiDocTransformer[] = []): void {
-  const openapiFilename = `openapi.${dir_version}.yml`;
+  const openapiFilename = `openapi.${dir_version}.yaml`;
 
   const openapiYmlSourcePath = join(__dirname, "..", "docs", openapiFilename);
   const openapiYmlOutPath = join(__dirname, "..", "..", "public", "static", openapiFilename);
