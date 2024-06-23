@@ -10,8 +10,10 @@ import {
   createServiceInputSchema,
   createServiceOutputSchema,
   getServiceFiltersSchema,
+  getServiceOutputSchema,
   getServicesOutputSchema,
 } from "./schemas";
+import { ENDPOINT_MESSAGES } from "@/utils/messages";
 
 const app = new Hono<ServerContext>();
 
@@ -75,6 +77,25 @@ app.post("/", adminServiceValidation, async (c) => {
     .execute();
 
   return c.json(createServiceOutputSchema.parse(service[0]));
+});
+
+/**
+ * @private
+ * Get a service by its ID, only accessible by admins
+ */
+app.get("/:service_id", adminServiceValidation, async (c) => {
+  const serviceId = c.req.param("service_id");
+
+  const service = await db.query.services.findFirst({
+    where: (fields, { and, eq }) => and(eq(fields.id, serviceId), eq(fields.isActive, true)),
+  });
+
+  if (!service) {
+    c.status(404);
+    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceNotFound });
+  }
+
+  return c.json(getServiceOutputSchema.parse(service));
 });
 
 export default app;
