@@ -15,8 +15,8 @@ const f = {
 export const createServiceSchema = z.object({});
 
 export const getServiceFiltersSchema = z.object({
-  page: z.number().min(1).default(1),
-  page_size: z.number().min(1).default(50),
+  page: z.coerce.number().min(1).default(1),
+  page_size: z.coerce.number().min(1).default(50),
 });
 
 const serviceOutput = z.object({

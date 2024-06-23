@@ -42,8 +42,8 @@ export const getLogsFiltersSchema = z.object({
   lookup: f.lookupFilterValue.optional(),
   environment: f.environment.optional(),
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
-  page: z.number().min(1).default(1),
-  page_size: z.number().min(1).default(50),
+  page: z.coerce.number().min(1).default(1),
+  page_size: z.coerce.number().min(1).default(50),
   level: f.levelWithAll,
 });
 
