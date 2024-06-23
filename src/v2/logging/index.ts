@@ -106,7 +106,7 @@ app.post("/", serviceValidation, async (c) => {
  * @public
  * Cleans log for a service for a specific number of months
  */
-app.delete("/", serviceValidation, async (c) => {
+app.delete("/purge", serviceValidation, async (c) => {
   if (env.FREEZE_DB_WRITES) {
     c.status(503);
     return c.json({ success: false, message: ENDPOINT_MESSAGES.DBWritesFrozen });
