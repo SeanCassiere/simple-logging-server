@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+/**
+ * Fields
+ */
 const f = {
   action: z.string(),
   environment: z.string(),
@@ -18,7 +21,7 @@ const f = {
   levelWithAll: z
     .preprocess(
       (val) => {
-        if (val) return val;
+        if (typeof val === "string") return [val];
         return ["all"];
       },
       z.array(z.enum(["all", "info", "warn", "error", "fatal"])),
@@ -43,3 +46,16 @@ export const getLogsFiltersSchema = z.object({
   page_size: z.number().min(1).default(50),
   level: f.levelWithAll,
 });
+
+const logOutput = z.object({
+  id: z.string(),
+  action: z.string(),
+  environment: z.string(),
+  ip: z.string().nullable(),
+  level: z.string(),
+  data: f.data,
+  lookupFilterValue: z.string().nullable(),
+  createdAt: z.string(),
+});
+
+export const getLogsOutputSchema = z.array(logOutput);
