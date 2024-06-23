@@ -40,16 +40,12 @@ app.use("/api/", timeout(5000));
 
 app.route("/api/v2", v2Router);
 
-app.get("/docs/v2", (c) => {
-  return c.json({ docs: "docs for the v2 api" });
-});
-
 app.get("/health", (c) => {
   return c.json({ message: "OK", uptime: process.uptime() });
 });
 
 app.get("/", (c) => {
-  return c.json({ message: "hello world" });
+  return c.redirect("/api/v2");
 });
 
 if (env.FREEZE_DB_WRITES) {

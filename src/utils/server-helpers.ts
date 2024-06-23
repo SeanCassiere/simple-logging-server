@@ -40,7 +40,7 @@ function getServiceId(c: Context): string | null {
 async function getService(serviceId: string, opts = { mustBeAdmin: false }) {
   const service = await db.query.services.findFirst({
     where: (fields, { and, eq }) =>
-      and(eq(fields.id, serviceId), ...(opts.mustBeAdmin ? [eq(fields.isAdmin, true)] : [])),
+      and(eq(fields.id, serviceId), ...(opts.mustBeAdmin ? [eq(fields.isAdmin, true)] : []), eq(fields.isActive, true)),
   });
   return service ?? null;
 }
