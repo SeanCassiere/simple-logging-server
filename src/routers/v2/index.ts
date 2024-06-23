@@ -7,7 +7,7 @@ import type { ServerContext } from "@/types/hono";
 
 const app = new Hono<ServerContext>();
 
-app.route("/services", servicesRouter);
-app.route("/logs", logsRouter);
+app.route("/service", servicesRouter);
+app.route("/log", logsRouter);
 
 export default app;

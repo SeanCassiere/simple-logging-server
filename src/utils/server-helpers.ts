@@ -3,6 +3,7 @@ import type { Context } from "hono";
 
 import { db } from "@/config/db";
 import { ENDPOINT_MESSAGES } from "./messages";
+import { env } from "@/config/env";
 
 /**
  * Takes a URL and returns an object with the query string parameters, multiple of the same key will be an array
@@ -90,3 +91,7 @@ export const adminServiceValidation = factory.createMiddleware(async (c, next) =
   c.set("service", service);
   await next();
 });
+
+export function getUserServerUrl() {
+  return env.NODE_ENV === "production" ? env.SERVER_URI : `http://localhost:${env.PORT}`;
+}

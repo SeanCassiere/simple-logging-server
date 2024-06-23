@@ -7,11 +7,14 @@ import { timeout } from "hono/timeout";
 import { logger } from "hono/logger";
 import { rateLimiter } from "hono-rate-limiter";
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 
 import v2Router from "@/routers/v2";
+import docsRouter from "@/routers/docs";
 import { env } from "@/config/env";
 
 import type { ServerContext } from "@/types/hono";
+import { transformOpenapiYmlDoc, openapiYmlVersioner } from "@/utils/openapi-docs";
 
 const packageJson = require("../package.json");
 
@@ -39,18 +42,27 @@ app.use("*", async (c, next) => {
 app.use("/api/", timeout(5000));
 
 app.route("/api/v2", v2Router);
+app.route("/docs", docsRouter);
+
+app.get(
+  "/*",
+  serveStatic({
+    root: "./public",
+  }),
+);
 
 app.get("/health", (c) => {
   return c.json({ message: "OK", uptime: process.uptime() });
 });
-
 app.get("/", (c) => {
-  return c.redirect("/api/v2");
+  return c.redirect("/docs");
 });
 
 if (env.FREEZE_DB_WRITES) {
   console.warn("  ⚠️ ⚠️ ⚠️ ⚠️\n  Database writes are currently frozen\n  ⚠️ ⚠️ ⚠️ ⚠️\n");
 }
+
+transformOpenapiYmlDoc("v2", [openapiYmlVersioner(packageJson.version)]);
 
 const PORT = Number(env.PORT);
 const HOST = env.NODE_ENV !== "production" ? "127.0.0.1" : "0.0.0.0";
