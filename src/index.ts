@@ -11,10 +11,10 @@ import { serveStatic } from "@hono/node-server/serve-static";
 
 import v2Router from "@/routers/v2";
 import docsRouter from "@/routers/docs";
-import { env } from "@/config/env";
 
-import type { ServerContext } from "@/types/hono";
 import { transformOpenapiYmlDoc, openapiYmlVersioner } from "@/utils/openapi-docs";
+import { env } from "@/config/env";
+import type { ServerContext } from "@/types/hono";
 
 const packageJson = require("../package.json");
 
@@ -29,7 +29,7 @@ const limiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 100,
   standardHeaders: "draft-6",
-  keyGenerator: (c) => c.req.header("x-service-id") ?? c.req.header("x-forwarded-for") ?? "",
+  keyGenerator: (c) => c.req.header("x-app-service-id") ?? c.req.header("x-forwarded-for") ?? "",
 });
 app.use(limiter);
 
