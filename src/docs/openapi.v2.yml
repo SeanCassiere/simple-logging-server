@@ -142,7 +142,7 @@ paths:
         - AppServiceID: []
       responses:
         "200":
-          description: List of logs for the service
+          description: List of logs for the service.
           content:
             application/json:
               schema:
@@ -204,7 +204,7 @@ paths:
         - AppServiceID: []
       responses:
         "201":
-          description: Log created
+          description: Log created.
           content:
             application/json:
               schema:
@@ -277,11 +277,26 @@ paths:
       description: |-
         Get the details for all the services.
         Only available to admins
+      parameters:
+        - schema:
+            type: number
+            minimum: 1
+            default: 1
+          in: query
+          name: page
+          required: false
+        - schema:
+            type: number
+            minimum: 1
+            default: 50
+          in: query
+          name: page_size
+          required: false
       security:
         - AppServiceID: []
       responses:
         "200":
-          description: All services
+          description: All services.
           content:
             application/json:
               schema:
@@ -330,7 +345,7 @@ paths:
         - AppServiceID: []
       responses:
         "201":
-          description: Created service details
+          description: Created service details.
           content:
             application/json:
               schema:
@@ -372,7 +387,7 @@ paths:
         - AppServiceID: []
       responses:
         "200":
-          description: Service details
+          description: Service details.
           content:
             application/json:
               schema:
