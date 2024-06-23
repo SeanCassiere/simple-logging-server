@@ -14,6 +14,7 @@ import {
   getServicesOutputSchema,
 } from "./schemas";
 import { ENDPOINT_MESSAGES } from "@/utils/messages";
+import { eq } from "drizzle-orm";
 
 const app = new Hono<ServerContext>();
 
@@ -96,6 +97,21 @@ app.get("/:service_id", adminServiceValidation, async (c) => {
   }
 
   return c.json(getServiceOutputSchema.parse(service));
+});
+
+app.delete("/:service_id", adminServiceValidation, async (c) => {
+  const reqServiceId = c.var.service!.id;
+  const serviceId = c.req.param("service_id");
+
+  if (reqServiceId.trim() === serviceId.trim()) {
+    c.status(400);
+    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceCannotDisableSelf });
+  }
+
+  await db.update(servicesTable).set({ isActive: false }).where(eq(servicesTable.id, serviceId)).execute();
+
+  c.status(200);
+  return c.json({ success: true, message: ENDPOINT_MESSAGES.ServiceDisabled });
 });
 
 export default app;

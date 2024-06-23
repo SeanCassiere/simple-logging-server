@@ -10,4 +10,5 @@ export const ENDPOINT_MESSAGES = {
   ServiceIdHeaderNotProvided: "X-APP-SERVICE-ID header was not passed.",
   ServiceDoesNotExistOrDoesNotHaveNecessaryRights: "Service does not exist or does not have necessary rights.",
   DBWritesFrozen: "Database writes are currently frozen.",
+  ServiceCannotDisableSelf: "You cannot disable the service you are using.",
 };
