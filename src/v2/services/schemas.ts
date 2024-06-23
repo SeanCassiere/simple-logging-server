@@ -29,5 +29,11 @@ const serviceOutput = z.object({
 });
 
 export const getServicesOutputSchema = z.array(serviceOutput);
+
+export const createServiceInputSchema = z.object({
+  name: z.string(),
+  isPersisted: z.boolean(),
+  isAdmin: z.boolean(),
+});
 export const createServiceOutputSchema = serviceOutput;
 export const getServiceOutputSchema = serviceOutput;
