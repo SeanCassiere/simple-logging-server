@@ -1,14 +1,15 @@
 import { Hono } from "hono";
+import { and, eq, lt } from "drizzle-orm";
 
-import { parseSearchParams, serviceValidation } from "@/utils/server-helpers";
 import { db } from "@/config/db";
+import { env } from "@/config/env";
+import { logs as logsTable } from "@/config/db/schema";
+import { parseSearchParams, serviceValidation } from "@/utils/server-helpers";
 import { ENDPOINT_MESSAGES } from "@/utils/messages";
+import { createDbId } from "@/utils/db";
 import type { ServerContext } from "@/types/hono";
 
 import { createLogOutputSchema, createLogSchema, getLogsFiltersSchema, getLogsOutputSchema } from "./schemas";
-import { env } from "@/config/env";
-import { logs as logsTable } from "@/config/db/schema";
-import { createDbId } from "@/utils/db";
 
 const app = new Hono<ServerContext>();
 
@@ -99,6 +100,49 @@ app.post("/", serviceValidation, async (c) => {
 
   c.status(201);
   return c.json(createLogOutputSchema.parse(log[0]));
+});
+
+/**
+ * @public
+ * Cleans log for a service for a specific number of months
+ */
+app.delete("/", serviceValidation, async (c) => {
+  if (env.FREEZE_DB_WRITES) {
+    c.status(503);
+    return c.json({ success: false, message: ENDPOINT_MESSAGES.DBWritesFrozen });
+  }
+
+  const service = c.var.service!;
+
+  const countMonths = Number(env.DEFAULT_NUM_OF_MONTHS_TO_DELETE);
+
+  const ip = c.req.header("x-forwarded-for") ?? null;
+
+  const date = new Date();
+  date.setMonth(date.getMonth() - countMonths);
+
+  await db
+    .delete(logsTable)
+    .where(and(eq(logsTable.isPersisted, false), lt(logsTable.createdAt, date.toISOString())))
+    .execute();
+
+  const logId = createDbId("log");
+  await db
+    .insert(logsTable)
+    .values({
+      id: logId,
+      serviceId: service.id,
+      isPersisted: true,
+      action: "app-admin-clean-service-logs",
+      ip,
+      environment: "production",
+      lookupFilterValue: "app-admin-action",
+      data: { client: service.name, ip },
+      level: "info",
+    })
+    .execute();
+
+  return c.json({ success: true, message: `Successfully cleaned logs for the last ${countMonths} months` });
 });
 
 export default app;
