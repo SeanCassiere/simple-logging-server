@@ -1,7 +1,5 @@
 # Simple Logging Server
 
-https://github.com/scalar/scalar/tree/main/packages/hono-api-reference
-
 This is a dead simple log server that allows you to log messages to a persisted database.
 
 ## Development
