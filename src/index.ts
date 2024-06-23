@@ -16,6 +16,10 @@ app.get("/docs/v2", (c) => {
   return c.json({ docs: "docs for the v2 api" });
 });
 
+app.get("/health", (c) => {
+  return c.json({ message: "OK", uptime: process.uptime() });
+});
+
 app.get("/", (c) => {
   return c.json({ message: "hello world" });
 });
