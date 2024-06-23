@@ -1,10 +1,20 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
-import { env } from "./config/env";
+
+import v2Router from "@/v2";
+import { env } from "@/config/env";
+
+import type { ServerContext } from "@/types/hono";
 
 const packageJson = require("../package.json");
 
-const app = new Hono();
+const app = new Hono<ServerContext>();
+
+app.route("/api/v2", v2Router);
+
+app.get("/docs/v2", (c) => {
+  return c.json({ docs: "docs for the v2 api" });
+});
 
 app.get("/", (c) => {
   return c.json({ message: "hello world" });
