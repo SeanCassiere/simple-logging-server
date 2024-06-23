@@ -8,7 +8,7 @@ import { logger } from "hono/logger";
 import { rateLimiter } from "hono-rate-limiter";
 import { serve } from "@hono/node-server";
 
-import v2Router from "@/v2";
+import v2Router from "@/routers/v2";
 import { env } from "@/config/env";
 
 import type { ServerContext } from "@/types/hono";
