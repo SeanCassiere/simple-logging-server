@@ -19,7 +19,7 @@ import { transformOpenapiYmlDoc, openapiYmlVersioner } from "@/utils/openapi-doc
 const packageJson = require("../package.json");
 
 const app = new Hono<ServerContext>();
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(csrf());
 app.use(etag());
 app.use(logger());
