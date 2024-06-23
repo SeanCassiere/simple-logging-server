@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 
 type OpenApiDocTransformer = (filename: string, source_path: string, dirVersion: string, doc: string) => string;
 
@@ -10,7 +10,8 @@ export function transformOpenapiYmlDoc(dir_version: string, transformers: OpenAp
   const openapiFilename = `openapi.${dir_version}.yaml`;
 
   const openapiYmlSourcePath = join(__dirname, "..", "docs", openapiFilename);
-  const openapiYmlOutPath = join(__dirname, "..", "..", "public", "static", openapiFilename);
+  const outDir = join(__dirname, "..", "..", "public", "static");
+  const openapiYmlOutPath = join(outDir, openapiFilename);
 
   const openapiYmlInputDoc = readFileSync(openapiYmlSourcePath, "utf-8").toString();
 
@@ -20,6 +21,10 @@ export function transformOpenapiYmlDoc(dir_version: string, transformers: OpenAp
 
   for (const transformer of transformers) {
     newOpenapiYmlDoc = transformer(openapiFilename, openapiYmlSourcePath, dir_version, newOpenapiYmlDoc);
+  }
+
+  if (!existsSync(outDir)) {
+    mkdirSync(outDir, { recursive: true });
   }
 
   writeFileSync(openapiYmlOutPath, newOpenapiYmlDoc);

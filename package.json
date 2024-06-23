@@ -19,6 +19,7 @@
     "build:kill-dist": "rimraf ./dist",
     "build:code": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "build": "pnpm run build:kill-dist && pnpm run build:code",
+    "postbuild": "node postbuild.mjs",
     "db:explorer": "drizzle-kit studio",
     "db:migrate-generate": "drizzle-kit generate:pg",
     "db:migrate-run": "tsx ./migrator.ts"
