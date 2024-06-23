@@ -28,7 +28,7 @@ export function parseSearchParams(url: string): Record<string, string | string[]
  * Get the service ID from the request headers
  */
 function getServiceId(c: Context): string | null {
-  const header = c.req.header("x-service-id");
+  const header = c.req.header("x-app-service-id");
   return header ?? null;
 }
 
