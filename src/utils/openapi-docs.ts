@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { readFileSync, writeFileSync } from "node:fs";
 
-type OpenApiDocTransformer = (dirVersion: string, doc: string) => string;
+type OpenApiDocTransformer = (filename: string, source_path: string, dirVersion: string, doc: string) => string;
 
 /**
  * Modify the OpenAPI doc with the provided transformers and write the file to the static directory.
@@ -16,17 +16,17 @@ export function transformOpenapiYmlDoc(dir_version: string, transformers: OpenAp
 
   let newOpenapiYmlDoc = openapiYmlInputDoc;
 
+  console.log(`📖 Starting to update /static/${openapiFilename}`);
+
   for (const transformer of transformers) {
-    newOpenapiYmlDoc = transformer(dir_version, newOpenapiYmlDoc);
+    newOpenapiYmlDoc = transformer(openapiFilename, openapiYmlSourcePath, dir_version, newOpenapiYmlDoc);
   }
 
   writeFileSync(openapiYmlOutPath, newOpenapiYmlDoc);
 
-  console.log(`📖 Updated /static/${openapiFilename}`);
+  console.log(`📖 Finishing updating /static/${openapiFilename}`);
   return;
 }
-
-const ymlVersionRegex = new RegExp(/^version: (0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/);
 
 /**
  * Transformer to update the version in the OpenAPI doc.
@@ -34,7 +34,8 @@ const ymlVersionRegex = new RegExp(/^version: (0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-
  * @returns
  */
 export function openapiYmlVersioner(version: string): OpenApiDocTransformer {
-  return (_, doc) => {
-    return doc.replace(ymlVersionRegex, `version: ${version}`);
+  return (filename, _, __, doc) => {
+    console.log(`📦 Updating the version in OpenAPI document "${filename}" to "${version}"`);
+    return doc.replace(/version:\s*0\.0\.0/g, `version: ${version}`);
   };
 }

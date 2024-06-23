@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Simple Logging Server API
-  version: 2.2.0
+  version: 0.0.0
   description: |-
     This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
     ### Usage

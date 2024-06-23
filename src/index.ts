@@ -13,10 +13,11 @@ import v2Router from "@/routers/v2";
 import docsRouter from "@/routers/docs";
 
 import { transformOpenapiYmlDoc, openapiYmlVersioner } from "@/utils/openapi-docs";
+import { getPackageInfo } from "@/utils/package";
 import { env } from "@/config/env";
 import type { ServerContext } from "@/types/hono";
 
-const packageJson = require("../package.json");
+const packageJson = getPackageInfo();
 
 const app = new Hono<ServerContext>();
 app.use(cors({ origin: "*" }));
