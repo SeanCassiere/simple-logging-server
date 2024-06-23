@@ -99,6 +99,10 @@ app.get("/:service_id", adminServiceValidation, async (c) => {
   return c.json(getServiceOutputSchema.parse(service));
 });
 
+/**
+ * @private
+ * Disable a service, only accessible by admins
+ */
 app.delete("/:service_id", adminServiceValidation, async (c) => {
   const reqServiceId = c.var.service!.id;
   const serviceId = c.req.param("service_id");
@@ -112,6 +116,19 @@ app.delete("/:service_id", adminServiceValidation, async (c) => {
 
   c.status(200);
   return c.json({ success: true, message: ENDPOINT_MESSAGES.ServiceDisabled });
+});
+
+/**
+ * @private
+ * Enable a service, only accessible by admins
+ */
+app.post("/:service_id/enable", adminServiceValidation, async (c) => {
+  const serviceId = c.req.param("service_id");
+
+  await db.update(servicesTable).set({ isActive: true }).where(eq(servicesTable.id, serviceId)).execute();
+
+  c.status(200);
+  return c.json({ success: true, message: ENDPOINT_MESSAGES.ServiceEnabled });
 });
 
 export default app;
