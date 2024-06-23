@@ -1,0 +1,529 @@
+openapi: 3.0.0
+info:
+  title: Simple Logging Server API
+  version: 0.0.0
+  description: |-
+    This is a simple API for logging messages. It is intended to be a basic interface for logging messages according to an allowed list of clients.
+    ### Usage
+    ```sh
+
+      Base URL: https://simple-logging-server.pingstash.com/api/v2
+
+      HTTP headers:
+        X-APP-SERVICE-ID: [ServiceID]
+
+    ```
+    All functions on this server is tied to your `ServiceID`. To get your own `ServiceID`, DM me on [X/Twitter](https://twitter.com/SeanCassiere) or send me an email using the contact details below.
+  license:
+    name: MIT
+    url: https://github.com/SeanCassiere/simple-logging-server/blob/master/LICENSE.md
+  contact:
+    email: admin@pingstash.com
+
+components:
+  securitySchemes:
+    AppServiceID:
+      type: apiKey
+      in: header
+      name: X-APP-SERVICE-ID
+
+  schemas:
+    GenericResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+    Service:
+      type: object
+      properties:
+        name:
+          type: string
+        isPersisted:
+          type: boolean
+        isAdmin:
+          type: boolean
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    Log:
+      type: object
+      properties:
+        id:
+          type: string
+        action:
+          type: string
+        environment:
+          type: string
+          default: production
+        ip:
+          type: string
+          nullable: true
+        lookupFilterValue:
+          type: string
+          nullable: true
+        data:
+          type: object
+          additionalProperties: true
+          nullable: true
+        level:
+          $ref: "#/components/schemas/LogLevel"
+
+    LogLevel:
+      type: string
+      enum:
+        - info
+        - warn
+        - error
+        - fatal
+      default: info
+
+paths:
+  /log:
+    get:
+      operationId: GetLogsForService
+      tags:
+        - Logs
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: lookup
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: environment
+          required: false
+        - schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+            default: DESC
+          in: query
+          name: sort
+          required: false
+        - schema:
+            type: number
+            minimum: 1
+            default: 1
+          in: query
+          name: page
+          required: false
+        - schema:
+            type: number
+            minimum: 1
+            default: 50
+          in: query
+          name: page_size
+          required: false
+        - schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - all
+                - info
+                - warn
+                - error
+                - fatal
+            default:
+              - all
+          in: query
+          name: level
+          required: false
+      security:
+        - AppServiceID: []
+      responses:
+        "200":
+          description: List of logs for the service.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Log"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. Service is not available.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+    post:
+      operationId: CreateLogForService
+      tags:
+        - Logs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                environment:
+                  type: string
+                  default: production
+                ip:
+                  type: string
+                  nullable: true
+                lookupFilterValue:
+                  type: string
+                  nullable: true
+                data:
+                  type: object
+                  additionalProperties: true
+                  nullable: true
+                level:
+                  type: string
+                  enum:
+                    - info
+                    - warn
+                    - error
+                    - fatal
+                  default: info
+      security:
+        - AppServiceID: []
+      responses:
+        "201":
+          description: Log created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Log"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. Service is not available.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "404":
+          description: Service not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+  /log/purge:
+    delete:
+      operationId: PurgeLogsForAllServices-Admin
+      tags:
+        - Logs
+        - Admin
+      description: |-
+        Purge the logs for a service that does NOT have their logs persisted. This will delete logs that are older than 6 months.
+      security:
+        - AppServiceID: []
+      responses:
+        "200":
+          description: "Response will have `success: true`."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. You must be an admin to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+  /service:
+    get:
+      operationId: GetAllServices-Admin
+      tags:
+        - Services
+        - Admin
+      description: |-
+        Get the details for all the services.
+        Only available to admins
+      parameters:
+        - schema:
+            type: number
+            minimum: 1
+            default: 1
+          in: query
+          name: page
+          required: false
+        - schema:
+            type: number
+            minimum: 1
+            default: 50
+          in: query
+          name: page_size
+          required: false
+      security:
+        - AppServiceID: []
+      responses:
+        "200":
+          description: All services.
+          content:
+            application/json:
+              schema:
+                description: All services
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. You must be an admin to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+    post:
+      operationId: CreateService-Admin
+      tags:
+        - Services
+        - Admin
+      description: |-
+        Create a new service.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                isPersisted:
+                  type: boolean
+                isAdmin:
+                  type: boolean
+      security:
+        - AppServiceID: []
+      responses:
+        "201":
+          description: Created service details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. You must be an admin to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+  /service/{ServiceId}:
+    get:
+      operationId: GetServiceById-Admin
+      tags:
+        - Services
+        - Admin
+      description: |-
+        Get the details of a service by its ID.
+        Only available to admins
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: ServiceId
+          required: true
+      security:
+        - AppServiceID: []
+      responses:
+        "200":
+          description: Service details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. You must be an admin to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "404":
+          description: Service not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+    delete:
+      operationId: DisableServiceById-Admin
+      tags:
+        - Services
+        - Admin
+      description: |-
+        Disable a service its ID.
+        Only available to admins
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: ServiceId
+          required: true
+      security:
+        - AppServiceID: []
+      responses:
+        "200":
+          description: Service disabled.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "400":
+          description: You cannot perform this action on the service you are using.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. You must be an admin to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+  /service/{ServiceId}/enable:
+    post:
+      operationId: EnableServiceById-Admin
+      tags:
+        - Services
+        - Admin
+      description: |-
+        Enable a service its ID.
+        Only available to admins
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: ServiceId
+          required: true
+      security:
+        - AppServiceID: []
+      responses:
+        "200":
+          description: Service enabled.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "400":
+          description: You cannot perform this action on the service you are using.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "401":
+          description: Unauthorized. You must be logged in to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "403":
+          description: Forbidden. You must be an admin to access this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "500":
+          description: Server Error. There was an error on the server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+
+servers:
+  - url: /api/v2
+    description: Base URL
+
+tags:
+  - name: Logs
+    description: Routes that interact with the `Log` entity.
+  - name: Services
+    description: All routes that interact with the `Service` entity.
+  - name: Admin
+    description: Routes are exclusively available to services that require the `Service` to have `admin` privileges.
+
+externalDocs:
+  description: GitHub Repository
+  url: https://github.com/SeanCassiere/simple-logging-server

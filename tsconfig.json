@@ -6,7 +6,6 @@
     "emitDecoratorMetadata": true,
     "module": "CommonJS",
     "moduleResolution": "Node",
-    "baseUrl": ".",
     "resolveJsonModule": true,
     "outDir": "./dist",
     "removeComments": true,
@@ -14,8 +13,12 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "ignore"]
 }

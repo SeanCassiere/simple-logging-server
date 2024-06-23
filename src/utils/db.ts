@@ -1,7 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 
-export const createDbId = (prefix: string) => `${prefix}_${createId()}`;
-export const dbPrefixes = {
+const dbPrefixes = {
   log: "log",
   service: "ser",
 } as const;
+export const createDbId = (key: keyof typeof dbPrefixes) => `${dbPrefixes[key]}_${createId()}`;
