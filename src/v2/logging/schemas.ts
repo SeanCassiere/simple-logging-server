@@ -59,3 +59,4 @@ const logOutput = z.object({
 });
 
 export const getLogsOutputSchema = z.array(logOutput);
+export const createLogOutputSchema = logOutput;
