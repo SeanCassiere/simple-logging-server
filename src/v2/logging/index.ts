@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-import { parseSearchParams, getServiceId, getService } from "@/utils/server-helpers";
+import { parseSearchParams, serviceValidation } from "@/utils/server-helpers";
 import { db } from "@/config/db";
 import { ENDPOINT_MESSAGES } from "@/utils/messages";
 import type { ServerContext } from "@/types/hono";
@@ -16,20 +16,9 @@ const app = new Hono<ServerContext>();
  * @public
  * Get all log entries
  */
-app.get("/", async (c) => {
-  const serviceId = getServiceId(c);
-
-  if (!serviceId) {
-    c.status(401);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided });
-  }
-
-  const service = await getService(serviceId);
-
-  if (!service) {
-    c.status(403);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights });
-  }
+app.get("/", serviceValidation, async (c) => {
+  const service = c.var.service!;
+  const serviceId = service.id;
 
   const searchQuery = parseSearchParams(c.req.url);
   const searchResult = getLogsFiltersSchema.safeParse(searchQuery);
@@ -63,24 +52,13 @@ app.get("/", async (c) => {
  * @public
  * Create a log entry
  */
-app.post("/", async (c) => {
-  const serviceId = getServiceId(c);
+app.post("/", serviceValidation, async (c) => {
+  const service = c.var.service!;
+  const serviceId = service.id;
 
   if (env.FREEZE_DB_WRITES) {
     c.status(503);
     return c.json({ success: false, message: ENDPOINT_MESSAGES.DBWritesFrozen });
-  }
-
-  if (!serviceId) {
-    c.status(401);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided });
-  }
-
-  const service = await getService(serviceId);
-
-  if (!service) {
-    c.status(403);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights });
   }
 
   const body = await c.req.json();

@@ -1,4 +1,11 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { csrf } from "hono/csrf";
+import { etag } from "hono/etag";
+import { secureHeaders } from "hono/secure-headers";
+import { timeout } from "hono/timeout";
+import { logger } from "hono/logger";
+import { rateLimiter } from "hono-rate-limiter";
 import { serve } from "@hono/node-server";
 
 import v2Router from "@/v2";
@@ -9,6 +16,27 @@ import type { ServerContext } from "@/types/hono";
 const packageJson = require("../package.json");
 
 const app = new Hono<ServerContext>();
+app.use(cors());
+app.use(csrf());
+app.use(etag());
+app.use(logger());
+app.use(secureHeaders());
+
+const limiter = rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100,
+  standardHeaders: "draft-6",
+  keyGenerator: (c) => c.req.header("x-service-id") ?? c.req.header("x-forwarded-for") ?? "",
+});
+app.use(limiter);
+
+app.use("*", async (c, next) => {
+  c.set("service", null);
+
+  await next();
+});
+
+app.use("/api/", timeout(5000));
 
 app.route("/api/v2", v2Router);
 

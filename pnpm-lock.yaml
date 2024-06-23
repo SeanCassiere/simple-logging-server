@@ -23,6 +23,9 @@ importers:
       hono:
         specifier: ^4.4.7
         version: 4.4.7
+      hono-rate-limiter:
+        specifier: ^0.3.0
+        version: 0.3.0(hono@4.4.7)
       postgres:
         specifier: ^3.4.4
         version: 3.4.4
@@ -1322,6 +1325,11 @@ packages:
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
+
+  hono-rate-limiter@0.3.0:
+    resolution: {integrity: sha512-QUS1N+DCZs8CKjpoHugvEvAp/+e+LUllPPnaIlATK9GyT26niQxn4H4V+O5kHwcsXjD3P3JOc0jMb7fnW6gpFQ==}
+    peerDependencies:
+      hono: ^4.1.1
 
   hono@4.4.7:
     resolution: {integrity: sha512-WoQWFQyVFEVRtIzP5sHPv7nvIw+RYL/HRnvnOCDxj6A+BtrwuC9S0vryZbV4IyFcNgOJ87r/phDiC1x2eEo4Gg==}
@@ -3213,6 +3221,10 @@ snapshots:
   hasown@2.0.2:
     dependencies:
       function-bind: 1.1.2
+
+  hono-rate-limiter@0.3.0(hono@4.4.7):
+    dependencies:
+      hono: 4.4.7
 
   hono@4.4.7: {}
 
