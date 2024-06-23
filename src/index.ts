@@ -1,30 +1,31 @@
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
 import { env } from "./config/env";
-import { makeFastifyServer } from "./config/server";
 
 const packageJson = require("../package.json");
 
-async function main() {
-  const fastify = await makeFastifyServer({ packageVersion: packageJson?.version });
+const app = new Hono();
 
-  if (env.FREEZE_DB_WRITES) {
-    console.warn("  ⚠️ ⚠️ ⚠️ ⚠️\n  Database writes are currently frozen\n  ⚠️ ⚠️ ⚠️ ⚠️\n");
-  }
+app.get("/", (c) => {
+  return c.json({ message: "hello world" });
+});
 
-  try {
-    fastify.listen(
-      { port: Number(env.PORT), host: env.NODE_ENV !== "production" ? "127.0.0.1" : "0.0.0.0" },
-      (err, address) => {
-        if (err) {
-          console.error(err);
-          process.exit(1);
-        }
-        console.log(`${packageJson.name} (${env.NODE_ENV} - ${packageJson.version}) listening on ${address} `);
-      }
-    );
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
-  }
+if (env.FREEZE_DB_WRITES) {
+  console.warn("  ⚠️ ⚠️ ⚠️ ⚠️\n  Database writes are currently frozen\n  ⚠️ ⚠️ ⚠️ ⚠️\n");
 }
 
-main().catch((err) => console.error(err));
+const PORT = Number(env.PORT);
+const HOST = env.NODE_ENV !== "production" ? "127.0.0.1" : "0.0.0.0";
+
+serve(
+  {
+    fetch: app.fetch,
+    port: PORT,
+    hostname: HOST,
+  },
+  ({ address, port }) => {
+    console.log(
+      `🚀 ${packageJson.name} (${env.NODE_ENV} - ${packageJson.version}) listening at http://${address}:${port}`,
+    );
+  },
+);
