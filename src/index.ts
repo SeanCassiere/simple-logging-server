@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { compress } from "hono/compress";
 import { csrf } from "hono/csrf";
 import { etag } from "hono/etag";
+import { HTTPException } from "hono/http-exception";
 import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
 import { logger } from "hono/logger";
@@ -59,6 +60,16 @@ app.get("/health", (c) => {
 });
 app.get("/", (c) => {
   return c.redirect("/docs");
+});
+
+app.onError(function handleError(err, c) {
+  if (err instanceof HTTPException) {
+    const response = err.getResponse();
+    return response;
+  }
+
+  c.status(500);
+  return c.json({ success: false, message: "Unknown Internal Server Error" });
 });
 
 if (env.FREEZE_DB_WRITES) {
