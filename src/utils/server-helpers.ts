@@ -48,10 +48,10 @@ async function getService(serviceId: string, opts = { mustBeAdmin: false }) {
   return service ?? null;
 }
 
-const factory = createFactory();
+const factory = createFactory<ServerContext>();
 
 /**
- * Middleware to validate that a service ID is provided and that the service exists
+ * V2 implementation of the middleware to validate that a service request by the service ID in the "x-app-service-id" header
  */
 export const v2_serviceValidation = factory.createMiddleware(async (c, next) => {
   const serviceId = getServiceId(c);
@@ -76,7 +76,7 @@ export const v2_serviceValidation = factory.createMiddleware(async (c, next) => 
  * Middleware to validate that a service ID is provided and that the service exists and is an admin service
  */
 export const adminServiceValidation = factory.createMiddleware(async (c, next) => {
-  const service = c.var.service as ServerContext["Variables"]["service"];
+  const service = c.var.service;
 
   if (!service) {
     c.status(403);
