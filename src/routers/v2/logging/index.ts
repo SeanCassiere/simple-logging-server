@@ -4,7 +4,7 @@ import { and, eq, lt } from "drizzle-orm";
 import { db } from "@/config/db";
 import { env } from "@/config/env";
 import { logs as logsTable } from "@/config/db/schema";
-import { parseSearchParams, serviceValidation } from "@/utils/server-helpers";
+import { parseSearchParams, v2_serviceValidation } from "@/utils/server-helpers";
 import { ENDPOINT_MESSAGES } from "@/utils/messages";
 import { createDbId } from "@/utils/db";
 import type { ServerContext } from "@/types/hono";
@@ -17,7 +17,7 @@ const app = new Hono<ServerContext>();
  * @public
  * Get all log entries
  */
-app.get("/", serviceValidation, async (c) => {
+app.get("/", v2_serviceValidation, async (c) => {
   const service = c.var.service!;
   const serviceId = service.id;
 
@@ -53,7 +53,7 @@ app.get("/", serviceValidation, async (c) => {
  * @public
  * Create a log entry
  */
-app.post("/", serviceValidation, async (c) => {
+app.post("/", v2_serviceValidation, async (c) => {
   const service = c.var.service!;
   const serviceId = service.id;
 
@@ -106,7 +106,7 @@ app.post("/", serviceValidation, async (c) => {
  * @public
  * Cleans log for a service for a specific number of months
  */
-app.delete("/purge", serviceValidation, async (c) => {
+app.delete("/purge", v2_serviceValidation, async (c) => {
   if (env.FREEZE_DB_WRITES) {
     c.status(503);
     return c.json({ success: false, message: ENDPOINT_MESSAGES.DBWritesFrozen });

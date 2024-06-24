@@ -2,7 +2,7 @@ import { Hono } from "hono";
 
 import { db } from "@/config/db";
 import { createDbId } from "@/utils/db";
-import { adminServiceValidation, parseSearchParams } from "@/utils/server-helpers";
+import { v2_serviceValidation, adminServiceValidation, parseSearchParams } from "@/utils/server-helpers";
 import { services as servicesTable } from "@/config/db/schema";
 import type { ServerContext } from "@/types/hono";
 
@@ -22,7 +22,7 @@ const app = new Hono<ServerContext>();
  * @private
  * Get all services, only accessible by admins
  */
-app.get("/", adminServiceValidation, async (c) => {
+app.get("/", v2_serviceValidation, adminServiceValidation, async (c) => {
   const searchQuery = parseSearchParams(c.req.url);
   const searchResult = getServiceFiltersSchema.safeParse(searchQuery);
 
@@ -46,7 +46,7 @@ app.get("/", adminServiceValidation, async (c) => {
  * @private
  * Create a new service, only accessible by admins
  */
-app.post("/", adminServiceValidation, async (c) => {
+app.post("/", v2_serviceValidation, adminServiceValidation, async (c) => {
   const body = await c.req.json();
   const bodyResult = createServiceInputSchema.safeParse(body);
 
@@ -84,7 +84,7 @@ app.post("/", adminServiceValidation, async (c) => {
  * @private
  * Get a service by its ID, only accessible by admins
  */
-app.get("/:service_id", adminServiceValidation, async (c) => {
+app.get("/:service_id", v2_serviceValidation, adminServiceValidation, async (c) => {
   const serviceId = c.req.param("service_id");
 
   const service = await db.query.services.findFirst({
@@ -103,7 +103,7 @@ app.get("/:service_id", adminServiceValidation, async (c) => {
  * @private
  * Disable a service, only accessible by admins
  */
-app.delete("/:service_id", adminServiceValidation, async (c) => {
+app.delete("/:service_id", v2_serviceValidation, adminServiceValidation, async (c) => {
   const reqServiceId = c.var.service!.id;
   const serviceId = c.req.param("service_id");
 
@@ -122,7 +122,7 @@ app.delete("/:service_id", adminServiceValidation, async (c) => {
  * @private
  * Enable a service, only accessible by admins
  */
-app.post("/:service_id/enable", adminServiceValidation, async (c) => {
+app.post("/:service_id/enable", v2_serviceValidation, adminServiceValidation, async (c) => {
   const serviceId = c.req.param("service_id");
 
   await db.update(servicesTable).set({ isActive: true }).where(eq(servicesTable.id, serviceId)).execute();

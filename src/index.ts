@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { compress } from "hono/compress";
 import { csrf } from "hono/csrf";
 import { etag } from "hono/etag";
 import { secureHeaders } from "hono/secure-headers";
@@ -21,6 +22,7 @@ const packageJson = getPackageInfo();
 
 const app = new Hono<ServerContext>();
 app.use(cors({ origin: "*" }));
+app.use(compress());
 app.use(csrf());
 app.use(etag());
 app.use(logger());
@@ -60,7 +62,7 @@ app.get("/", (c) => {
 });
 
 if (env.FREEZE_DB_WRITES) {
-  console.warn("  ⚠️ ⚠️ ⚠️ ⚠️\n  Database writes are currently frozen\n  ⚠️ ⚠️ ⚠️ ⚠️\n");
+  console.warn("\n🚨 Database writes are currently frozen!!!\n");
 }
 
 transformOpenapiYmlDoc("v2", [openapiYmlVersioner(packageJson.version)]);

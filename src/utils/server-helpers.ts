@@ -2,8 +2,10 @@ import { createFactory } from "hono/factory";
 import type { Context } from "hono";
 
 import { db } from "@/config/db";
-import { ENDPOINT_MESSAGES } from "./messages";
 import { env } from "@/config/env";
+import type { ServerContext } from "@/types/hono";
+
+import { ENDPOINT_MESSAGES } from "./messages";
 
 /**
  * Takes a URL and returns an object with the query string parameters, multiple of the same key will be an array
@@ -51,7 +53,7 @@ const factory = createFactory();
 /**
  * Middleware to validate that a service ID is provided and that the service exists
  */
-export const serviceValidation = factory.createMiddleware(async (c, next) => {
+export const v2_serviceValidation = factory.createMiddleware(async (c, next) => {
   const serviceId = getServiceId(c);
 
   if (!serviceId) {
@@ -74,24 +76,20 @@ export const serviceValidation = factory.createMiddleware(async (c, next) => {
  * Middleware to validate that a service ID is provided and that the service exists and is an admin service
  */
 export const adminServiceValidation = factory.createMiddleware(async (c, next) => {
-  const serviceId = getServiceId(c);
-
-  if (!serviceId) {
-    c.status(401);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided });
-  }
-
-  const service = await getService(serviceId, { mustBeAdmin: true });
+  const service = c.var.service as ServerContext["Variables"]["service"];
 
   if (!service) {
     c.status(403);
     return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights });
   }
 
-  c.set("service", service);
   await next();
 });
 
-export function getUserServerUrl() {
+/**
+ * Get the url of the server for the user
+ * @returns The URL of the server for the user
+ */
+export function getUserServerUrl(): string {
   return env.NODE_ENV === "production" ? env.SERVER_URI : `http://localhost:${env.PORT}`;
 }
