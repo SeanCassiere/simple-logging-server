@@ -60,7 +60,6 @@ export const v2_serviceValidation = honoFactory.createMiddleware(async (c, next)
   if (!serviceId) {
     throw new HTTPException(401, {
       res: createV2ErrResponse(
-        403,
         JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided }),
       ),
     });
@@ -71,7 +70,6 @@ export const v2_serviceValidation = honoFactory.createMiddleware(async (c, next)
   if (!service) {
     throw new HTTPException(403, {
       res: createV2ErrResponse(
-        403,
         JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights }),
       ),
     });
@@ -90,7 +88,6 @@ export const adminServiceValidation = honoFactory.createMiddleware(async (c, nex
   if (!service || !service.isAdmin) {
     throw new HTTPException(403, {
       res: createV2ErrResponse(
-        403,
         JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights }),
       ),
     });
@@ -109,16 +106,15 @@ export function getUserServerUrl(): string {
 
 /**
  * Helper function to create a response that matches the V2 error response format
- * @param status Status code of the response
- * @param message Message to include in the response
+ * @param message Message to include in the response.
  * @param headers Headers to include in the response. Defaults to an empty object with a "Content-Type" header set to "application/json"
  */
-export function createV2ErrResponse(status: number, message: string, headers: Record<string, string> = {}): Response {
+export function createV2ErrResponse(message: string, headers: Record<string, string> = {}): Response {
   const responseHeaders = new Headers(headers);
 
   if (!responseHeaders.get("Content-Type")) {
     responseHeaders.set("Content-Type", "application/json");
   }
 
-  return new Response(message, { status, headers });
+  return new Response(message, { headers });
 }
