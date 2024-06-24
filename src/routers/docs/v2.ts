@@ -1,5 +1,5 @@
-import { Hono } from "hono";
 import { apiReference } from "@scalar/hono-api-reference";
+import { Hono } from "hono";
 
 import type { ServerContext } from "@/types/hono";
 

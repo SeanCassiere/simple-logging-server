@@ -3,8 +3,8 @@ import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/config/db";
 import { env } from "@/config/env";
-import type { Context } from "hono";
 import type { ServerContext } from "@/types/hono";
+import type { Context } from "hono";
 
 import { ENDPOINT_MESSAGES } from "./messages";
 

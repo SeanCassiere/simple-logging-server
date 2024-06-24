@@ -3,8 +3,8 @@ import { rateLimiter } from "hono-rate-limiter";
 
 import type { ServerContext } from "@/types/hono";
 
-import servicesRouter from "./services";
 import logsRouter from "./logging";
+import servicesRouter from "./services";
 
 const app = new Hono<ServerContext>();
 

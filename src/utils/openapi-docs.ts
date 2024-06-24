@@ -1,5 +1,5 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 
 type OpenApiDocTransformer = (filename: string, source_path: string, dirVersion: string, doc: string) => string;
 

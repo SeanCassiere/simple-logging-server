@@ -1,5 +1,5 @@
-import { pgTable, timestamp, text, index, jsonb, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { boolean, index, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const logs = pgTable(
   "logs",
