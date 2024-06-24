@@ -59,8 +59,7 @@ app.get("/", (c) => {
 
 app.onError(function handleError(err, c) {
   if (err instanceof HTTPException) {
-    const response = err.getResponse();
-    return response;
+    return err.getResponse();
   }
 
   c.status(500);
