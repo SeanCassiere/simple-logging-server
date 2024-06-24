@@ -1,3 +1,9 @@
 {
-  "cSpell.words": ["fastify", "openapi"]
+  "cSpell.words": ["openapi", "versioner"],
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  }
 }
