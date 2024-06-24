@@ -1,14 +1,15 @@
 import { createFactory } from "hono/factory";
-import type { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/config/db";
 import { env } from "@/config/env";
+import type { Context } from "hono";
 import type { ServerContext } from "@/types/hono";
 
 import { ENDPOINT_MESSAGES } from "./messages";
 
 /**
- * Takes a URL and returns an object with the query string parameters, multiple of the same key will be an array
+ * Takes a string URL and returns an object with the query string parameters, multiple of the same key will be an array
  */
 export function parseSearchParams(url: string): Record<string, string | string[]> {
   const search = new URL(url).searchParams;
@@ -30,7 +31,7 @@ export function parseSearchParams(url: string): Record<string, string | string[]
 /**
  * Get the service ID from the request headers
  */
-function getServiceId(c: Context): string | null {
+function v2_getServiceId(c: Context): string | null {
   const header = c.req.header("x-app-service-id");
   return header ?? null;
 }
@@ -48,24 +49,32 @@ async function getService(serviceId: string, opts = { mustBeAdmin: false }) {
   return service ?? null;
 }
 
-const factory = createFactory<ServerContext>();
+const honoFactory = createFactory<ServerContext>();
 
 /**
  * V2 implementation of the middleware to validate that a service request by the service ID in the "x-app-service-id" header
  */
-export const v2_serviceValidation = factory.createMiddleware(async (c, next) => {
-  const serviceId = getServiceId(c);
+export const v2_serviceValidation = honoFactory.createMiddleware(async (c, next) => {
+  const serviceId = v2_getServiceId(c);
 
   if (!serviceId) {
-    c.status(401);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided });
+    throw new HTTPException(401, {
+      res: createV2ErrResponse(
+        403,
+        JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided }),
+      ),
+    });
   }
 
   const service = await getService(serviceId);
 
   if (!service) {
-    c.status(403);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights });
+    throw new HTTPException(403, {
+      res: createV2ErrResponse(
+        403,
+        JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights }),
+      ),
+    });
   }
 
   c.set("service", service);
@@ -75,12 +84,16 @@ export const v2_serviceValidation = factory.createMiddleware(async (c, next) => 
 /**
  * Middleware to validate that a service ID is provided and that the service exists and is an admin service
  */
-export const adminServiceValidation = factory.createMiddleware(async (c, next) => {
+export const adminServiceValidation = honoFactory.createMiddleware(async (c, next) => {
   const service = c.var.service;
 
-  if (!service) {
-    c.status(403);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights });
+  if (!service || !service.isAdmin) {
+    throw new HTTPException(403, {
+      res: createV2ErrResponse(
+        403,
+        JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights }),
+      ),
+    });
   }
 
   await next();
@@ -92,4 +105,20 @@ export const adminServiceValidation = factory.createMiddleware(async (c, next) =
  */
 export function getUserServerUrl(): string {
   return env.NODE_ENV === "production" ? env.SERVER_URI : `http://localhost:${env.PORT}`;
+}
+
+/**
+ * Helper function to create a response that matches the V2 error response format
+ * @param status Status code of the response
+ * @param message Message to include in the response
+ * @param headers Headers to include in the response. Defaults to an empty object with a "Content-Type" header set to "application/json"
+ */
+export function createV2ErrResponse(status: number, message: string, headers: Record<string, string> = {}): Response {
+  const responseHeaders = new Headers(headers);
+
+  if (!responseHeaders.get("Content-Type")) {
+    responseHeaders.set("Content-Type", "application/json");
+  }
+
+  return new Response(message, { status, headers });
 }
