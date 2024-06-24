@@ -1,77 +1,12 @@
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { compress } from "hono/compress";
-import { csrf } from "hono/csrf";
-import { etag } from "hono/etag";
-import { HTTPException } from "hono/http-exception";
-import { secureHeaders } from "hono/secure-headers";
-import { timeout } from "hono/timeout";
-import { logger } from "hono/logger";
-import { rateLimiter } from "hono-rate-limiter";
 import { serve } from "@hono/node-server";
-import { serveStatic } from "@hono/node-server/serve-static";
 
-import v2Router from "@/routers/v2";
-import docsRouter from "@/routers/docs";
-
-import { transformOpenapiYmlDoc, openapiYmlVersioner } from "@/utils/openapi-docs";
-import { getPackageInfo } from "@/utils/package";
 import { env } from "@/config/env";
-import type { ServerContext } from "@/types/hono";
+import { openapiYmlVersioner, transformOpenapiYmlDoc } from "@/utils/openapi-docs";
+import { getPackageInfo } from "@/utils/package";
 
 const packageJson = getPackageInfo();
 
-const app = new Hono<ServerContext>();
-app.use(cors({ origin: "*" }));
-app.use(compress());
-app.use(csrf());
-app.use(etag());
-app.use(logger());
-app.use(secureHeaders());
-
-const limiter = rateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100,
-  standardHeaders: "draft-6",
-  keyGenerator: (c) => c.req.header("CF-Connecting-IP") ?? c.req.header("x-forwarded-for") ?? "",
-});
-
-app.use("*", async (c, next) => {
-  c.set("service", null);
-
-  await next();
-});
-
-app.use("/api/", timeout(5000));
-
-app.route("/api/v2", v2Router);
-
-app.use(limiter);
-app.route("/docs", docsRouter);
-
-app.get(
-  "/*",
-  serveStatic({
-    root: "./public",
-  }),
-);
-
-app.get("/health", (c) => {
-  return c.json({ message: "OK", uptime: process.uptime() });
-});
-app.get("/", (c) => {
-  return c.redirect("/docs");
-});
-
-app.onError(function handleError(err, c) {
-  if (err instanceof HTTPException) {
-    const response = err.getResponse();
-    return response;
-  }
-
-  c.status(500);
-  return c.json({ success: false, message: "Unknown Internal Server Error" });
-});
+import server from "./server";
 
 if (env.FREEZE_DB_WRITES) {
   console.warn("\n🚨 Database writes are currently frozen!!!\n");
@@ -80,11 +15,11 @@ if (env.FREEZE_DB_WRITES) {
 transformOpenapiYmlDoc("v2", [openapiYmlVersioner(packageJson.version)]);
 
 const PORT = Number(env.PORT);
-const HOST = env.NODE_ENV !== "production" ? "127.0.0.1" : "0.0.0.0";
+const HOST = env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1";
 
 serve(
   {
-    fetch: app.fetch,
+    fetch: server.fetch,
     port: PORT,
     hostname: HOST,
   },
