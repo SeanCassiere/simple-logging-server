@@ -33,9 +33,8 @@ const limiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 100,
   standardHeaders: "draft-6",
-  keyGenerator: (c) => c.req.header("x-app-service-id") ?? c.req.header("x-forwarded-for") ?? "",
+  keyGenerator: (c) => c.req.header("CF-Connecting-IP") ?? c.req.header("x-forwarded-for") ?? "",
 });
-app.use(limiter);
 
 app.use("*", async (c, next) => {
   c.set("service", null);
@@ -46,6 +45,8 @@ app.use("*", async (c, next) => {
 app.use("/api/", timeout(5000));
 
 app.route("/api/v2", v2Router);
+
+app.use(limiter);
 app.route("/docs", docsRouter);
 
 app.get(
