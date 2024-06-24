@@ -1,9 +1,17 @@
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/config/db";
-import { createDbId } from "@/utils/db";
-import { v2_serviceValidation, adminServiceValidation, parseSearchParams } from "@/utils/server-helpers";
 import { services as servicesTable } from "@/config/db/schema";
+import { createDbId } from "@/utils/db";
+import { ENDPOINT_MESSAGES } from "@/utils/messages";
+import {
+  createV2ErrResponse,
+  v2_serviceValidation,
+  adminServiceValidation,
+  parseSearchParams,
+} from "@/utils/server-helpers";
 import type { ServerContext } from "@/types/hono";
 
 import {
@@ -13,8 +21,6 @@ import {
   getServiceOutputSchema,
   getServicesOutputSchema,
 } from "./schemas";
-import { ENDPOINT_MESSAGES } from "@/utils/messages";
-import { eq } from "drizzle-orm";
 
 const app = new Hono<ServerContext>();
 
@@ -27,19 +33,21 @@ app.get("/", v2_serviceValidation, adminServiceValidation, async (c) => {
   const searchResult = getServiceFiltersSchema.safeParse(searchQuery);
 
   if (!searchResult.success) {
-    c.status(400);
-    return c.json({ success: false, message: searchResult.error.message });
+    throw new HTTPException(400, { res: createV2ErrResponse(searchResult.error.message) });
   }
 
   const search = searchResult.data;
 
-  const services = await db.query.services.findMany({
-    limit: search.page_size,
-    offset: search.page_size * (search.page - 1),
-    orderBy: (fields, { desc }) => desc(fields.createdAt),
-  });
-
-  return c.json(getServicesOutputSchema.parse(services));
+  try {
+    const services = await db.query.services.findMany({
+      limit: search.page_size,
+      offset: search.page_size * (search.page - 1),
+      orderBy: (fields, { desc }) => desc(fields.createdAt),
+    });
+    return c.json(getServicesOutputSchema.parse(services));
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
+  }
 });
 
 /**
@@ -51,33 +59,36 @@ app.post("/", v2_serviceValidation, adminServiceValidation, async (c) => {
   const bodyResult = createServiceInputSchema.safeParse(body);
 
   if (!bodyResult.success) {
-    c.status(400);
-    return c.json({ success: false, message: bodyResult.error.message });
+    throw new HTTPException(400, { res: createV2ErrResponse(bodyResult.error.message) });
   }
 
   const input = bodyResult.data;
 
-  const serviceId = createDbId("service");
-  const service = await db
-    .insert(servicesTable)
-    .values({
-      id: serviceId,
-      name: input.name,
-      isPersisted: input.isPersisted,
-      isAdmin: input.isAdmin,
-      isActive: true,
-    })
-    .returning({
-      id: servicesTable.id,
-      name: servicesTable.name,
-      isPersisted: servicesTable.isPersisted,
-      isAdmin: servicesTable.isAdmin,
-      isActive: servicesTable.isActive,
-      createdAt: servicesTable.createdAt,
-    })
-    .execute();
+  try {
+    const serviceId = createDbId("service");
+    const service = await db
+      .insert(servicesTable)
+      .values({
+        id: serviceId,
+        name: input.name,
+        isPersisted: input.isPersisted,
+        isAdmin: input.isAdmin,
+        isActive: true,
+      })
+      .returning({
+        id: servicesTable.id,
+        name: servicesTable.name,
+        isPersisted: servicesTable.isPersisted,
+        isAdmin: servicesTable.isAdmin,
+        isActive: servicesTable.isActive,
+        createdAt: servicesTable.createdAt,
+      })
+      .execute();
 
-  return c.json(createServiceOutputSchema.parse(service[0]));
+    return c.json(createServiceOutputSchema.parse(service[0]));
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
+  }
 });
 
 /**
@@ -87,16 +98,19 @@ app.post("/", v2_serviceValidation, adminServiceValidation, async (c) => {
 app.get("/:service_id", v2_serviceValidation, adminServiceValidation, async (c) => {
   const serviceId = c.req.param("service_id");
 
-  const service = await db.query.services.findFirst({
-    where: (fields, { and, eq }) => and(eq(fields.id, serviceId), eq(fields.isActive, true)),
-  });
+  try {
+    const service = await db.query.services.findFirst({
+      where: (fields, { and, eq }) => and(eq(fields.id, serviceId), eq(fields.isActive, true)),
+    });
 
-  if (!service) {
-    c.status(404);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceNotFound });
+    if (!service) {
+      throw new HTTPException(404, { res: createV2ErrResponse(ENDPOINT_MESSAGES.ServiceNotFound) });
+    }
+
+    return c.json(getServiceOutputSchema.parse(service));
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
   }
-
-  return c.json(getServiceOutputSchema.parse(service));
 });
 
 /**
@@ -107,15 +121,18 @@ app.delete("/:service_id", v2_serviceValidation, adminServiceValidation, async (
   const reqServiceId = c.var.service!.id;
   const serviceId = c.req.param("service_id");
 
-  if (reqServiceId.trim() === serviceId.trim()) {
-    c.status(400);
-    return c.json({ success: false, message: ENDPOINT_MESSAGES.ServiceCannotDisableSelf });
+  if (reqServiceId === serviceId) {
+    throw new HTTPException(400, { res: createV2ErrResponse(ENDPOINT_MESSAGES.ServiceCannotDisableSelf) });
   }
 
-  await db.update(servicesTable).set({ isActive: false }).where(eq(servicesTable.id, serviceId)).execute();
+  try {
+    await db.update(servicesTable).set({ isActive: false }).where(eq(servicesTable.id, serviceId)).execute();
 
-  c.status(200);
-  return c.json({ success: true, message: ENDPOINT_MESSAGES.ServiceDisabled });
+    c.status(200);
+    return c.json({ success: true, message: ENDPOINT_MESSAGES.ServiceDisabled });
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
+  }
 });
 
 /**
@@ -125,10 +142,14 @@ app.delete("/:service_id", v2_serviceValidation, adminServiceValidation, async (
 app.post("/:service_id/enable", v2_serviceValidation, adminServiceValidation, async (c) => {
   const serviceId = c.req.param("service_id");
 
-  await db.update(servicesTable).set({ isActive: true }).where(eq(servicesTable.id, serviceId)).execute();
+  try {
+    await db.update(servicesTable).set({ isActive: true }).where(eq(servicesTable.id, serviceId)).execute();
 
-  c.status(200);
-  return c.json({ success: true, message: ENDPOINT_MESSAGES.ServiceEnabled });
+    c.status(200);
+    return c.json({ success: true, message: ENDPOINT_MESSAGES.ServiceEnabled });
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
+  }
 });
 
 export default app;
