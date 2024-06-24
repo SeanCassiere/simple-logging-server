@@ -59,9 +59,7 @@ export const v2_serviceValidation = honoFactory.createMiddleware(async (c, next)
 
   if (!serviceId) {
     throw new HTTPException(401, {
-      res: createV2ErrResponse(
-        JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided }),
-      ),
+      res: createV2ErrResponse(ENDPOINT_MESSAGES.ServiceIdHeaderNotProvided),
     });
   }
 
@@ -69,9 +67,7 @@ export const v2_serviceValidation = honoFactory.createMiddleware(async (c, next)
 
   if (!service) {
     throw new HTTPException(403, {
-      res: createV2ErrResponse(
-        JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights }),
-      ),
+      res: createV2ErrResponse(ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights),
     });
   }
 
@@ -86,10 +82,9 @@ export const adminServiceValidation = honoFactory.createMiddleware(async (c, nex
   const service = c.var.service;
 
   if (!service || !service.isAdmin) {
+    console.log("service", service);
     throw new HTTPException(403, {
-      res: createV2ErrResponse(
-        JSON.stringify({ success: false, message: ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights }),
-      ),
+      res: createV2ErrResponse(ENDPOINT_MESSAGES.ServiceDoesNotExistOrDoesNotHaveNecessaryRights),
     });
   }
 
@@ -112,9 +107,9 @@ export function getUserServerUrl(): string {
 export function createV2ErrResponse(message: string, headers: Record<string, string> = {}): Response {
   const responseHeaders = new Headers(headers);
 
-  if (!responseHeaders.get("Content-Type")) {
+  if (!responseHeaders.has("Content-Type")) {
     responseHeaders.set("Content-Type", "application/json");
   }
 
-  return new Response(message, { headers });
+  return new Response(JSON.stringify({ success: false, message }), { headers: responseHeaders });
 }
