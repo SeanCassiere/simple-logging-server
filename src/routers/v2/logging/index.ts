@@ -1,10 +1,11 @@
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 import { and, eq, lt } from "drizzle-orm";
 
 import { db } from "@/config/db";
 import { env } from "@/config/env";
 import { logs as logsTable } from "@/config/db/schema";
-import { parseSearchParams, v2_serviceValidation } from "@/utils/server-helpers";
+import { createV2ErrResponse, parseSearchParams, v2_serviceValidation } from "@/utils/server-helpers";
 import { ENDPOINT_MESSAGES } from "@/utils/messages";
 import { createDbId } from "@/utils/db";
 import type { ServerContext } from "@/types/hono";
@@ -25,28 +26,31 @@ app.get("/", v2_serviceValidation, async (c) => {
   const searchResult = getLogsFiltersSchema.safeParse(searchQuery);
 
   if (!searchResult.success) {
-    c.status(400);
-    return c.json({ success: false, message: searchResult.error.message });
+    throw new HTTPException(400, { res: createV2ErrResponse(searchResult.error.message) });
   }
 
   const search = searchResult.data;
 
   const logLevels = search.level.filter((val) => val !== "all");
 
-  const logs = await db.query.logs.findMany({
-    limit: search.page_size,
-    offset: search.page_size * (search.page - 1),
-    orderBy: (fields, { asc, desc }) => (search.sort === "ASC" ? asc(fields.createdAt) : desc(fields.createdAt)),
-    where: (fields, { and, eq, inArray }) =>
-      and(
-        ...[eq(fields.serviceId, serviceId)],
-        ...(search.environment ? [eq(fields.environment, search.environment)] : []),
-        ...(search.lookup ? [eq(fields.lookupFilterValue, search.lookup)] : []),
-        ...(logLevels.length > 0 ? [inArray(fields.level, logLevels)] : []),
-      ),
-  });
+  try {
+    const logs = await db.query.logs.findMany({
+      limit: search.page_size,
+      offset: search.page_size * (search.page - 1),
+      orderBy: (fields, { asc, desc }) => (search.sort === "ASC" ? asc(fields.createdAt) : desc(fields.createdAt)),
+      where: (fields, { and, eq, inArray }) =>
+        and(
+          ...[eq(fields.serviceId, serviceId)],
+          ...(search.environment ? [eq(fields.environment, search.environment)] : []),
+          ...(search.lookup ? [eq(fields.lookupFilterValue, search.lookup)] : []),
+          ...(logLevels.length > 0 ? [inArray(fields.level, logLevels)] : []),
+        ),
+    });
 
-  return c.json(getLogsOutputSchema.parse(logs));
+    return c.json(getLogsOutputSchema.parse(logs));
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
+  }
 });
 
 /**
@@ -66,40 +70,43 @@ app.post("/", v2_serviceValidation, async (c) => {
   const bodyResult = createLogSchema.safeParse(body);
 
   if (!bodyResult.success) {
-    c.status(400);
-    return c.json({ success: false, message: bodyResult.error.message });
+    throw new HTTPException(400, { res: createV2ErrResponse(bodyResult.error.message) });
   }
 
   const input = bodyResult.data;
 
-  const logId = createDbId("log");
-  const log = await db
-    .insert(logsTable)
-    .values({
-      id: logId,
-      serviceId,
-      action: input.action,
-      environment: input.environment,
-      ip: input.ip,
-      data: input.data || {},
-      isPersisted: service.isPersisted,
-      lookupFilterValue: input.lookupFilterValue,
-      level: input.level,
-    })
-    .returning({
-      id: logsTable.id,
-      action: logsTable.id,
-      environment: logsTable.environment,
-      ip: logsTable.ip,
-      lookupFilterValue: logsTable.lookupFilterValue,
-      data: logsTable.data,
-      level: logsTable.level,
-      createdAt: logsTable.createdAt,
-    })
-    .execute();
+  try {
+    const logId = createDbId("log");
+    const log = await db
+      .insert(logsTable)
+      .values({
+        id: logId,
+        serviceId,
+        action: input.action,
+        environment: input.environment,
+        ip: input.ip,
+        data: input.data || {},
+        isPersisted: service.isPersisted,
+        lookupFilterValue: input.lookupFilterValue,
+        level: input.level,
+      })
+      .returning({
+        id: logsTable.id,
+        action: logsTable.id,
+        environment: logsTable.environment,
+        ip: logsTable.ip,
+        lookupFilterValue: logsTable.lookupFilterValue,
+        data: logsTable.data,
+        level: logsTable.level,
+        createdAt: logsTable.createdAt,
+      })
+      .execute();
 
-  c.status(201);
-  return c.json(createLogOutputSchema.parse(log[0]));
+    c.status(201);
+    return c.json(createLogOutputSchema.parse(log[0]));
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
+  }
 });
 
 /**
@@ -121,28 +128,32 @@ app.delete("/purge", v2_serviceValidation, async (c) => {
   const date = new Date();
   date.setMonth(date.getMonth() - countMonths);
 
-  await db
-    .delete(logsTable)
-    .where(and(eq(logsTable.isPersisted, false), lt(logsTable.createdAt, date.toISOString())))
-    .execute();
+  try {
+    await db
+      .delete(logsTable)
+      .where(and(eq(logsTable.isPersisted, false), lt(logsTable.createdAt, date.toISOString())))
+      .execute();
 
-  const logId = createDbId("log");
-  await db
-    .insert(logsTable)
-    .values({
-      id: logId,
-      serviceId: service.id,
-      isPersisted: true,
-      action: "app-admin-clean-service-logs",
-      ip,
-      environment: "production",
-      lookupFilterValue: "app-admin-action",
-      data: { client: service.name, ip },
-      level: "info",
-    })
-    .execute();
+    const logId = createDbId("log");
+    await db
+      .insert(logsTable)
+      .values({
+        id: logId,
+        serviceId: service.id,
+        isPersisted: true,
+        action: "app-admin-clean-service-logs",
+        ip,
+        environment: "production",
+        lookupFilterValue: "app-admin-action",
+        data: { client: service.name, ip },
+        level: "info",
+      })
+      .execute();
 
-  return c.json({ success: true, message: `Successfully cleaned logs for the last ${countMonths} months` });
+    return c.json({ success: true, message: `Successfully cleaned logs for the last ${countMonths} months` });
+  } catch (error) {
+    throw new HTTPException(500, { res: createV2ErrResponse(ENDPOINT_MESSAGES.InternalError) });
+  }
 });
 
 export default app;
