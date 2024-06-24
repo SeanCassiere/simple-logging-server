@@ -4,7 +4,7 @@ import { z, ZodFormattedError } from "zod";
 dotenv.config();
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]),
+  NODE_ENV: z.enum(["development", "test", "ci", "production"]),
   PORT: z.string(),
   DATABASE_URL: z.string(),
   DEFAULT_NUM_OF_MONTHS_TO_DELETE: z.string().default("8"),
