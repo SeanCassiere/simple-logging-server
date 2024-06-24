@@ -11,4 +11,5 @@ export const ENDPOINT_MESSAGES = {
   ServiceDoesNotExistOrDoesNotHaveNecessaryRights: "Service does not exist or does not have necessary rights.",
   DBWritesFrozen: "Database writes are currently frozen.",
   ServiceCannotDisableSelf: "You cannot disable the service you are using.",
+  InternalError: "Internal error. Please try again later.",
 };

@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { compress } from "hono/compress";
 import { csrf } from "hono/csrf";
 import { etag } from "hono/etag";
+import { HTTPException } from "hono/http-exception";
 import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
 import { logger } from "hono/logger";
@@ -32,9 +33,8 @@ const limiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 100,
   standardHeaders: "draft-6",
-  keyGenerator: (c) => c.req.header("x-app-service-id") ?? c.req.header("x-forwarded-for") ?? "",
+  keyGenerator: (c) => c.req.header("CF-Connecting-IP") ?? c.req.header("x-forwarded-for") ?? "",
 });
-app.use(limiter);
 
 app.use("*", async (c, next) => {
   c.set("service", null);
@@ -45,6 +45,8 @@ app.use("*", async (c, next) => {
 app.use("/api/", timeout(5000));
 
 app.route("/api/v2", v2Router);
+
+app.use(limiter);
 app.route("/docs", docsRouter);
 
 app.get(
@@ -59,6 +61,16 @@ app.get("/health", (c) => {
 });
 app.get("/", (c) => {
   return c.redirect("/docs");
+});
+
+app.onError(function handleError(err, c) {
+  if (err instanceof HTTPException) {
+    const response = err.getResponse();
+    return response;
+  }
+
+  c.status(500);
+  return c.json({ success: false, message: "Unknown Internal Server Error" });
 });
 
 if (env.FREEZE_DB_WRITES) {
