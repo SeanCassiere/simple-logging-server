@@ -1,10 +1,8 @@
 {
-  "id": "ce2127be-1277-4db7-b4c3-789c393f369a",
-  "prevId": "19b9ab6a-21fa-4bb0-91c2-2460725df8c5",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "logs": {
+    "public.logs": {
       "name": "logs",
       "schema": "",
       "columns": {
@@ -73,39 +71,55 @@
       },
       "indexes": {
         "log_created_at_idx": {
-          "name": "log_created_at_idx",
           "columns": [
-            "created_at"
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "log_created_at_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         },
         "log_level_idx": {
-          "name": "log_level_idx",
           "columns": [
-            "level"
+            {
+              "expression": "level",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "log_level_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {
         "logs_service_id_services_id_fk": {
           "name": "logs_service_id_services_id_fk",
           "tableFrom": "logs",
-          "tableTo": "services",
           "columnsFrom": [
             "service_id"
           ],
+          "tableTo": "services",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "services": {
+    "public.services": {
       "name": "services",
       "schema": "",
       "columns": {
@@ -149,11 +163,19 @@
       },
       "indexes": {
         "service_created_at_idx": {
-          "name": "service_created_at_idx",
           "columns": [
-            "created_at"
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "service_created_at_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {},
@@ -164,8 +186,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "ce2127be-1277-4db7-b4c3-789c393f369a",
+  "prevId": "19b9ab6a-21fa-4bb0-91c2-2460725df8c5"
 }
