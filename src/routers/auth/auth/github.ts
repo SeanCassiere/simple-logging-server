@@ -29,7 +29,7 @@ app.get("/", async (c) => {
     sameSite: "Lax",
   });
 
-  setCookie(c, "post_login_redirect", "/auth/login", {
+  setCookie(c, "post_login_redirect", "/app", {
     path: "/",
     secure: env.NODE_ENV === "production",
     httpOnly: true,
@@ -54,7 +54,7 @@ app.get("/callback", async (c) => {
     return c.body(null, 400);
   }
 
-  const postLoginRedirect = getCookie(c).post_login_redirect ?? "/";
+  const postLoginRedirect = getCookie(c).post_login_redirect ?? "/app";
 
   try {
     const tokens = await github.validateAuthorizationCode(code);

@@ -1,10 +1,10 @@
 import type { ServerContext } from "@/types/hono";
 import { Hono } from "hono";
 
-import { db } from "@/config/db";
 import { lucia } from "@/config/lucia";
 
-import githubLoginRouter from "./github";
+import authRouter from "./auth";
+import uiRouter from "./ui";
 
 const app = new Hono<ServerContext>();
 
@@ -31,31 +31,7 @@ app.use("*", async (c, next) => {
   return await next();
 });
 
-app.route("/login/github", githubLoginRouter);
-
-app.get("/login", async (c) => {
-  const user = c.var.user;
-
-  const users = await db.query.users.findMany({
-    orderBy: (fields, { desc }) => desc(fields.createdAt),
-    with: {
-      usersToTenants: true,
-    },
-  });
-  return c.json({ user, users });
-});
-
-app.get("/logout", async (c) => {
-  const session = c.get("session");
-  if (!session) {
-    return c.body(null, 401);
-  }
-
-  await lucia.invalidateSession(session.id);
-
-  c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), { append: true });
-
-  return c.redirect("/auth/login");
-});
+app.route("", authRouter);
+app.route("", uiRouter);
 
 export default app;

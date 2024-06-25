@@ -1,3 +1,4 @@
+import type { ServerContext } from "@/types/hono";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
@@ -10,13 +11,12 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
 
-import authRouter from "@/routers/auth";
+import appRouter from "@/routers/auth";
 import docsRouter from "@/routers/docs";
 import v2Router from "@/routers/v2";
 
-import type { ServerContext } from "@/types/hono";
-
 const app = new Hono<ServerContext>();
+
 app.use(cors({ origin: "*" }));
 app.use(compress());
 app.use(csrf());
@@ -33,8 +33,7 @@ const limiter = rateLimiter({
 
 app.use("*", async (c, next) => {
   c.set("service", null);
-
-  await next();
+  return await next();
 });
 
 app.use("/api/", timeout(5000));
@@ -43,7 +42,7 @@ app.route("/api/v2", v2Router);
 
 app.use(limiter);
 app.route("/docs", docsRouter);
-app.route("/auth", authRouter);
+app.route("/app", appRouter);
 
 app.get(
   "/*",
