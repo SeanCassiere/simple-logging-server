@@ -41,16 +41,22 @@ export const services = pgTable(
     createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
     isPersisted: boolean("is_persisted").notNull(),
     isAdmin: boolean("is_admin").notNull(),
+    tenantId: text("tenant_id").references(() => tenants.id),
   },
   (table) => {
     return {
       createdAtIdx: index("service_created_at_idx").on(table.createdAt),
+      serviceTenantIdx: index("service_tenant_idx").on(table.tenantId),
     };
   },
 );
 
-export const serviceRelations = relations(services, ({ many }) => ({
+export const serviceRelations = relations(services, ({ many, one }) => ({
   logs: many(logs),
+  tenant: one(tenants, {
+    fields: [services.tenantId],
+    references: [tenants.id],
+  }),
 }));
 
 export const tenants = pgTable("tenants", {
@@ -62,6 +68,7 @@ export const tenants = pgTable("tenants", {
 
 export const tenantRelations = relations(tenants, ({ many }) => ({
   usersToTenants: many(usersToTenants),
+  services: many(services),
 }));
 
 export const users = pgTable("users", {
