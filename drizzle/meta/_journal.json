@@ -22,6 +22,13 @@
       "when": 1704635877860,
       "tag": "0002_aromatic_nightcrawler",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1719278407053,
+      "tag": "0003_amazing_nekra",
+      "breakpoints": true
     }
   ]
 }

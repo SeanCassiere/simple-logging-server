@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const logs = pgTable(
   "logs",
@@ -51,4 +51,46 @@ export const services = pgTable(
 
 export const serviceRelations = relations(services, ({ many }) => ({
   logs: many(logs),
+}));
+
+export const tenants = pgTable("tenants", {
+  id: text("id").primaryKey().notNull(),
+  name: text("name").notNull(),
+  created_at: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+  updated_at: timestamp("updated_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+});
+
+export const tenantRelations = relations(tenants, ({ many }) => ({
+  users: many(users),
+  // services: many(services),
+}));
+
+export const users = pgTable("users", {
+  id: text("id").primaryKey().notNull(),
+  username: text("username").notNull(),
+  github_id: text("github_id").unique(),
+  created_at: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+  updated_at: timestamp("updated_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+});
+
+export const userRelations = relations(users, ({ many }) => ({
+  tenants: many(tenants),
+  sessions: many(sessions),
+}));
+
+export const sessions = pgTable("sessions", {
+  id: text("id").primaryKey().notNull(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+  expires_at: integer("expires_at").notNull(),
+  revoked: boolean("revoked").default(false).notNull(),
+  created_at: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+});
+
+export const sessionRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.user_id],
+    references: [users.id],
+  }),
 }));
