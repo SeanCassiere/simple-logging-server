@@ -43,6 +43,7 @@ app.route("/api/v2", v2Router);
 
 app.use(limiter);
 app.route("/docs", docsRouter);
+app.route("/auth", authRouter);
 
 app.get(
   "/*",
@@ -50,8 +51,6 @@ app.get(
     root: "./public",
   }),
 );
-
-app.route("", authRouter);
 
 app.get("/health", (c) => {
   return c.json({ message: "OK", uptime: process.uptime() });

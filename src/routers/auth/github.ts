@@ -9,6 +9,7 @@ import {
   users as usersTable,
   usersToTenants as usersToTenantsTable,
 } from "@/config/db/schema";
+import { env } from "@/config/env";
 import { github, lucia } from "@/config/lucia";
 import { createDbId } from "@/utils/db";
 
@@ -22,14 +23,15 @@ app.get("/", async (c) => {
 
   setCookie(c, "github_oauth_state", state, {
     path: "/",
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 60 * 10,
     sameSite: "Lax",
   });
-  setCookie(c, "post_login_redirect", "/login", {
+
+  setCookie(c, "post_login_redirect", "/auth/login", {
     path: "/",
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 60 * 10,
     sameSite: "Lax",

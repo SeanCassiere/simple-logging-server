@@ -27,6 +27,7 @@ app.use("*", async (c, next) => {
 
   c.set("user", user);
   c.set("session", session);
+
   return await next();
 });
 
@@ -54,7 +55,7 @@ app.get("/logout", async (c) => {
 
   c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), { append: true });
 
-  return c.redirect("/login");
+  return c.redirect("/auth/login");
 });
 
 export default app;
