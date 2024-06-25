@@ -79,7 +79,7 @@ app.get("/callback", async (c) => {
 
     await db.transaction(async (tx) => {
       // create the default tenant
-      await tx.insert(tenantsTable).values({ id: tenantId, name: "default" });
+      await tx.insert(tenantsTable).values({ id: tenantId, name: "default", workspace: tenantId });
 
       // create the user
       await tx

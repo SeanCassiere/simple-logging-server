@@ -62,6 +62,7 @@ export const serviceRelations = relations(services, ({ many, one }) => ({
 export const tenants = pgTable("tenants", {
   id: text("id").primaryKey().notNull(),
   name: text("name").notNull(),
+  workspace: text("workspace").notNull().unique(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
