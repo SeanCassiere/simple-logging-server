@@ -7,7 +7,7 @@ import { sessions, users } from "@/config/db/schema";
 import { env } from "@/config/env";
 import { DrizzleLuciaAdapter } from "./adapter";
 
-interface User extends DatabaseUser {
+export interface LuciaUser extends DatabaseUser {
   username: (typeof users.$inferSelect)["username"];
   githubId: (typeof users.$inferSelect)["githubId"];
 }
@@ -33,6 +33,6 @@ export const github = new GitHub(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET)
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
-    DatabaseUserAttributes: Omit<User, "id">;
+    DatabaseUserAttributes: Omit<LuciaUser, "id">;
   }
 }

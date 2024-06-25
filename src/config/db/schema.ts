@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, jsonb, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
 
 export const logs = pgTable(
   "logs",
@@ -61,8 +61,7 @@ export const tenants = pgTable("tenants", {
 });
 
 export const tenantRelations = relations(tenants, ({ many }) => ({
-  users: many(users),
-  // services: many(services),
+  usersToTenants: many(usersToTenants),
 }));
 
 export const users = pgTable("users", {
@@ -74,8 +73,40 @@ export const users = pgTable("users", {
 });
 
 export const userRelations = relations(users, ({ many }) => ({
-  tenants: many(tenants),
+  usersToTenants: many(usersToTenants),
   sessions: many(sessions),
+}));
+
+export const usersToTenants = pgTable(
+  "users_to_tenants",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => tenants.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+  },
+  (t) => ({
+    id: primaryKey({ columns: [t.userId, t.tenantId] }),
+  }),
+);
+
+export const usersToTenantsRelations = relations(usersToTenants, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [usersToTenants.tenantId],
+    references: [tenants.id],
+  }),
+  user: one(users, {
+    fields: [usersToTenants.userId],
+    references: [users.id],
+  }),
 }));
 
 export const sessions = pgTable("sessions", {

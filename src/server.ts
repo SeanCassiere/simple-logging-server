@@ -10,6 +10,7 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
 
+import authRouter from "@/routers/auth";
 import docsRouter from "@/routers/docs";
 import v2Router from "@/routers/v2";
 
@@ -49,6 +50,8 @@ app.get(
     root: "./public",
   }),
 );
+
+app.route("", authRouter);
 
 app.get("/health", (c) => {
   return c.json({ message: "OK", uptime: process.uptime() });
