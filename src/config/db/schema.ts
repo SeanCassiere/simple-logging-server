@@ -56,8 +56,8 @@ export const serviceRelations = relations(services, ({ many }) => ({
 export const tenants = pgTable("tenants", {
   id: text("id").primaryKey().notNull(),
   name: text("name").notNull(),
-  createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const tenantRelations = relations(tenants, ({ many }) => ({
@@ -68,9 +68,9 @@ export const tenantRelations = relations(tenants, ({ many }) => ({
 export const users = pgTable("users", {
   id: text("id").primaryKey().notNull(),
   username: text("username").notNull(),
-  github_id: text("github_id").unique(),
-  createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+  githubId: text("github_id").unique(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -83,8 +83,11 @@ export const sessions = pgTable("sessions", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
-  expiresAt: timestamp("expires_at", { precision: 3, mode: "string" }).notNull(),
-  createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const sessionRelations = relations(sessions, ({ one }) => ({
