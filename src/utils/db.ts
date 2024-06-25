@@ -15,7 +15,7 @@ const dbEnv = {
 };
 /**
  * Returns a unique database ID
- * @param key
+ * @param key_prefix
  * @param key_env
  * @returns
  * @example
@@ -25,8 +25,8 @@ const dbEnv = {
  * ```
  */
 export const createDbId = (
-  key: keyof typeof dbPrefixes,
+  key_prefix: keyof typeof dbPrefixes,
   key_env: keyof typeof dbEnv = env.NODE_ENV === "production" ? "live" : "dev",
 ) => {
-  return [dbPrefixes[key], dbEnv[key_env], createId()].filter(Boolean).join("");
+  return [dbPrefixes[key_prefix], dbEnv[key_env], createId()].filter(Boolean).join("");
 };
