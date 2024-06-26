@@ -22,8 +22,4 @@ app.get("/logout", async (c) => {
   return c.redirect("/app");
 });
 
-app.get("/login", (c) => {
-  return c.redirect("/login/github");
-});
-
 export default app;
