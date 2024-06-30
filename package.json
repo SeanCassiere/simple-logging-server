@@ -1,7 +1,7 @@
 {
   "name": "simple-logging-server",
   "license": "MIT",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "This is a simple API for logging messages",
   "author": "Sean Cassiere",
   "keywords": [],
