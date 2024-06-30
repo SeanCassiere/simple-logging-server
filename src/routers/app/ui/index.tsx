@@ -1,28 +1,12 @@
 import type { ServerContext } from "@/types/hono.mjs";
 import { Hono } from "hono";
 import { html } from "hono/html";
-import type { FC } from "hono/jsx";
 
 import { db } from "@/config/db/index.mjs";
 
-const app = new Hono<ServerContext>();
+import { LoginPage } from "./pages/login.js";
 
-const Layout: FC = ({ children }) => {
-  return (
-    <html>
-      <head>
-        <script
-          src="https://unpkg.com/htmx.org@1.9.10"
-          integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-          crossorigin="anonymous"
-        ></script>
-        <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
-        <script src="https://cdn.tailwindcss.com"></script>
-      </head>
-      <body>{children}</body>
-    </html>
-  );
-};
+const app = new Hono<ServerContext>();
 
 app.get("/login", async (c) => {
   const user = c.var.user;
@@ -31,14 +15,7 @@ app.get("/login", async (c) => {
     return c.redirect("/app");
   }
 
-  return c.html(
-    <Layout>
-      <div style="display: grid;gap: 0.5rem;">
-        <a href="/app/login/github">Login with Github</a>
-        <a href="/app">← Go back</a>
-      </div>
-    </Layout>,
-  );
+  return c.html(<LoginPage />);
 });
 
 app.get("/", async (c) => {
