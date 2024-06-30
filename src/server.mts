@@ -10,6 +10,7 @@ import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
+import { trimTrailingSlash } from "hono/trailing-slash";
 
 import appRouter from "@/routers/app/index.mjs";
 import docsRouter from "@/routers/docs/index.mjs";
@@ -23,6 +24,7 @@ app.use(csrf());
 app.use(etag());
 app.use(logger());
 app.use(secureHeaders());
+app.use(trimTrailingSlash());
 
 const limiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes

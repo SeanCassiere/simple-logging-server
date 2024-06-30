@@ -15,7 +15,7 @@ export const RootDocument: FC<PropsWithChildren<{ title: string }>> = ({ title, 
         <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
         <script src="https://cdn.tailwindcss.com"></script>
       </head>
-      <body>{children}</body>
+      <body class="bg-gray-50 dark:bg-gray-900">{children}</body>
     </html>
   );
 };
