@@ -10,6 +10,8 @@
     "outDir": "./dist",
     "removeComments": true,
     "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
