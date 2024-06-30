@@ -1,6 +1,6 @@
-import type { FC } from "hono/jsx";
+import type { FC, PropsWithChildren } from "hono/jsx";
 
-export const RootDocument: FC<{ title: string; children: any }> = ({ title, children }) => {
+export const RootDocument: FC<PropsWithChildren<{ title: string }>> = ({ title, children }) => {
   return (
     <html>
       <head>
