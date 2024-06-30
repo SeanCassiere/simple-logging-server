@@ -11,7 +11,7 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
 
-import appRouter from "@/routers/auth";
+import appRouter from "@/routers/app";
 import docsRouter from "@/routers/docs";
 import v2Router from "@/routers/v2";
 
