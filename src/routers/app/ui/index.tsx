@@ -17,6 +17,7 @@ const app = new Hono<ServerContext>();
 
 app.get("/", checkUserAuthed, async (c) => {
   const user = c.var.user!;
+  const view_all = c.req.query("view_all") || "false";
 
   const relationships = await db.query.usersToTenants.findMany({
     where: (fields, { eq }) => eq(fields.userId, user.id),
@@ -24,6 +25,11 @@ app.get("/", checkUserAuthed, async (c) => {
   });
 
   const tenants = relationships.map((r) => r.tenant);
+
+  if (tenants.length === 1 && view_all !== "true") {
+    const tenant = tenants[0];
+    return c.redirect(`/app/${tenant.workspace}`);
+  }
 
   return c.html(<DashboardLandingPage user={user} tenants={tenants} />);
 });

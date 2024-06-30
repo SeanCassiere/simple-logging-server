@@ -22,6 +22,9 @@ export const WorkspaceLandingPage: FC<{
               <a class={getButtonStyles("secondary", "xs")} href="/app/logout">
                 Logout 👋🏼
               </a>
+              <a class={getButtonStyles("secondary", "xs")} href={`/app?view_all=true`}>
+                Organizations ⬅️
+              </a>
               <a class={getButtonStyles("secondary", "xs")} href={`/app/${tenant.workspace}/edit`}>
                 Edit ✏️
               </a>
@@ -43,9 +46,6 @@ export const WorkspaceLandingPage: FC<{
                   <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                     Created at
                   </th>
-                  <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8">
-                    <span class="sr-only">Edit</span>
-                  </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
@@ -61,14 +61,6 @@ export const WorkspaceLandingPage: FC<{
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       {dateFormatter.humanReadable(new Date(service.createdAt))}
-                    </td>
-                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
-                      <a
-                        href={`/app/${tenant.workspace}/${service.id}/edit`}
-                        class="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit<span class="sr-only">, {service.name}</span>
-                      </a>
                     </td>
                   </tr>
                 ))}
