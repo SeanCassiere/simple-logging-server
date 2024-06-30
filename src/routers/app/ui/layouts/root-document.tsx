@@ -9,7 +9,7 @@ export const RootDocument: FC<PropsWithChildren<{ title: string }>> = ({ title, 
         <title>{title}</title>
         <script src="https://cdn.tailwindcss.com"></script>
       </head>
-      <body class="bg-gray-50 dark:bg-gray-900">{children}</body>
+      <body class="bg-gray-50 dark:bg-gray-950">{children}</body>
     </html>
   );
 };

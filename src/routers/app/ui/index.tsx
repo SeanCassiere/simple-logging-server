@@ -4,8 +4,12 @@ import { db } from "@/config/db/index.mjs";
 
 import { DashboardLandingPage } from "./pages/dashboard-landing.js";
 import { LoginPage } from "./pages/login.js";
-import { checkTenantMembership, checkUserAuthed, checkServiceTenantMembership } from "./utils/middleware.mjs";
 import { WorkspaceLandingPage } from "./pages/workspace-landing.js";
+import { WorkspaceEditPage } from "./pages/workspace-edit.js";
+import { ServiceLandingPage } from "./pages/service-landing.js";
+import { ServiceEditPage } from "./pages/service-edit.js";
+
+import { checkTenantMembership, checkUserAuthed, checkServiceTenantMembership } from "./utils/middleware.mjs";
 
 import type { ServerContext } from "@/types/hono.mjs";
 
@@ -45,14 +49,16 @@ app.get("/:workspace", checkUserAuthed, checkTenantMembership, async (c) => {
 });
 
 app.get("/:workspace/edit", checkUserAuthed, checkTenantMembership, async (c) => {
-  const tenantId = c.req.param("workspace");
-  return c.text(`Workspace "${tenantId}" edit page`);
+  const tenant = c.var.tenant!;
+
+  return c.html(<WorkspaceEditPage tenant={tenant} />);
 });
 
 app.get("/:workspace/:service_id", checkUserAuthed, checkTenantMembership, checkServiceTenantMembership, async (c) => {
-  const serviceId = c.req.param("service_id");
+  const tenant = c.var.tenant!;
+  const service = c.var.service!;
 
-  return c.text(`Service id: "${serviceId}" landing page`);
+  return c.html(<ServiceLandingPage tenant={tenant} service={service} />);
 });
 
 app.get(
@@ -61,9 +67,10 @@ app.get(
   checkTenantMembership,
   checkServiceTenantMembership,
   async (c) => {
-    const serviceId = c.req.param("service_id");
+    const tenant = c.var.tenant!;
+    const service = c.var.service!;
 
-    return c.text(`Service id: "${serviceId}" edit page`);
+    return c.html(<ServiceEditPage tenant={tenant} service={service} />);
   },
 );
 

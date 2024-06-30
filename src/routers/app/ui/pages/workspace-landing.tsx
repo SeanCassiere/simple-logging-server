@@ -15,9 +15,9 @@ export const WorkspaceLandingPage: FC<{
     <RootDocument title="Simple Logging Server">
       <section class="mx-auto max-w-7xl h-full grid place-items-center px-2">
         <Card class="lg:max-w-2xl w-full">
-          <div class="p-4">
-            <h2 class="text-2xl lg:text-3xl font-semibold pb-2 text-gray-900">{tenant.name}</h2>
-            <p class="lg:text-sm pb-2 text-gray-700">These are the services for {tenant.name}</p>
+          <div class="p-4 grid gap-2">
+            <h2 class="text-2xl lg:text-3xl font-semibold pb-2 text-gray-900">Services</h2>
+            <p class="lg:text-sm text-gray-700">These are the services managed by this organization ({tenant.name}).</p>
             <div class="flex gap-1">
               <a class={getButtonStyles("secondary", "xs")} href="/app/logout">
                 Logout 👋🏼
@@ -26,6 +26,9 @@ export const WorkspaceLandingPage: FC<{
                 Edit ✏️
               </a>
             </div>
+            <p class="lg:text-sm text-gray-700">
+              You can view and edit the services managed by this organization here.
+            </p>
           </div>
           <div class="border-t overflow-hidden">
             <table class="min-w-full divide-y divide-gray-300">

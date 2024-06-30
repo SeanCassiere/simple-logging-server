@@ -20,12 +20,15 @@ export const DashboardLandingPage: FC<{
     <RootDocument title="Simple Logging Server">
       <section class="mx-auto max-w-7xl h-full grid place-items-center px-2">
         <Card class="lg:max-w-2xl w-full">
-          <div class="p-4">
-            <h2 class="text-2xl lg:text-3xl font-semibold pb-2 text-gray-900">Welcome!!!</h2>
-            <p class="lg:text-sm pb-2 text-gray-700">{`Hello${githubMessage}`}</p>
-            <a class={getButtonStyles("secondary", "xs")} href="/app/logout">
-              Logout 👋🏼
-            </a>
+          <div class="p-4 grid gap-2">
+            <h2 class="text-2xl lg:text-3xl font-semibold pb-2 text-gray-900">Organizations</h2>
+            <p class="lg:text-sm text-gray-700">{`Hello${githubMessage}`}</p>
+            <div>
+              <a class={getButtonStyles("secondary", "xs")} href="/app/logout">
+                Logout 👋🏼
+              </a>
+            </div>
+            <p class="lg:text-sm text-gray-700">Select the organization you want to view or edit.</p>
           </div>
           <div class="border-t overflow-hidden">
             <table class="min-w-full divide-y divide-gray-300">
