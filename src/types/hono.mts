@@ -1,13 +1,13 @@
 import type { HttpBindings } from "@hono/node-server";
 import type { Session, User } from "lucia";
 
-import type { services as servicesTable } from "@/config/db/schema.mjs";
-type Service = typeof servicesTable.$inferSelect;
+import type { ServiceRecord, TenantRecord } from "./db.mjs";
 
 type Bindings = HttpBindings & {};
 
 type Variables = {
-  service: Service | null;
+  service: ServiceRecord | null;
+  tenant: TenantRecord | null;
   user: User | null;
   session: Session | null;
 };
