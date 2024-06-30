@@ -1,12 +1,12 @@
 import { serve } from "@hono/node-server";
 
-import { env } from "@/config/env";
-import { openapiYmlVersioner, transformOpenapiYmlDoc } from "@/utils/openapi-docs";
-import { getPackageInfo } from "@/utils/package";
+import { env } from "@/config/env.mjs";
+import { openapiYmlVersioner, transformOpenapiYmlDoc } from "@/utils/openapi-docs.mjs";
+import { getPackageInfo } from "@/utils/package.mjs";
 
 const packageJson = getPackageInfo();
 
-import server from "./server";
+import server from "./server.mjs";
 
 if (env.FREEZE_DB_WRITES) {
   console.warn("\n🚨 Database writes are currently frozen!!!\n");

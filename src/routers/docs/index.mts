@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 
-import type { ServerContext } from "@/types/hono";
+import type { ServerContext } from "@/types/hono.mjs";
 
-import v2DocsRouter from "./v2";
+import v2DocsRouter from "./v2.mjs";
 
 const app = new Hono<ServerContext>();
 

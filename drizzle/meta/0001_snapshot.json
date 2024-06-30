@@ -1,10 +1,8 @@
 {
-  "version": "5",
-  "dialect": "pg",
-  "id": "19b9ab6a-21fa-4bb0-91c2-2460725df8c5",
-  "prevId": "4c7a7f60-c5a1-472e-a4d2-d6e324943bb3",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "logs": {
+    "public.logs": {
       "name": "logs",
       "schema": "",
       "columns": {
@@ -66,25 +64,40 @@
       },
       "indexes": {
         "log_created_at_idx": {
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "with": {},
           "name": "log_created_at_idx",
-          "columns": ["created_at"],
-          "isUnique": false
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {
         "logs_service_id_services_id_fk": {
           "name": "logs_service_id_services_id_fk",
           "tableFrom": "logs",
+          "columnsFrom": [
+            "service_id"
+          ],
           "tableTo": "services",
-          "columnsFrom": ["service_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "services": {
+    "public.services": {
       "name": "services",
       "schema": "",
       "columns": {
@@ -128,13 +141,24 @@
       },
       "indexes": {
         "service_created_at_idx": {
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "with": {},
           "name": "service_created_at_idx",
-          "columns": ["created_at"],
-          "isUnique": false
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "enums": {},
@@ -143,5 +167,7 @@
     "schemas": {},
     "tables": {},
     "columns": {}
-  }
+  },
+  "id": "19b9ab6a-21fa-4bb0-91c2-2460725df8c5",
+  "prevId": "4c7a7f60-c5a1-472e-a4d2-d6e324943bb3"
 }

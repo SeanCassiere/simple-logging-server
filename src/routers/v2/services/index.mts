@@ -2,17 +2,17 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 
-import { db } from "@/config/db";
-import { services as servicesTable } from "@/config/db/schema";
-import type { ServerContext } from "@/types/hono";
-import { createDbId } from "@/utils/db";
-import { ENDPOINT_MESSAGES } from "@/utils/messages";
+import { db } from "@/config/db/index.mjs";
+import { services as servicesTable } from "@/config/db/schema.mjs";
+import type { ServerContext } from "@/types/hono.mjs";
+import { createDbId } from "@/utils/db.mjs";
+import { ENDPOINT_MESSAGES } from "@/utils/messages.mjs";
 import {
   adminServiceValidation,
   createV2ErrResponse,
   parseSearchParams,
   v2_serviceValidation,
-} from "@/utils/server-helpers";
+} from "@/utils/server-helpers.mjs";
 
 import {
   createServiceInputSchema,
@@ -20,7 +20,7 @@ import {
   getServiceFiltersSchema,
   getServiceOutputSchema,
   getServicesOutputSchema,
-} from "./schemas";
+} from "./schemas.mjs";
 
 const app = new Hono<ServerContext>();
 

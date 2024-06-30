@@ -1,7 +1,7 @@
 import { apiReference } from "@scalar/hono-api-reference";
 import { Hono } from "hono";
 
-import type { ServerContext } from "@/types/hono";
+import type { ServerContext } from "@/types/hono.mjs";
 
 const app = new Hono<ServerContext>();
 
