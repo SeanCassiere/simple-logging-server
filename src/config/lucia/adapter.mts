@@ -1,5 +1,5 @@
-import type { db } from "@/config/db";
-import type { sessions, users } from "@/config/db/schema";
+import type { db } from "@/config/db/index.mjs";
+import type { sessions, users } from "@/config/db/schema.mjs";
 import { eq, lte } from "drizzle-orm";
 import type { Adapter, DatabaseSession, DatabaseUser, UserId } from "lucia";
 

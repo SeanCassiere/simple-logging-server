@@ -2,15 +2,15 @@ import { and, eq, lt } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 
-import { db } from "@/config/db";
-import { logs as logsTable } from "@/config/db/schema";
-import { env } from "@/config/env";
-import type { ServerContext } from "@/types/hono";
-import { createDbId } from "@/utils/db";
-import { ENDPOINT_MESSAGES } from "@/utils/messages";
-import { createV2ErrResponse, parseSearchParams, v2_serviceValidation } from "@/utils/server-helpers";
+import { db } from "@/config/db/index.mjs";
+import { logs as logsTable } from "@/config/db/schema.mjs";
+import { env } from "@/config/env.mjs";
+import type { ServerContext } from "@/types/hono.mjs";
+import { createDbId } from "@/utils/db.mjs";
+import { ENDPOINT_MESSAGES } from "@/utils/messages.mjs";
+import { createV2ErrResponse, parseSearchParams, v2_serviceValidation } from "@/utils/server-helpers.mjs";
 
-import { createLogOutputSchema, createLogSchema, getLogsFiltersSchema, getLogsOutputSchema } from "./schemas";
+import { createLogOutputSchema, createLogSchema, getLogsFiltersSchema, getLogsOutputSchema } from "./schemas.mjs";
 
 const app = new Hono<ServerContext>();
 

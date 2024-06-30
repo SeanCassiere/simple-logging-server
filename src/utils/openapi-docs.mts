@@ -9,8 +9,10 @@ type OpenApiDocTransformer = (filename: string, source_path: string, dirVersion:
 export function transformOpenapiYmlDoc(dir_version: string, transformers: OpenApiDocTransformer[] = []): void {
   const openapiFilename = `openapi.${dir_version}.yaml`;
 
-  const openapiYmlSourcePath = join(__dirname, "..", "docs", openapiFilename);
-  const outDir = join(__dirname, "..", "..", "public", "static");
+  const dirname = import.meta.dirname;
+
+  const openapiYmlSourcePath = join(dirname, "..", "docs", openapiFilename);
+  const outDir = join(dirname, "..", "..", "public", "static");
   const openapiYmlOutPath = join(outDir, openapiFilename);
 
   const openapiYmlInputDoc = readFileSync(openapiYmlSourcePath, "utf-8").toString();

@@ -1,12 +1,12 @@
 import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 
-import { db } from "@/config/db";
-import { env } from "@/config/env";
-import type { ServerContext } from "@/types/hono";
+import { db } from "@/config/db/index.mjs";
+import { env } from "@/config/env.mjs";
+import type { ServerContext } from "@/types/hono.mjs";
 import type { Context } from "hono";
 
-import { ENDPOINT_MESSAGES } from "./messages";
+import { ENDPOINT_MESSAGES } from "./messages.mjs";
 
 /**
  * Takes a string URL and returns an object with the query string parameters, multiple of the same key will be an array

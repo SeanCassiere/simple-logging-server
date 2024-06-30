@@ -1,10 +1,10 @@
-import type { ServerContext } from "@/types/hono";
+import type { ServerContext } from "@/types/hono.mjs";
 import { Hono } from "hono";
 
-import { lucia } from "@/config/lucia";
+import { lucia } from "@/config/lucia/index.mjs";
 
-import authRouter from "./auth";
-import uiRouter from "./ui";
+import authRouter from "./auth/index.mjs";
+import uiRouter from "./ui/index.js";
 
 const app = new Hono<ServerContext>();
 

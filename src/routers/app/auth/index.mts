@@ -1,9 +1,9 @@
-import type { ServerContext } from "@/types/hono";
+import type { ServerContext } from "@/types/hono.mjs";
 import { Hono } from "hono";
 
-import { lucia } from "@/config/lucia";
+import { lucia } from "@/config/lucia/index.mjs";
 
-import githubAuthRouter from "./github";
+import githubAuthRouter from "./github.mjs";
 
 const app = new Hono<ServerContext>();
 

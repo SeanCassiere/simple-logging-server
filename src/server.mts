@@ -1,4 +1,4 @@
-import type { ServerContext } from "@/types/hono";
+import type { ServerContext } from "@/types/hono.mjs";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
@@ -11,9 +11,9 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
 
-import appRouter from "@/routers/app";
-import docsRouter from "@/routers/docs";
-import v2Router from "@/routers/v2";
+import appRouter from "@/routers/app/index.mjs";
+import docsRouter from "@/routers/docs/index.mjs";
+import v2Router from "@/routers/v2/index.mjs";
 
 const app = new Hono<ServerContext>();
 

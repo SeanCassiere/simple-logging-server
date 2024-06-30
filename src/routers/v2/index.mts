@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
 
-import type { ServerContext } from "@/types/hono";
+import type { ServerContext } from "@/types/hono.mjs";
 
-import logsRouter from "./logging";
-import servicesRouter from "./services";
+import logsRouter from "./logging/index.mjs";
+import servicesRouter from "./services/index.mjs";
 
 const app = new Hono<ServerContext>();
 

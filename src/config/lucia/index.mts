@@ -2,10 +2,10 @@ import { GitHub } from "arctic";
 import type { DatabaseUser } from "lucia";
 import { Lucia } from "lucia";
 
-import { db } from "@/config/db";
-import { sessions, users } from "@/config/db/schema";
-import { env } from "@/config/env";
-import { DrizzleLuciaAdapter } from "./adapter";
+import { db } from "@/config/db/index.mjs";
+import { sessions, users } from "@/config/db/schema.mjs";
+import { env } from "@/config/env.mjs";
+import { DrizzleLuciaAdapter } from "./adapter.mjs";
 
 export interface LuciaUser extends DatabaseUser {
   username: (typeof users.$inferSelect)["username"];

@@ -1,4 +1,4 @@
-import { env } from "@/config/env";
+import { env } from "@/config/env.mjs";
 import { createId } from "@paralleldrive/cuid2";
 
 const dbPrefixes = {

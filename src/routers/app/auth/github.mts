@@ -3,17 +3,17 @@ import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { z } from "zod";
 
-import { db } from "@/config/db";
+import { db } from "@/config/db/index.mjs";
 import {
   tenants as tenantsTable,
   users as usersTable,
   usersToTenants as usersToTenantsTable,
-} from "@/config/db/schema";
-import { env } from "@/config/env";
-import { github, lucia } from "@/config/lucia";
-import { createDbId } from "@/utils/db";
+} from "@/config/db/schema.mjs";
+import { env } from "@/config/env.mjs";
+import { github, lucia } from "@/config/lucia/index.mjs";
+import { createDbId } from "@/utils/db.mjs";
 
-import type { ServerContext } from "@/types/hono";
+import type { ServerContext } from "@/types/hono.mjs";
 
 const app = new Hono<ServerContext>();
 
