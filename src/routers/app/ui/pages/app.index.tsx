@@ -6,7 +6,7 @@ import { AppContainer, type AppContainerProps } from "../layouts/app-container.j
 export const DashboardLandingPage: FC<{} & Omit<AppContainerProps, "tenant">> = ({ user, tenants }) => {
   return (
     <RootDocument title="Simple Logging Server">
-      <AppContainer user={user} tenants={tenants} tenant={null}>
+      <AppContainer user={user} tenants={tenants} tenant={null} mainClass="p-2 md:p-4">
         <p>There is no content on this page</p>
       </AppContainer>
     </RootDocument>

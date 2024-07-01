@@ -10,7 +10,7 @@ import type { TenantRecord } from "@/types/db.mjs";
 export const WorkspaceEditPage: FC<{ tenant: TenantRecord } & AppContainerProps> = ({ user, tenants, tenant }) => {
   return (
     <RootDocument title={`${tenant.name} edit`}>
-      <AppContainer user={user} tenants={tenants} tenant={tenant} mainClass="grid place-items-center px-2">
+      <AppContainer user={user} tenants={tenants} tenant={tenant} mainClass="grid place-items-center p-2 md:p-4">
         <Card class="max-w-2xl w-full">
           <div class="p-4 grid gap-2">
             <div class="flex gap-1">

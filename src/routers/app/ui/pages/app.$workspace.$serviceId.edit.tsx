@@ -15,7 +15,7 @@ export const ServiceEditPage: FC<{ service: ServiceRecord } & AppContainerProps>
 }) => {
   return (
     <RootDocument title={`${tenant?.name} edit`}>
-      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center px-2">
+      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center p-2 md:p-4">
         <Card class="max-w-2xl w-full">
           <div class="p-4 grid gap-2">
             <div class="flex gap-1">

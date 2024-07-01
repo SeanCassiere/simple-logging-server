@@ -18,8 +18,8 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({
   mainClass,
 }) => {
   return (
-    <div className="grid md:grid-cols-4 lg:grid-cols-5 min-h-full">
-      <aside class="md:col-span-1 border-r flex flex-col bg-gray-100 dark:bg-gray-800">
+    <div className="flex flex-col md:grid md:grid-cols-4 lg:grid-cols-5 min-h-full">
+      <aside class="h-[250px] border-b flex flex-col bg-gray-100 dark:bg-gray-800 md:h-auto md:col-span-1 md:border-r md:border-b-none">
         <div class="flex-grow p-2">
           <p class="pb-2">Hello {user.username}!</p>
           <p class="pb-2 border-b">Your organizations</p>

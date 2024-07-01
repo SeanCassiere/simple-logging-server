@@ -16,7 +16,7 @@ export const WorkspaceLandingPage: FC<
 > = ({ user, tenants, tenant, services }) => {
   return (
     <RootDocument title={`${tenant.name}`}>
-      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center px-2">
+      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center p-2 md:p-4">
         <Card class="max-w-4xl w-full">
           <div class="p-4 grid gap-2">
             <div class="flex gap-1">
@@ -30,8 +30,8 @@ export const WorkspaceLandingPage: FC<
               You can view and edit the services managed by this organization here.
             </p>
           </div>
-          <div class="border-t overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-300">
+          <div class="border-t overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-300 overflow-auto">
               <thead class="bg-gray-50">
                 <tr>
                   <th
