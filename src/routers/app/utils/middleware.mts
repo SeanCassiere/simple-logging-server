@@ -1,7 +1,9 @@
+import { setCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 
 import { db } from "@/config/db/index.mjs";
+import { env } from "@/config/env.mjs";
 
 import type { ServerContext } from "@/types/hono.mjs";
 
@@ -9,6 +11,14 @@ export const checkUserAuthed = createMiddleware<ServerContext>(async (c, next) =
   const user = c.var.user;
 
   if (!user) {
+    setCookie(c, "post_login_redirect", c.req.url, {
+      path: "/",
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 60 * 10,
+      sameSite: "Lax",
+    });
+
     return c.redirect("/app/login");
   }
 

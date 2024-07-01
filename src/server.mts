@@ -12,7 +12,8 @@ import { secureHeaders } from "hono/secure-headers";
 import { timeout } from "hono/timeout";
 import { trimTrailingSlash } from "hono/trailing-slash";
 
-import appRouter from "@/routers/app/index.mjs";
+import appRouter from "@/routers/app/index.js";
+import authRouter from "@/routers/auth/index.mjs";
 import docsRouter from "@/routers/docs/index.mjs";
 import v2Router from "@/routers/v2/index.mjs";
 
@@ -43,6 +44,7 @@ app.use("/api/", timeout(5000));
 app.route("/api/v2", v2Router);
 
 app.use(limiter);
+app.route("/auth", authRouter);
 app.route("/docs", docsRouter);
 app.route("/app", appRouter);
 

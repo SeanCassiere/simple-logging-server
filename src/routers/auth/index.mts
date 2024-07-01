@@ -1,5 +1,7 @@
-import { OAuth2RequestError, generateState } from "arctic";
+import type { ServerContext } from "@/types/hono.mjs";
 import { Hono } from "hono";
+
+import { OAuth2RequestError, generateState } from "arctic";
 import { getCookie, setCookie } from "hono/cookie";
 import { z } from "zod";
 
@@ -13,23 +15,29 @@ import { env } from "@/config/env.mjs";
 import { github, lucia } from "@/config/lucia/index.mjs";
 import { createDbId } from "@/utils/db.mjs";
 
-import type { ServerContext } from "@/types/hono.mjs";
+import { sessionMiddleware } from "./middleware.mjs";
 
 const app = new Hono<ServerContext>();
 
-app.get("/", async (c) => {
+app.use("*", sessionMiddleware);
+
+app.get("/login/github", async (c) => {
+  const post_login_redirect = getCookie(c).post_login_redirect || "/app";
+
+  if (post_login_redirect.length === 0 || post_login_redirect === "/app") {
+    setCookie(c, "post_login_redirect", "/app", {
+      path: "/",
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 60 * 10,
+      sameSite: "Lax",
+    });
+  }
+
   const state = generateState();
   const url = await github.createAuthorizationURL(state);
 
   setCookie(c, "github_oauth_state", state, {
-    path: "/",
-    secure: env.NODE_ENV === "production",
-    httpOnly: true,
-    maxAge: 60 * 10,
-    sameSite: "Lax",
-  });
-
-  setCookie(c, "post_login_redirect", "/app", {
     path: "/",
     secure: env.NODE_ENV === "production",
     httpOnly: true,
@@ -45,7 +53,7 @@ const githubUserSchema = z.object({
   login: z.string(),
 });
 
-app.get("/callback", async (c) => {
+app.get("/login/github/callback", async (c) => {
   const code = c.req.query("code")?.toString() ?? null;
   const state = c.req.query("state")?.toString() ?? null;
   const storedState = getCookie(c).github_oauth_state ?? null;
@@ -54,7 +62,7 @@ app.get("/callback", async (c) => {
     return c.body(null, 400);
   }
 
-  const postLoginRedirect = getCookie(c).post_login_redirect ?? "/app";
+  const postLoginRedirect = getCookie(c).post_login_redirect || "/app";
 
   try {
     const tokens = await github.validateAuthorizationCode(code);
@@ -103,6 +111,19 @@ app.get("/callback", async (c) => {
     }
     return c.body(null, 500);
   }
+});
+
+app.get("/logout", async (c) => {
+  const session = c.get("session");
+  if (!session) {
+    return c.body(null, 401);
+  }
+
+  await lucia.invalidateSession(session.id);
+
+  c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), { append: true });
+
+  return c.redirect("/app");
 });
 
 export default app;
