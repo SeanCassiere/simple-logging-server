@@ -19,7 +19,7 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({
 }) => {
   return (
     <div className="grid grid-cols-5 min-h-full">
-      <aside class="col-span-1 bg-gray-800 border-r flex flex-col">
+      <aside class="col-span-1 border-r flex flex-col bg-gray-100 dark:bg-gray-800">
         <div class="flex-grow p-2">
           <p class="pb-2">Hello {user.username}!</p>
           <p class="pb-2 border-b">Your organizations</p>
