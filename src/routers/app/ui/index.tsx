@@ -2,12 +2,12 @@ import { Hono } from "hono";
 
 import { db } from "@/config/db/index.mjs";
 
-import { DashboardLandingPage } from "./pages/dashboard-landing.js";
-import { LoginPage } from "./pages/login.js";
-import { WorkspaceLandingPage } from "./pages/workspace-landing.js";
-import { WorkspaceEditPage } from "./pages/workspace-edit.js";
-import { ServiceLandingPage } from "./pages/service-landing.js";
-import { ServiceEditPage } from "./pages/service-edit.js";
+import { DashboardLandingPage } from "./pages/app.index.js";
+import { LoginPage } from "./pages/app.login.js";
+import { WorkspaceLandingPage } from "./pages/app.$workspace.index.js";
+import { WorkspaceEditPage } from "./pages/app.$workspace.edit.js";
+import { ServiceLandingPage } from "./pages/app.$workspace.$serviceId.index.js";
+import { ServiceEditPage } from "./pages/app.$workspace.$serviceId.edit.js";
 
 import { checkTenantMembership, checkUserAuthed, checkServiceTenantMembership } from "./utils/middleware.mjs";
 
