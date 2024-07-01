@@ -18,8 +18,8 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({
   mainClass,
 }) => {
   return (
-    <div className="grid grid-cols-5 min-h-full">
-      <aside class="col-span-1 border-r flex flex-col bg-gray-100 dark:bg-gray-800">
+    <div className="grid md:grid-cols-4 lg:grid-cols-5 min-h-full">
+      <aside class="md:col-span-1 border-r flex flex-col bg-gray-100 dark:bg-gray-800">
         <div class="flex-grow p-2">
           <p class="pb-2">Hello {user.username}!</p>
           <p class="pb-2 border-b">Your organizations</p>
@@ -38,7 +38,7 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({
               ))}
             </ul>
           ) : (
-            <p>You are not a part of any organizations.</p>
+            <p>😞 You have no organizations.</p>
           )}
           <span class="border-t" />
         </div>
@@ -46,7 +46,7 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({
           <a href="/app/logout">👋🏼 Logout</a>
         </div>
       </aside>
-      <main className={["col-span-4", mainClass].filter(Boolean).join(" ")}>{children}</main>
+      <main className={["md:col-span-3 lg:col-span-4", mainClass].filter(Boolean).join(" ")}>{children}</main>
     </div>
   );
 };
