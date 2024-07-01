@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "hono/jsx";
+import type { JSX, PropsWithChildren } from "hono/jsx";
 
 const buttonStyles = {
   primary:
@@ -21,10 +21,13 @@ export function Button({
   children,
   variant = "primary",
   size = "md",
+  class: className,
   ...props
-}: PropsWithChildren<{ variant?: keyof typeof buttonStyles; size?: keyof typeof buttonSize }>) {
+}: PropsWithChildren<
+  { variant?: keyof typeof buttonStyles; size?: keyof typeof buttonSize } & JSX.IntrinsicElements["button"]
+>) {
   return (
-    <button class={getButtonStyles(variant, size)} {...props}>
+    <button class={[getButtonStyles(variant, size), className].filter(Boolean).join(" ")} {...props}>
       {children}
     </button>
   );

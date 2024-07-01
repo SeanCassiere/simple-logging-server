@@ -2,7 +2,7 @@ import { Hono } from "hono";
 
 import { db } from "@/config/db/index.mjs";
 
-import { DashboardLandingPage } from "./pages/app.index.js";
+import { NoOrganizationPage } from "./pages/app.index.js";
 import { LoginPage } from "./pages/app.login.js";
 import { WorkspaceLandingPage } from "./pages/app.$workspace.index.js";
 import { WorkspaceEditPage } from "./pages/app.$workspace.edit.js";
@@ -26,12 +26,12 @@ app.get("/", checkUserAuthed, async (c) => {
 
   const tenants = relationships.map((r) => r.tenant);
 
-  if (tenants.length === 1 && view_all !== "true") {
+  if (tenants.length >= 1 && view_all !== "true") {
     const tenant = tenants[0];
     return c.redirect(`/app/${tenant.workspace}`);
   }
 
-  return c.html(<DashboardLandingPage user={user} tenants={tenants} />);
+  return c.html(<NoOrganizationPage user={user} tenants={tenants} />);
 });
 
 app.get("/login", async (c) => {
