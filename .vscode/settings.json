@@ -6,5 +6,5 @@
       "source.organizeImports": "explicit"
     }
   },
-  "conventionalCommits.scopes": ["api-v2", "ui"]
+  "conventionalCommits.scopes": ["auth", "ui", "api-v2"]
 }
