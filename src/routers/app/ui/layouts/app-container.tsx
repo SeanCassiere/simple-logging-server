@@ -6,9 +6,10 @@ import type { TenantRecord } from "@/types/db.mjs";
 export interface AppContainerProps {
   user: User;
   tenants: Array<TenantRecord>;
+  mainClass?: string;
 }
 
-export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({ user, tenants, children }) => {
+export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({ user, tenants, children, mainClass }) => {
   return (
     <div className="grid grid-cols-5 min-h-full">
       <aside class="col-span-1 bg-gray-800 border-r flex flex-col">
@@ -32,7 +33,7 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({ user, t
           <a href="/app/logout">👋🏼 Logout</a>
         </div>
       </aside>
-      <main className="col-span-4">{children}</main>
+      <main className={["col-span-4", mainClass].filter(Boolean).join(" ")}>{children}</main>
     </div>
   );
 };

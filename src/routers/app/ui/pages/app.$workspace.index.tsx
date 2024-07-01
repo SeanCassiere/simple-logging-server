@@ -4,29 +4,26 @@ import { RootDocument } from "../layouts/root-document.js";
 import { Card } from "../components/card.js";
 import { getButtonStyles } from "../components/button.js";
 import { dateFormatter } from "../utils/date.mjs";
+import { AppContainer, type AppContainerProps } from "../layouts/app-container.js";
 
 import type { ServiceRecord, TenantRecord } from "@/types/db.mjs";
 
-export const WorkspaceLandingPage: FC<{
-  tenant: TenantRecord;
-  services: Array<ServiceRecord>;
-}> = ({ tenant, services }) => {
+export const WorkspaceLandingPage: FC<
+  {
+    tenant: TenantRecord;
+    services: Array<ServiceRecord>;
+  } & AppContainerProps
+> = ({ user, tenants, tenant, services }) => {
   return (
-    <RootDocument title="Simple Logging Server">
-      <section class="mx-auto max-w-7xl h-full grid place-items-center px-2">
-        <Card class="lg:max-w-2xl w-full">
+    <RootDocument title={`${tenant.name}`}>
+      <AppContainer user={user} tenants={tenants} mainClass="grid place-items-center">
+        <Card class="lg:max-w-4xl w-full">
           <div class="p-4 grid gap-2">
             <h2 class="text-2xl lg:text-3xl font-semibold pb-2 text-gray-900">Services</h2>
             <p class="lg:text-sm text-gray-700">These are the services managed by this organization ({tenant.name}).</p>
             <div class="flex gap-1">
-              <a class={getButtonStyles("secondary", "xs")} href="/app/logout">
-                Logout 👋🏼
-              </a>
-              <a class={getButtonStyles("secondary", "xs")} href={`/app?view_all=true`}>
-                Organizations ⬅️
-              </a>
               <a class={getButtonStyles("secondary", "xs")} href={`/app/${tenant.workspace}/edit`}>
-                Edit ✏️
+                Edit organization ✏️
               </a>
             </div>
             <p class="lg:text-sm text-gray-700">
@@ -68,7 +65,7 @@ export const WorkspaceLandingPage: FC<{
             </table>
           </div>
         </Card>
-      </section>
+      </AppContainer>
     </RootDocument>
   );
 };

@@ -46,18 +46,34 @@ app.get("/login", async (c) => {
 
 app.get("/:workspace", checkUserAuthed, checkTenantMembership, async (c) => {
   const tenant = c.var.tenant!;
+  const user = c.var.user!;
+
+  const relationships = await db.query.usersToTenants.findMany({
+    where: (fields, { eq }) => eq(fields.userId, user.id),
+    with: { tenant: true },
+  });
+
+  const tenants = relationships.map((r) => r.tenant);
 
   const services = await db.query.services.findMany({
     where: (fields, { eq }) => eq(fields.tenantId, tenant.id),
   });
 
-  return c.html(<WorkspaceLandingPage tenant={tenant} services={services} />);
+  return c.html(<WorkspaceLandingPage user={user} tenants={tenants} tenant={tenant} services={services} />);
 });
 
 app.get("/:workspace/edit", checkUserAuthed, checkTenantMembership, async (c) => {
   const tenant = c.var.tenant!;
+  const user = c.var.user!;
 
-  return c.html(<WorkspaceEditPage tenant={tenant} />);
+  const relationships = await db.query.usersToTenants.findMany({
+    where: (fields, { eq }) => eq(fields.userId, user.id),
+    with: { tenant: true },
+  });
+
+  const tenants = relationships.map((r) => r.tenant);
+
+  return c.html(<WorkspaceEditPage user={user} tenants={tenants} tenant={tenant} />);
 });
 
 app.get("/:workspace/:service_id", checkUserAuthed, checkTenantMembership, checkServiceTenantMembership, async (c) => {
