@@ -24,7 +24,7 @@ export const checkTenantMembership = createMiddleware<ServerContext>(async (c, n
   });
 
   if (!tenant) {
-    throw new HTTPException(404, { message: "Workspace not found." });
+    return c.redirect("/app");
   }
 
   const relationship = await db.query.usersToTenants.findFirst({
@@ -32,7 +32,7 @@ export const checkTenantMembership = createMiddleware<ServerContext>(async (c, n
   });
 
   if (!relationship) {
-    throw new HTTPException(403, { message: "You do not have access to this workspace." });
+    return c.redirect("/app");
   }
 
   c.set("tenant", tenant);

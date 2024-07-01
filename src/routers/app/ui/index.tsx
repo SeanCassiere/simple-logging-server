@@ -2,12 +2,12 @@ import { Hono } from "hono";
 
 import { db } from "@/config/db/index.mjs";
 
-import { DashboardLandingPage } from "./pages/dashboard-landing.js";
-import { LoginPage } from "./pages/login.js";
-import { WorkspaceLandingPage } from "./pages/workspace-landing.js";
-import { WorkspaceEditPage } from "./pages/workspace-edit.js";
-import { ServiceLandingPage } from "./pages/service-landing.js";
-import { ServiceEditPage } from "./pages/service-edit.js";
+import { DashboardLandingPage } from "./pages/app.index.js";
+import { LoginPage } from "./pages/app.login.js";
+import { WorkspaceLandingPage } from "./pages/app.$workspace.index.js";
+import { WorkspaceEditPage } from "./pages/app.$workspace.edit.js";
+import { ServiceLandingPage } from "./pages/app.$workspace.$serviceId.index.js";
+import { ServiceEditPage } from "./pages/app.$workspace.$serviceId.edit.js";
 
 import { checkTenantMembership, checkUserAuthed, checkServiceTenantMembership } from "./utils/middleware.mjs";
 
@@ -46,25 +46,49 @@ app.get("/login", async (c) => {
 
 app.get("/:workspace", checkUserAuthed, checkTenantMembership, async (c) => {
   const tenant = c.var.tenant!;
+  const user = c.var.user!;
+
+  const relationships = await db.query.usersToTenants.findMany({
+    where: (fields, { eq }) => eq(fields.userId, user.id),
+    with: { tenant: true },
+  });
+
+  const tenants = relationships.map((r) => r.tenant);
 
   const services = await db.query.services.findMany({
     where: (fields, { eq }) => eq(fields.tenantId, tenant.id),
   });
 
-  return c.html(<WorkspaceLandingPage tenant={tenant} services={services} />);
+  return c.html(<WorkspaceLandingPage user={user} tenants={tenants} tenant={tenant} services={services} />);
 });
 
 app.get("/:workspace/edit", checkUserAuthed, checkTenantMembership, async (c) => {
   const tenant = c.var.tenant!;
+  const user = c.var.user!;
 
-  return c.html(<WorkspaceEditPage tenant={tenant} />);
+  const relationships = await db.query.usersToTenants.findMany({
+    where: (fields, { eq }) => eq(fields.userId, user.id),
+    with: { tenant: true },
+  });
+
+  const tenants = relationships.map((r) => r.tenant);
+
+  return c.html(<WorkspaceEditPage user={user} tenants={tenants} tenant={tenant} />);
 });
 
 app.get("/:workspace/:service_id", checkUserAuthed, checkTenantMembership, checkServiceTenantMembership, async (c) => {
   const tenant = c.var.tenant!;
   const service = c.var.service!;
+  const user = c.var.user!;
 
-  return c.html(<ServiceLandingPage tenant={tenant} service={service} />);
+  const relationships = await db.query.usersToTenants.findMany({
+    where: (fields, { eq }) => eq(fields.userId, user.id),
+    with: { tenant: true },
+  });
+
+  const tenants = relationships.map((r) => r.tenant);
+
+  return c.html(<ServiceLandingPage user={user} tenant={tenant} tenants={tenants} service={service} />);
 });
 
 app.get(
@@ -75,8 +99,16 @@ app.get(
   async (c) => {
     const tenant = c.var.tenant!;
     const service = c.var.service!;
+    const user = c.var.user!;
 
-    return c.html(<ServiceEditPage tenant={tenant} service={service} />);
+    const relationships = await db.query.usersToTenants.findMany({
+      where: (fields, { eq }) => eq(fields.userId, user.id),
+      with: { tenant: true },
+    });
+
+    const tenants = relationships.map((r) => r.tenant);
+
+    return c.html(<ServiceEditPage user={user} tenant={tenant} tenants={tenants} service={service} />);
   },
 );
 
