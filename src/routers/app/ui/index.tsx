@@ -79,8 +79,16 @@ app.get("/:workspace/edit", checkUserAuthed, checkTenantMembership, async (c) =>
 app.get("/:workspace/:service_id", checkUserAuthed, checkTenantMembership, checkServiceTenantMembership, async (c) => {
   const tenant = c.var.tenant!;
   const service = c.var.service!;
+  const user = c.var.user!;
 
-  return c.html(<ServiceLandingPage tenant={tenant} service={service} />);
+  const relationships = await db.query.usersToTenants.findMany({
+    where: (fields, { eq }) => eq(fields.userId, user.id),
+    with: { tenant: true },
+  });
+
+  const tenants = relationships.map((r) => r.tenant);
+
+  return c.html(<ServiceLandingPage user={user} tenant={tenant} tenants={tenants} service={service} />);
 });
 
 app.get(
@@ -91,8 +99,16 @@ app.get(
   async (c) => {
     const tenant = c.var.tenant!;
     const service = c.var.service!;
+    const user = c.var.user!;
 
-    return c.html(<ServiceEditPage tenant={tenant} service={service} />);
+    const relationships = await db.query.usersToTenants.findMany({
+      where: (fields, { eq }) => eq(fields.userId, user.id),
+      with: { tenant: true },
+    });
+
+    const tenants = relationships.map((r) => r.tenant);
+
+    return c.html(<ServiceEditPage user={user} tenant={tenant} tenants={tenants} service={service} />);
   },
 );
 
