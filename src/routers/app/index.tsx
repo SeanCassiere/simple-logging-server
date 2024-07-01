@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 
+import { sessionMiddleware } from "@/routers/auth/middleware.mjs";
 import { db } from "@/config/db/index.mjs";
 
 import { NoOrganizationPage } from "./pages/app.index.js";
@@ -14,6 +15,8 @@ import { checkTenantMembership, checkUserAuthed, checkServiceTenantMembership } 
 import type { ServerContext } from "@/types/hono.mjs";
 
 const app = new Hono<ServerContext>();
+
+app.use("*", sessionMiddleware);
 
 app.get("/", checkUserAuthed, async (c) => {
   const user = c.var.user!;

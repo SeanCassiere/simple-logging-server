@@ -15,7 +15,7 @@ export const LoginPage: FC = () => {
             <p class="text-gray-700 lg:text-sm">You must first sign in with GitHub to access the application.</p>
           </div>
           <div class="p-4">
-            <a class={[getButtonStyles("primary"), "w-full gap-3"].join(" ")} href="/app/login/github">
+            <a class={[getButtonStyles("primary"), "w-full gap-3"].join(" ")} href="/auth/login/github">
               <span>Login with GitHub</span>
               <icons.Github class="h-5 w-5 fill-white" />
             </a>

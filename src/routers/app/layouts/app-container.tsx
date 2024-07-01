@@ -43,7 +43,7 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({
           <span class="border-t" />
         </div>
         <div class="p-2">
-          <a href="/app/logout">👋🏼 Logout</a>
+          <a href="/auth/logout">👋🏼 Logout</a>
         </div>
       </aside>
       <main className={["md:col-span-3 lg:col-span-4", mainClass].filter(Boolean).join(" ")}>{children}</main>

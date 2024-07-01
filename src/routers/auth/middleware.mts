@@ -1,14 +1,10 @@
-import type { ServerContext } from "@/types/hono.mjs";
-import { Hono } from "hono";
+import { createMiddleware } from "hono/factory";
 
 import { lucia } from "@/config/lucia/index.mjs";
 
-import authRouter from "./auth/index.mjs";
-import uiRouter from "./ui/index.js";
+import type { ServerContext } from "@/types/hono.mjs";
 
-const app = new Hono<ServerContext>();
-
-app.use("*", async (c, next) => {
+export const sessionMiddleware = createMiddleware<ServerContext>(async (c, next) => {
   const sessionId = lucia.readSessionCookie(c.req.header("Cookie") ?? "");
   if (!sessionId) {
     c.set("user", null);
@@ -30,8 +26,3 @@ app.use("*", async (c, next) => {
 
   return await next();
 });
-
-app.route("", authRouter);
-app.route("", uiRouter);
-
-export default app;
