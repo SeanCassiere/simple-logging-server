@@ -5,11 +5,18 @@ import type { TenantRecord } from "@/types/db.mjs";
 
 export interface AppContainerProps {
   user: User;
+  tenant: TenantRecord | null;
   tenants: Array<TenantRecord>;
   mainClass?: string;
 }
 
-export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({ user, tenants, children, mainClass }) => {
+export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({
+  user,
+  tenant,
+  tenants,
+  children,
+  mainClass,
+}) => {
   return (
     <div className="grid grid-cols-5 min-h-full">
       <aside class="col-span-1 bg-gray-800 border-r flex flex-col">
@@ -18,9 +25,15 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({ user, t
           <p class="pb-2 border-b">Your organizations</p>
           {tenants.length > 0 ? (
             <ul>
-              {tenants.map((tenant) => (
+              {tenants.map((item) => (
                 <li>
-                  <a href={`/app/${tenant.workspace}`}>{tenant.name}</a>
+                  <a
+                    href={`/app/${item.workspace}`}
+                    class='block py-1 data-[active-tenant="true"]:text-blue-500'
+                    data-active-tenant={tenant ? item.id === tenant.id : false}
+                  >
+                    {item.name}
+                  </a>
                 </li>
               ))}
             </ul>

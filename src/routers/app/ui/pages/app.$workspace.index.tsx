@@ -16,16 +16,16 @@ export const WorkspaceLandingPage: FC<
 > = ({ user, tenants, tenant, services }) => {
   return (
     <RootDocument title={`${tenant.name}`}>
-      <AppContainer user={user} tenants={tenants} mainClass="grid place-items-center">
-        <Card class="lg:max-w-4xl w-full">
+      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center px-2">
+        <Card class="max-w-4xl w-full">
           <div class="p-4 grid gap-2">
-            <h2 class="text-2xl lg:text-3xl font-semibold pb-2 text-gray-900">Services</h2>
-            <p class="lg:text-sm text-gray-700">These are the services managed by this organization ({tenant.name}).</p>
             <div class="flex gap-1">
               <a class={getButtonStyles("secondary", "xs")} href={`/app/${tenant.workspace}/edit`}>
-                Edit organization ✏️
+                ✏️ Edit organization
               </a>
             </div>
+            <h2 class="text-2xl lg:text-3xl font-semibold pb-2 text-gray-900">Services</h2>
+            <p class="lg:text-sm text-gray-700">These are the services managed by this organization ({tenant.name}).</p>
             <p class="lg:text-sm text-gray-700">
               You can view and edit the services managed by this organization here.
             </p>
