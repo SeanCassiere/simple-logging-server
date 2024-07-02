@@ -14,7 +14,7 @@ app.get("/sidebar-organizations", checkUserAuthed, async (c) => {
 
   // DO NOT USE THIS PARAMETER FOR AUTH
   // THIS IS PURELY BEING USED FOR STYLING
-  const workspace = c.req.query("current_workspace") || "";
+  const style_workspace = c.req.query("style_current_workspace") || "";
 
   const relationships = await db.query.usersToTenants.findMany({
     where: (fields, { eq }) => eq(fields.userId, user.id),
@@ -23,7 +23,7 @@ app.get("/sidebar-organizations", checkUserAuthed, async (c) => {
 
   const tenants = relationships.map((r) => r.tenant);
 
-  return c.html(<SidebarOrganizations workspace={workspace} tenants={tenants} />);
+  return c.html(<SidebarOrganizations workspace={style_workspace} tenants={tenants} />);
 });
 
 export default app;

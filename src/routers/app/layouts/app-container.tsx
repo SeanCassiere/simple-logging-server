@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "hono/jsx";
-import { User } from "lucia";
+import type { User } from "lucia";
 
 export interface AppContainerProps {
   user: User;
@@ -7,16 +7,14 @@ export interface AppContainerProps {
   mainClass?: string;
 }
 
-export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = (props) => {
-  const { user, children, mainClass } = props;
-
+export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = ({ user, children, mainClass, workspace }) => {
   return (
     <div class="flex flex-col md:grid md:grid-cols-4 lg:grid-cols-5 min-h-full">
       <aside class="h-[250px] border-b flex flex-col bg-gray-100 dark:bg-gray-800 md:h-auto md:col-span-1 md:border-r md:border-b-0">
         <div class="flex-grow p-2">
           <p class="pb-2">Hello {user.username}!</p>
           <p class="pb-2 border-b">Your organizations</p>
-          <SidebarFetcher {...props} />
+          <SidebarFetcher workspace={workspace} />
           <span class="border-t" />
         </div>
         <div class="p-2">
@@ -28,11 +26,10 @@ export const AppContainer: FC<PropsWithChildren<AppContainerProps>> = (props) =>
   );
 };
 
-const SidebarFetcher: FC<Pick<AppContainerProps, "user" | "workspace">> = ({ user, workspace }) => {
-  return (
-    <div
-      hx-trigger="load"
-      hx-get={["/app/hx/sidebar-organizations", workspace.length > 0 ? `?current_workspace=${workspace}` : ""].join("")}
-    ></div>
-  );
+const SidebarFetcher: FC<{ workspace: string }> = ({ workspace }) => {
+  const params = new URLSearchParams();
+  params.append("style_current_workspace", workspace);
+
+  const getUrl = `/app/hx/sidebar-organizations?${params.toString()}`;
+  return <div hx-get={getUrl} hx-trigger="load" hx-swap="innerHTML transition:true" />;
 };
