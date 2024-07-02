@@ -31,5 +31,12 @@ const SidebarFetcher: FC<{ workspace: string }> = ({ workspace }) => {
   params.append("style_current_workspace", workspace);
 
   const getUrl = `/app/hx/sidebar-organizations?${params.toString()}`;
-  return <div hx-get={getUrl} hx-trigger="load" hx-swap="innerHTML transition:true" />;
+  return (
+    <div
+      hx-get={getUrl}
+      hx-trigger="load"
+      hx-swap="innerHTML transition:true"
+      style="view-transition-name:sidebar-organizations-list"
+    />
+  );
 };
