@@ -11,17 +11,17 @@ export const ServiceLandingPage: FC<
   {
     service: ServiceRecord;
   } & AppContainerProps
-> = ({ user, tenant, tenants, service }) => {
+> = ({ user, workspace, service }) => {
   return (
-    <RootDocument title="Simple Logging Server">
-      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center p-2 md:p-4">
+    <RootDocument title={`${service.name} - ${workspace}`}>
+      <AppContainer user={user} workspace={workspace} mainClass="grid place-items-center p-2 md:p-4">
         <Card class="max-w-2xl w-full">
           <div class="p-4 grid gap-2">
             <div class="flex gap-1">
-              <a class={getButtonStyles("secondary", "xs")} href={`/app/${tenant?.workspace}`}>
+              <a class={getButtonStyles("secondary", "xs")} href={`/app/${workspace}`}>
                 ⬅️ Back
               </a>
-              <a class={getButtonStyles("secondary", "xs")} href={`/app/${tenant?.workspace}/${service.id}/edit`}>
+              <a class={getButtonStyles("secondary", "xs")} href={`/app/${workspace}/${service.id}/edit`}>
                 ✏️ Edit service
               </a>
             </div>

@@ -28,7 +28,7 @@ app.use(secureHeaders());
 app.use(trimTrailingSlash());
 
 const limiter = rateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 8 * 60 * 1000, // 8 minutes
   limit: 100,
   standardHeaders: "draft-6",
   keyGenerator: (c) => c.req.header("CF-Connecting-IP") ?? c.req.header("x-forwarded-for") ?? "",

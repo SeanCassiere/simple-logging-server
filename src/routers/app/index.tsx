@@ -12,11 +12,15 @@ import { ServiceEditPage } from "./pages/app.$workspace.$serviceId.edit.js";
 
 import { checkTenantMembership, checkUserAuthed, checkServiceTenantMembership } from "./utils/middleware.mjs";
 
+import hxRouter from "./hx-router.js";
+
 import type { ServerContext } from "@/types/hono.mjs";
 
 const app = new Hono<ServerContext>();
 
 app.use("*", sessionMiddleware);
+
+app.route("/hx", hxRouter);
 
 app.get("/", checkUserAuthed, async (c) => {
   const user = c.var.user!;
@@ -34,7 +38,7 @@ app.get("/", checkUserAuthed, async (c) => {
     return c.redirect(`/app/${tenant.workspace}`);
   }
 
-  return c.html(<NoOrganizationPage user={user} tenants={tenants} />);
+  return c.html(<NoOrganizationPage user={user} workspace="" />);
 });
 
 app.get("/login", async (c) => {
@@ -48,50 +52,31 @@ app.get("/login", async (c) => {
 });
 
 app.get("/:workspace", checkUserAuthed, checkTenantMembership, async (c) => {
+  const workspace = c.req.param("workspace");
   const tenant = c.var.tenant!;
   const user = c.var.user!;
-
-  const relationships = await db.query.usersToTenants.findMany({
-    where: (fields, { eq }) => eq(fields.userId, user.id),
-    with: { tenant: true },
-  });
-
-  const tenants = relationships.map((r) => r.tenant);
 
   const services = await db.query.services.findMany({
     where: (fields, { eq }) => eq(fields.tenantId, tenant.id),
   });
 
-  return c.html(<WorkspaceLandingPage user={user} tenants={tenants} tenant={tenant} services={services} />);
+  return c.html(<WorkspaceLandingPage user={user} workspace={workspace} tenant={tenant} services={services} />);
 });
 
 app.get("/:workspace/edit", checkUserAuthed, checkTenantMembership, async (c) => {
+  const workspace = c.req.param("workspace");
   const tenant = c.var.tenant!;
   const user = c.var.user!;
 
-  const relationships = await db.query.usersToTenants.findMany({
-    where: (fields, { eq }) => eq(fields.userId, user.id),
-    with: { tenant: true },
-  });
-
-  const tenants = relationships.map((r) => r.tenant);
-
-  return c.html(<WorkspaceEditPage user={user} tenants={tenants} tenant={tenant} />);
+  return c.html(<WorkspaceEditPage user={user} workspace={workspace} tenant={tenant} />);
 });
 
 app.get("/:workspace/:service_id", checkUserAuthed, checkTenantMembership, checkServiceTenantMembership, async (c) => {
-  const tenant = c.var.tenant!;
+  const workspace = c.req.param("workspace");
   const service = c.var.service!;
   const user = c.var.user!;
 
-  const relationships = await db.query.usersToTenants.findMany({
-    where: (fields, { eq }) => eq(fields.userId, user.id),
-    with: { tenant: true },
-  });
-
-  const tenants = relationships.map((r) => r.tenant);
-
-  return c.html(<ServiceLandingPage user={user} tenant={tenant} tenants={tenants} service={service} />);
+  return c.html(<ServiceLandingPage user={user} workspace={workspace} service={service} />);
 });
 
 app.get(
@@ -100,18 +85,11 @@ app.get(
   checkTenantMembership,
   checkServiceTenantMembership,
   async (c) => {
-    const tenant = c.var.tenant!;
+    const workspace = c.req.param("workspace");
     const service = c.var.service!;
     const user = c.var.user!;
 
-    const relationships = await db.query.usersToTenants.findMany({
-      where: (fields, { eq }) => eq(fields.userId, user.id),
-      with: { tenant: true },
-    });
-
-    const tenants = relationships.map((r) => r.tenant);
-
-    return c.html(<ServiceEditPage user={user} tenant={tenant} tenants={tenants} service={service} />);
+    return c.html(<ServiceEditPage user={user} workspace={workspace} service={service} />);
   },
 );
 

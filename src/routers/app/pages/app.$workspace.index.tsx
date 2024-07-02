@@ -13,14 +13,14 @@ export const WorkspaceLandingPage: FC<
     tenant: TenantRecord;
     services: Array<ServiceRecord>;
   } & AppContainerProps
-> = ({ user, tenants, tenant, services }) => {
+> = ({ user, workspace, tenant, services }) => {
   return (
-    <RootDocument title={`${tenant.name}`}>
-      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center p-2 md:p-4">
+    <RootDocument title={`${workspace}`}>
+      <AppContainer user={user} workspace={workspace} mainClass="grid place-items-center p-2 md:p-4">
         <Card class="max-w-4xl w-full">
           <div class="p-4 grid gap-2">
             <div class="flex gap-1">
-              <a class={getButtonStyles("secondary", "xs")} href={`/app/${tenant.workspace}/edit`}>
+              <a class={getButtonStyles("secondary", "xs")} href={`/app/${workspace}/edit`}>
                 ✏️ Edit organization
               </a>
             </div>
