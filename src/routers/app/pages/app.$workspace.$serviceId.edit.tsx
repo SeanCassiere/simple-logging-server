@@ -7,19 +7,14 @@ import { AppContainer, type AppContainerProps } from "../layouts/app-container.j
 
 import type { ServiceRecord } from "@/types/db.mjs";
 
-export const ServiceEditPage: FC<{ service: ServiceRecord } & AppContainerProps> = ({
-  user,
-  tenant,
-  tenants,
-  service,
-}) => {
+export const ServiceEditPage: FC<{ service: ServiceRecord } & AppContainerProps> = ({ user, workspace, service }) => {
   return (
-    <RootDocument title={`${tenant?.name} edit`}>
-      <AppContainer user={user} tenant={tenant} tenants={tenants} mainClass="grid place-items-center p-2 md:p-4">
+    <RootDocument title={`${service.name} edit - ${workspace}`}>
+      <AppContainer user={user} workspace={workspace} mainClass="grid place-items-center p-2 md:p-4">
         <Card class="max-w-2xl w-full">
           <div class="p-4 grid gap-2">
             <div class="flex gap-1">
-              <a class={getButtonStyles("secondary", "xs")} href={`/app/${tenant?.workspace}/${service.id}`}>
+              <a class={getButtonStyles("secondary", "xs")} href={`/app/${workspace}/${service.id}`}>
                 Back ⬅️
               </a>
             </div>
