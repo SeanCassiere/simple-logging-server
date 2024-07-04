@@ -1,7 +1,7 @@
 {
   "name": "simple-logging-server",
   "license": "MIT",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "description": "This is a simple API for logging messages",
   "author": "Sean Cassiere",
   "keywords": [],
@@ -43,13 +43,13 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "@hono/node-server": "^1.11.4",
+    "@hono/node-server": "^1.12.0",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@scalar/hono-api-reference": "^0.5.87",
+    "@scalar/hono-api-reference": "^0.5.92",
     "arctic": "^1.9.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
-    "hono": "^4.4.10",
+    "hono": "^4.4.11",
     "hono-rate-limiter": "^0.4.0",
     "lucia": "^3.2.0",
     "postgres": "^3.4.4",
