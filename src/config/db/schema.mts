@@ -9,13 +9,13 @@ export const logs = pgTable(
     environment: text().notNull(),
     ip: text(),
     data: jsonb(),
-    createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
-    serviceId: text("service_id")
+    createdAt: timestamp({ precision: 3, mode: "string" }).defaultNow().notNull(),
+    serviceId: text()
       .notNull()
       .references(() => services.id, { onDelete: "cascade", onUpdate: "cascade" }),
     level: text().default("info").notNull(),
-    lookupFilterValue: text("lookup_filter_value"),
-    isPersisted: boolean("is_persisted").notNull(),
+    lookupFilterValue: text(),
+    isPersisted: boolean().notNull(),
   },
   (t) => ({
     createdAtIdx: index("log_created_at_idx").on(t.createdAt),
@@ -35,11 +35,11 @@ export const services = pgTable(
   {
     id: text().primaryKey().notNull(),
     name: text().notNull(),
-    isActive: boolean("is_active").notNull(),
-    createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
-    isPersisted: boolean("is_persisted").notNull(),
-    isAdmin: boolean("is_admin").notNull(),
-    tenantId: text("tenant_id").references(() => tenants.id),
+    isActive: boolean().notNull(),
+    createdAt: timestamp({ precision: 3, mode: "string" }).defaultNow().notNull(),
+    isPersisted: boolean().notNull(),
+    isAdmin: boolean().notNull(),
+    tenantId: text().references(() => tenants.id),
   },
   (t) => ({
     createdAtIdx: index("service_created_at_idx").on(t.createdAt),
@@ -59,8 +59,8 @@ export const tenants = pgTable("tenants", {
   id: text().primaryKey().notNull(),
   name: text().notNull(),
   workspace: text().notNull().unique(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const tenantRelations = relations(tenants, ({ many }) => ({
@@ -72,8 +72,8 @@ export const users = pgTable("users", {
   id: text().primaryKey().notNull(),
   username: text().notNull(),
   githubId: text("github_id").unique(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -84,13 +84,13 @@ export const userRelations = relations(users, ({ many }) => ({
 export const usersToTenants = pgTable(
   "users_to_tenants",
   {
-    userId: text("user_id")
+    userId: text()
       .notNull()
       .references(() => users.id, {
         onDelete: "cascade",
         onUpdate: "cascade",
       }),
-    tenantId: text("tenant_id")
+    tenantId: text()
       .notNull()
       .references(() => tenants.id, {
         onDelete: "cascade",
@@ -115,14 +115,14 @@ export const usersToTenantsRelations = relations(usersToTenants, ({ one }) => ({
 
 export const sessions = pgTable("sessions", {
   id: text().primaryKey().notNull(),
-  userId: text("user_id")
+  userId: text()
     .notNull()
     .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
-  expiresAt: timestamp("expires_at", {
+  expiresAt: timestamp({
     withTimezone: true,
     mode: "date",
   }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const sessionRelations = relations(sessions, ({ one }) => ({
