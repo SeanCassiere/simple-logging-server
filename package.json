@@ -51,7 +51,7 @@
     "arctic": "^1.9.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.0",
-    "hono": "^4.4.11",
+    "hono": "^4.6.5",
     "hono-rate-limiter": "^0.4.0",
     "lucia": "^3.2.0",
     "pg": "^8.13.1",
