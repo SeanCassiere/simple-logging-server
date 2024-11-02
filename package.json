@@ -21,9 +21,10 @@
     "build:code": "tsc && tsc-alias",
     "build": "pnpm run build:kill-dist && pnpm run build:code",
     "postbuild": "node postbuild.mjs",
-    "db:explorer": "drizzle-kit studio",
-    "db:migrate-generate": "drizzle-kit generate",
-    "db:migrate-run": "drizzle-kit migrate"
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:check": "drizzle-kit check"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
