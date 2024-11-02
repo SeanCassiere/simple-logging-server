@@ -4,25 +4,23 @@ import { boolean, index, jsonb, pgTable, primaryKey, text, timestamp } from "dri
 export const logs = pgTable(
   "logs",
   {
-    id: text("id").primaryKey().notNull(),
-    action: text("action").notNull(),
-    environment: text("environment").notNull(),
-    ip: text("ip"),
-    data: jsonb("data"),
-    createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
-    serviceId: text("service_id")
+    id: text().primaryKey().notNull(),
+    action: text().notNull(),
+    environment: text().notNull(),
+    ip: text(),
+    data: jsonb(),
+    createdAt: timestamp({ precision: 3, mode: "string" }).defaultNow().notNull(),
+    serviceId: text()
       .notNull()
       .references(() => services.id, { onDelete: "cascade", onUpdate: "cascade" }),
-    level: text("level").default("info").notNull(),
-    lookupFilterValue: text("lookup_filter_value"),
-    isPersisted: boolean("is_persisted").notNull(),
+    level: text().default("info").notNull(),
+    lookupFilterValue: text(),
+    isPersisted: boolean().notNull(),
   },
-  (table) => {
-    return {
-      createdAtIdx: index("log_created_at_idx").on(table.createdAt),
-      levelIdx: index("log_level_idx").on(table.level),
-    };
-  },
+  (t) => ({
+    createdAtIdx: index("log_created_at_idx").on(t.createdAt),
+    levelIdx: index("log_level_idx").on(t.level),
+  }),
 );
 
 export const logRelations = relations(logs, ({ one }) => ({
@@ -35,20 +33,18 @@ export const logRelations = relations(logs, ({ one }) => ({
 export const services = pgTable(
   "services",
   {
-    id: text("id").primaryKey().notNull(),
-    name: text("name").notNull(),
-    isActive: boolean("is_active").notNull(),
-    createdAt: timestamp("created_at", { precision: 3, mode: "string" }).defaultNow().notNull(),
-    isPersisted: boolean("is_persisted").notNull(),
-    isAdmin: boolean("is_admin").notNull(),
-    tenantId: text("tenant_id").references(() => tenants.id),
+    id: text().primaryKey().notNull(),
+    name: text().notNull(),
+    isActive: boolean().notNull(),
+    createdAt: timestamp({ precision: 3, mode: "string" }).defaultNow().notNull(),
+    isPersisted: boolean().notNull(),
+    isAdmin: boolean().notNull(),
+    tenantId: text().references(() => tenants.id),
   },
-  (table) => {
-    return {
-      createdAtIdx: index("service_created_at_idx").on(table.createdAt),
-      serviceTenantIdx: index("service_tenant_idx").on(table.tenantId),
-    };
-  },
+  (t) => ({
+    createdAtIdx: index("service_created_at_idx").on(t.createdAt),
+    serviceTenantIdx: index("service_tenant_idx").on(t.tenantId),
+  }),
 );
 
 export const serviceRelations = relations(services, ({ many, one }) => ({
@@ -60,11 +56,11 @@ export const serviceRelations = relations(services, ({ many, one }) => ({
 }));
 
 export const tenants = pgTable("tenants", {
-  id: text("id").primaryKey().notNull(),
-  name: text("name").notNull(),
-  workspace: text("workspace").notNull().unique(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  id: text().primaryKey().notNull(),
+  name: text().notNull(),
+  workspace: text().notNull().unique(),
+  createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const tenantRelations = relations(tenants, ({ many }) => ({
@@ -73,11 +69,11 @@ export const tenantRelations = relations(tenants, ({ many }) => ({
 }));
 
 export const users = pgTable("users", {
-  id: text("id").primaryKey().notNull(),
-  username: text("username").notNull(),
+  id: text().primaryKey().notNull(),
+  username: text().notNull(),
   githubId: text("github_id").unique(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -88,13 +84,13 @@ export const userRelations = relations(users, ({ many }) => ({
 export const usersToTenants = pgTable(
   "users_to_tenants",
   {
-    userId: text("user_id")
+    userId: text()
       .notNull()
       .references(() => users.id, {
         onDelete: "cascade",
         onUpdate: "cascade",
       }),
-    tenantId: text("tenant_id")
+    tenantId: text()
       .notNull()
       .references(() => tenants.id, {
         onDelete: "cascade",
@@ -118,15 +114,15 @@ export const usersToTenantsRelations = relations(usersToTenants, ({ one }) => ({
 }));
 
 export const sessions = pgTable("sessions", {
-  id: text("id").primaryKey().notNull(),
-  userId: text("user_id")
+  id: text().primaryKey().notNull(),
+  userId: text()
     .notNull()
     .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
-  expiresAt: timestamp("expires_at", {
+  expiresAt: timestamp({
     withTimezone: true,
     mode: "date",
   }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export const sessionRelations = relations(sessions, ({ one }) => ({
