@@ -29,6 +29,13 @@
       "when": 1719289067156,
       "tag": "0003_smart_azazel",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1730537328922,
+      "tag": "0004_magical_sharon_ventura",
+      "breakpoints": true
     }
   ]
 }
