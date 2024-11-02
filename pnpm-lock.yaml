@@ -24,8 +24,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       drizzle-orm:
-        specifier: ^0.31.2
-        version: 0.31.2(pg@8.12.0)(postgres@3.4.4)
+        specifier: ^0.36.0
+        version: 0.36.0(pg@8.12.0)(postgres@3.4.4)
       hono:
         specifier: ^4.4.11
         version: 4.4.11
@@ -52,8 +52,8 @@ importers:
         specifier: ^6.18.0
         version: 6.18.0(eslint@8.56.0)(typescript@5.5.2)
       drizzle-kit:
-        specifier: ^0.22.8
-        version: 0.22.8
+        specifier: ^0.27.1
+        version: 0.27.1
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -171,6 +171,9 @@ packages:
   '@codemirror/view@6.28.4':
     resolution: {integrity: sha512-QScv95fiviSQ/CaVGflxAvvvDy/9wi0RFyDl4LkHHWiMr/UPebyuTspmYSeN5Nx6eujcPYwsQzA6ZIZucKZVHQ==}
 
+  '@drizzle-team/brocli@0.10.2':
+    resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+
   '@emnapi/core@0.45.0':
     resolution: {integrity: sha512-DPWjcUDQkCeEM4VnljEOEcXdAD7pp8zSZsgOujk/LGIwCXWbXJngin+MO4zbH429lzeC3WbYLGjE2MaUOwzpyw==}
 
@@ -179,9 +182,11 @@ packages:
 
   '@esbuild-kit/core-utils@3.1.0':
     resolution: {integrity: sha512-Uuk8RpCg/7fdHSceR1M6XbSZFSuMrxcePFuGgyvsBn+u339dk5OeL4jv2EojwTN2st/unJGsVm4qHWjWNmJ/tw==}
+    deprecated: 'Merged into tsx: https://tsx.is'
 
   '@esbuild-kit/esm-loader@2.5.5':
     resolution: {integrity: sha512-Qwfvj/qoPbClxCRNuac1Du01r9gvNOT+pMYtJDapfB1eoGN1YlJ1BixLyL9WVENRx5RXgNLdfYdx/CuswlGhMw==}
+    deprecated: 'Merged into tsx: https://tsx.is'
 
   '@esbuild/aix-ppc64@0.19.11':
     resolution: {integrity: sha512-FnzU0LyE3ySQk7UntJO4+qIiQgI7KoODnZg5xzXIrFJlKd2P2gwHsHY4927xj9y5PJmJSzULiUCWmv7iWnNa7g==}
@@ -1682,21 +1687,23 @@ packages:
     resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
     engines: {node: '>=12'}
 
-  drizzle-kit@0.22.8:
-    resolution: {integrity: sha512-VjI4wsJjk3hSqHSa3TwBf+uvH6M6pRHyxyoVbt935GUzP9tUR/BRZ+MhEJNgryqbzN2Za1KP0eJMTgKEPsalYQ==}
+  drizzle-kit@0.27.1:
+    resolution: {integrity: sha512-4BNA0T2blN+jW5wSwhtc+FIlCMuxYSMWCnYYdOBi5rttwq8aVXRUid0d0NCzcBKtZQSPZGAUxy+TXr7Q1OgEug==}
     hasBin: true
 
-  drizzle-orm@0.31.2:
-    resolution: {integrity: sha512-QnenevbnnAzmbNzQwbhklvIYrDE8YER8K7kSrAWQSV1YvFCdSQPzj+jzqRdTSsV2cDqSpQ0NXGyL1G9I43LDLg==}
+  drizzle-orm@0.36.0:
+    resolution: {integrity: sha512-6BETYPdKSR7cDHC0ZfqZk2VrKJ8n/Rfd3ajFPsAbc69gi87nwZ6oBA2wUGMELHA0tQE4kUKN0Ds00LUZQ6Z69A==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
-      '@electric-sql/pglite': '>=0.1.1'
-      '@libsql/client': '*'
+      '@electric-sql/pglite': '>=0.2.0'
+      '@libsql/client': '>=0.10.0'
+      '@libsql/client-wasm': '>=0.10.0'
       '@neondatabase/serverless': '>=0.1'
       '@op-engineering/op-sqlite': '>=2'
       '@opentelemetry/api': ^1.4.1
       '@planetscale/database': '>=1'
+      '@prisma/client': '*'
       '@tidbcloud/serverless': '*'
       '@types/better-sqlite3': '*'
       '@types/pg': '*'
@@ -1712,6 +1719,7 @@ packages:
       mysql2: '>=2'
       pg: '>=8'
       postgres: '>=3'
+      prisma: '*'
       react: '>=18'
       sql.js: '>=1'
       sqlite3: '>=5'
@@ -1724,6 +1732,8 @@ packages:
         optional: true
       '@libsql/client':
         optional: true
+      '@libsql/client-wasm':
+        optional: true
       '@neondatabase/serverless':
         optional: true
       '@op-engineering/op-sqlite':
@@ -1731,6 +1741,8 @@ packages:
       '@opentelemetry/api':
         optional: true
       '@planetscale/database':
+        optional: true
+      '@prisma/client':
         optional: true
       '@tidbcloud/serverless':
         optional: true
@@ -1761,6 +1773,8 @@ packages:
       pg:
         optional: true
       postgres:
+        optional: true
+      prisma:
         optional: true
       react:
         optional: true
@@ -3578,6 +3592,8 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
+  '@drizzle-team/brocli@0.10.2': {}
+
   '@emnapi/core@0.45.0':
     dependencies:
       tslib: 2.6.2
@@ -5148,15 +5164,16 @@ snapshots:
 
   dotenv@16.4.5: {}
 
-  drizzle-kit@0.22.8:
+  drizzle-kit@0.27.1:
     dependencies:
+      '@drizzle-team/brocli': 0.10.2
       '@esbuild-kit/esm-loader': 2.5.5
       esbuild: 0.19.11
       esbuild-register: 3.5.0(esbuild@0.19.11)
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.31.2(pg@8.12.0)(postgres@3.4.4):
+  drizzle-orm@0.36.0(pg@8.12.0)(postgres@3.4.4):
     optionalDependencies:
       pg: 8.12.0
       postgres: 3.4.4
