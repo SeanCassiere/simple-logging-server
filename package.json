@@ -24,7 +24,8 @@
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:check": "drizzle-kit check"
+    "db:check": "drizzle-kit check",
+    "db:up": "drizzle-kit up"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
