@@ -29,6 +29,11 @@ export const checkTenantMembership = createMiddleware<ServerContext>(async (c, n
   const userId = c.var.user!.id;
   const workspace = c.req.param("workspace");
 
+  if (!workspace) {
+    console.error("[checkTenantMembership] No workspace provided.");
+    return c.redirect("/app");
+  }
+
   const tenant = await db.query.tenants.findFirst({
     where: (fields, { eq }) => eq(fields.workspace, workspace),
   });
@@ -53,6 +58,11 @@ export const checkTenantMembership = createMiddleware<ServerContext>(async (c, n
 export const checkServiceTenantMembership = createMiddleware<ServerContext>(async (c, next) => {
   const tenant = c.var.tenant!;
   const serviceId = c.req.param("service_id");
+
+  if (!serviceId) {
+    console.error("[checkServiceTenantMembership] No service ID provided.");
+    return c.redirect("/app");
+  }
 
   const service = await db.query.services.findFirst({
     where: (fields, { and, eq }) => and(eq(fields.id, serviceId), eq(fields.tenantId, tenant.id)),
