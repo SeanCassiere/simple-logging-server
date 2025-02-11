@@ -3,6 +3,7 @@
 import eslintJs from "@eslint/js";
 import tsEslint from "typescript-eslint";
 import prettierEslintPluginRecommended from "eslint-plugin-prettier/recommended";
+import globals from "globals";
 
 export default tsEslint.config(
   eslintJs.configs.recommended,
@@ -10,6 +11,15 @@ export default tsEslint.config(
   prettierEslintPluginRecommended,
   {
     ignores: ["**/node_modules", "**/dist"],
+  },
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     rules: {
       "no-unused-vars": "off",
       "prefer-const": "off",
@@ -21,25 +31,3 @@ export default tsEslint.config(
     },
   },
 );
-
-// export default [{
-//     ignores: ["**/node_modules", "**/dist"],
-// }, ...compat.extends(
-//     "eslint:recommended",
-//     "plugin:@typescript-eslint/eslint-recommended",
-//     "plugin:@typescript-eslint/recommended",
-//     "prettier",
-// ), {
-//     plugins: {
-//         "@typescript-eslint": typescriptEslint,
-//         prettier,
-//     },
-
-//     languageOptions: {
-//         globals: {},
-//         parser: tsParser,
-//     },
-
-//     rules: {
-//     },
-// }];

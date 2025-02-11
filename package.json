@@ -12,7 +12,7 @@
   "scripts": {
     "lint": "eslint --max-warnings=0 src",
     "lint:fix": "eslint --fix --max-warnings=0 src",
-    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'",
+    "format": "prettier --write .",
     "start": "NODE_ENV=production node dist/index.mjs",
     "dev": "NODE_ENV=development tsx --watch ./src/index.mts",
     "test": "NODE_ENV=test vitest",
@@ -35,6 +35,7 @@
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^15.14.0",
     "prettier": "^3.3.2",
     "rimraf": "^5.0.7",
     "tsc-alias": "^1.8.10",

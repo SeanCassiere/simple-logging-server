@@ -1,10 +1,13 @@
 {
   "cSpell.words": ["openapi", "versioner"],
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.configPath": "./prettier.config.mjs",
   "[typescript]": {
     "editor.codeActionsOnSave": {
       "source.organizeImports": "explicit"
     }
   },
+  "typescript.tsdk": "node_modules/typescript/lib",
   "conventionalCommits.scopes": ["auth", "ui", "api-v2"]
 }
