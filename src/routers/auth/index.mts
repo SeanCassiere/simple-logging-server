@@ -1,7 +1,7 @@
 import type { ServerContext } from "@/types/hono.mjs";
 import { Hono } from "hono";
 
-import { OAuth2RequestError, generateState } from "arctic";
+import * as arctic from "arctic";
 import { getCookie, setCookie } from "hono/cookie";
 import { z } from "zod";
 
@@ -34,8 +34,8 @@ app.get("/login/github", async (c) => {
     });
   }
 
-  const state = generateState();
-  const url = await github.createAuthorizationURL(state);
+  const state = arctic.generateState();
+  const url = github.createAuthorizationURL(state, ["user:email", "read:user"]);
 
   setCookie(c, "github_oauth_state", state, {
     path: "/",
@@ -68,7 +68,7 @@ app.get("/login/github/callback", async (c) => {
     const tokens = await github.validateAuthorizationCode(code);
     const githubUserResponse = await fetch("https://api.github.com/user", {
       headers: {
-        Authorization: `Bearer ${tokens.accessToken}`,
+        Authorization: `Bearer ${tokens.accessToken()}`,
       },
     });
     const githubUserJson = await githubUserResponse.json();
@@ -105,10 +105,11 @@ app.get("/login/github/callback", async (c) => {
 
     return c.redirect(postLoginRedirect);
   } catch (error) {
-    if (error instanceof OAuth2RequestError && error.message === "bad_verification_code") {
+    if (error instanceof arctic.OAuth2RequestError) {
       // invalid code
       return c.body(null, 400);
     }
+    console.error(error);
     return c.body(null, 500);
   }
 });
